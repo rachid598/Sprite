@@ -18,10 +18,13 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
-- **Synchronisation entre appareils** — serveur optionnel (Cloudflare Worker + KV,
-  `server/`). Un salon contient plusieurs profils nommés : chacun synchronise sa
-  propre collection entre ses appareils et consulte celle des autres. Les profils
-  ne sont jamais fusionnés entre eux, et une comparaison montre qui possède quoi.
+- **Trois niveaux par case** — un clic marque *obtenu*, un deuxième *maîtrisé*
+  (couronne dorée), un troisième efface.
+- **Synchronisation entre appareils** — Firebase Realtime Database via son API
+  REST, sans bibliothèque ni outil à installer (`docs/firebase.md`). Un salon
+  contient plusieurs profils nommés : chacun synchronise sa propre collection
+  entre ses appareils et consulte celle des autres, sans fusion. Une solution
+  auto-hébergée reste disponible dans `server/`.
 - **Partage & synchronisation** — la collection est encodée en champ de bits dans l'URL
   (`?c=…`). Ouvrir le lien sur un autre appareil propose de remplacer, fusionner ou ignorer.
 - **Échanges** — liste « ce qu'il me manque » / « ce que je possède », résumé formaté
@@ -44,7 +47,8 @@ fr|en/manifest.webmanifest  manifeste d'installation par langue
 assets/sprites/     illustrations des Sprites (117 fichiers .webp 128 px)
 assets/js/art.js    rendu des illustrations, avec repli SVG généré
 assets/js/pwa.js    service worker, invite d'installation, état réseau
-assets/js/sync.js   client de synchronisation
+assets/js/sync.js   client de synchronisation (API REST Firebase)
+docs/firebase.md    guide de mise en place pas à pas
 server/             Worker Cloudflare + KV (voir server/README.md)
 assets/js/store.js  persistance locale et encodage du code de partage
 assets/js/app.js    rendu, filtres, interactions
@@ -91,8 +95,13 @@ hébergement statique (Netlify, Cloudflare Pages…).
 
 ## Synchronisation
 
-Optionnelle : sans serveur configuré, le site reste entièrement local. Mise en
-place détaillée dans `server/README.md`.
+Optionnelle : sans serveur configuré, le site reste entièrement local.
+
+- **Firebase** (recommandé, aucune installation) : `docs/firebase.md`
+- **Cloudflare Worker** auto-hébergé : `server/README.md`
+
+Le code du salon tient lieu de secret partagé : 20 caractères tirés au hasard,
+et les règles Firebase conseillées refusent les codes de moins de 12 caractères.
 
 Arbitrage des versions, par profil :
 

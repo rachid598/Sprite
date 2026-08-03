@@ -444,7 +444,7 @@ label:focus-within {
   padding: 0.05rem 0.36rem;
 }
 
-.variant.is-unreleased.is-owned .variant__soon {
+.variant.is-unreleased:not([data-level='0']) .variant__soon {
   background: var(--accent);
 }
 
@@ -585,9 +585,11 @@ label:focus-within {
   gap: 0.5rem;
 }
 
+/* Trois états successifs : rien → possédé → maîtrisé, puis retour à rien. */
 .variant {
   --chip-a: var(--accent);
   --chip-b: var(--accent-2);
+  --or: #f5c542;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -600,12 +602,13 @@ label:focus-within {
   cursor: pointer;
   text-align: center;
   transition: all 0.15s ease;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.variant input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+.variant:active {
+  transform: scale(0.94);
 }
 
 .sprite-img {
@@ -640,21 +643,13 @@ label:focus-within {
   border-color: rgba(255, 255, 255, 0.24);
 }
 
-.variant.is-owned {
+/* niveau 1 : possédé */
+.variant[data-level='1'] {
   border-color: color-mix(in srgb, var(--chip-a) 55%, transparent);
   background: color-mix(in srgb, var(--chip-a) 12%, transparent);
 }
 
-.variant.is-owned .variant__art {
-  opacity: 1;
-  filter: none;
-}
-
-.variant.is-owned .variant__name {
-  color: var(--text);
-}
-
-.variant.is-owned::after {
+.variant[data-level='1']::after {
   content: '✓';
   position: absolute;
   top: 4px;
@@ -662,6 +657,44 @@ label:focus-within {
   font-size: 0.7rem;
   font-weight: 800;
   color: var(--ok);
+}
+
+/* niveau 2 : maîtrisé — liseré doré et couronne */
+.variant[data-level='2'] {
+  border-color: color-mix(in srgb, var(--or) 70%, transparent);
+  background: color-mix(in srgb, var(--or) 14%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--or) 35%, transparent),
+    0 6px 18px -10px color-mix(in srgb, var(--or) 70%, transparent);
+}
+
+.variant__crown {
+  position: absolute;
+  top: -7px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-2);
+  border: 1px solid color-mix(in srgb, var(--or) 60%, transparent);
+  color: var(--or);
+  line-height: 0;
+}
+
+.variant[data-level='1'] .variant__art,
+.variant[data-level='2'] .variant__art {
+  opacity: 1;
+  filter: none;
+}
+
+.variant[data-level='1'] .variant__name,
+.variant[data-level='2'] .variant__name {
+  color: var(--text);
+}
+
+.variant[data-level='2'] .variant__name {
+  color: var(--or);
 }
 
 .variant.is-dimmed {
@@ -878,6 +911,22 @@ body.is-offline .site-header::after {
 .field small {
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.field--wide {
+  grid-column: 1 / -1;
+}
+
+.field__row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.field__row input {
+  flex: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.03em;
 }
 
 .sync__actions {

@@ -9,28 +9,39 @@
 
 import { ALL_SLOTS } from './data.js';
 
-const KEY = 'sprite-tracker:v2';
-// v2 : la liste des Sprites a été corrigée (24 Sprites, 109 cases) et certains
-// identifiants ont changé, donc l'ordre des bits diffère de la v1.
-const CODE_VERSION = 2;
+const KEY = 'sprite-tracker:v3';
+const ANCIENNE_CLE = 'sprite-tracker:v2';
+// v3 : chaque case a deux niveaux — possédé, puis maîtrisé. Le code de partage
+// contient donc deux champs de bits successifs au lieu d'un.
+const CODE_VERSION = 3;
 
-/** @returns {{owned:Set<string>, updatedAt:number}} */
+/**
+ * @returns {{owned:Set<string>, mastered:Set<string>, updatedAt:number}}
+ * `mastered` est toujours un sous-ensemble de `owned`.
+ */
 export function load() {
+  const vide = { owned: new Set(), mastered: new Set(), updatedAt: 0 };
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return { owned: new Set(), updatedAt: 0 };
+    const raw = localStorage.getItem(KEY) || localStorage.getItem(ANCIENNE_CLE);
+    if (!raw) return vide;
     const parsed = JSON.parse(raw);
-    return {
-      owned: new Set(Array.isArray(parsed.owned) ? parsed.owned : []),
-      updatedAt: Number(parsed.updatedAt) || 0,
-    };
+    const owned = new Set(Array.isArray(parsed.owned) ? parsed.owned : []);
+    // Les sauvegardes v2 ne connaissent pas la maîtrise : tout reste « possédé ».
+    const mastered = new Set(
+      (Array.isArray(parsed.mastered) ? parsed.mastered : []).filter((s) => owned.has(s))
+    );
+    return { owned, mastered, updatedAt: Number(parsed.updatedAt) || 0 };
   } catch {
-    return { owned: new Set(), updatedAt: 0 };
+    return vide;
   }
 }
 
-export function save(owned) {
-  const payload = { owned: [...owned], updatedAt: Date.now() };
+export function save(owned, mastered = new Set()) {
+  const payload = {
+    owned: [...owned],
+    mastered: [...mastered].filter((s) => owned.has(s)),
+    updatedAt: Date.now(),
+  };
   try {
     localStorage.setItem(KEY, JSON.stringify(payload));
   } catch {
@@ -73,26 +84,38 @@ function base64UrlToBytes(str) {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 }
 
-export function encode(owned) {
-  const bits = new Uint8Array(1 + Math.ceil(ALL_SLOTS.length / 8));
+const OCTETS = Math.ceil(ALL_SLOTS.length / 8);
+
+/** Un octet de version, puis le champ « possédé », puis le champ « maîtrisé ». */
+export function encode(owned, mastered = new Set()) {
+  const bits = new Uint8Array(1 + OCTETS * 2);
   bits[0] = CODE_VERSION;
   ALL_SLOTS.forEach((slot, i) => {
     if (owned.has(slot)) bits[1 + (i >> 3)] |= 1 << (i & 7);
+    if (mastered.has(slot)) bits[1 + OCTETS + (i >> 3)] |= 1 << (i & 7);
   });
   return bytesToBase64Url(bits);
 }
 
-/** @returns {Set<string>|null} null si le code est illisible ou d'une autre version. */
+/**
+ * @returns {{owned:Set<string>, mastered:Set<string>}|null}
+ *          null si le code est illisible ou d'une autre version.
+ */
 export function decode(code) {
   try {
     const bytes = base64UrlToBytes(code);
     if (!bytes.length || bytes[0] !== CODE_VERSION) return null;
     const owned = new Set();
+    const mastered = new Set();
     ALL_SLOTS.forEach((slot, i) => {
-      const byte = bytes[1 + (i >> 3)];
-      if (byte !== undefined && byte & (1 << (i & 7))) owned.add(slot);
+      const o = bytes[1 + (i >> 3)];
+      const m = bytes[1 + OCTETS + (i >> 3)];
+      if (o !== undefined && o & (1 << (i & 7))) owned.add(slot);
+      if (m !== undefined && m & (1 << (i & 7))) mastered.add(slot);
     });
-    return owned;
+    // La maîtrise n'a de sens que sur une case possédée.
+    for (const s of [...mastered]) if (!owned.has(s)) mastered.delete(s);
+    return { owned, mastered };
   } catch {
     return null;
   }
@@ -103,14 +126,16 @@ export function decode(code) {
 const BACKUP_FORMAT = 'sprite-tracker-backup';
 
 /** Objet de sauvegarde, lisible et ré-importable. */
-export function buildBackup(owned) {
+export function buildBackup(owned, mastered = new Set()) {
   return {
     format: BACKUP_FORMAT,
     version: CODE_VERSION,
     exportedAt: new Date().toISOString(),
     count: owned.size,
-    code: encode(owned),
+    masteredCount: mastered.size,
+    code: encode(owned, mastered),
     owned: [...owned].sort(),
+    mastered: [...mastered].sort(),
   };
 }
 
@@ -128,22 +153,27 @@ export function readBackup(text) {
   }
   if (!data || data.format !== BACKUP_FORMAT) return null;
 
+  const valide = (s) => typeof s === 'string' && s.includes(':');
+
   // La liste explicite prime ; le code sert de secours s'il manque.
   if (Array.isArray(data.owned)) {
-    const owned = new Set(data.owned.filter((s) => typeof s === 'string' && s.includes(':')));
-    return { owned, exportedAt: data.exportedAt || '' };
+    const owned = new Set(data.owned.filter(valide));
+    const mastered = new Set(
+      (Array.isArray(data.mastered) ? data.mastered : []).filter((s) => valide(s) && owned.has(s))
+    );
+    return { owned, mastered, exportedAt: data.exportedAt || '' };
   }
   if (typeof data.code === 'string') {
-    const owned = decode(data.code);
-    if (owned) return { owned, exportedAt: data.exportedAt || '' };
+    const lu = decode(data.code);
+    if (lu) return { ...lu, exportedAt: data.exportedAt || '' };
   }
   return null;
 }
 
-export function shareUrl(owned) {
+export function shareUrl(owned, mastered = new Set()) {
   const url = new URL(window.location.href);
   url.hash = '';
-  url.searchParams.set('c', encode(owned));
+  url.searchParams.set('c', encode(owned, mastered));
   return url.toString();
 }
 

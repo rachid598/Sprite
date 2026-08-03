@@ -21,6 +21,7 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
 const state = {
   owned: new Set(),
+  mastered: new Set(), // sous-ensemble de `owned` : les cases montees au niveau max
   status: 'all', // all | owned | missing
   rarities: new Set(),
   variants: new Set(),
@@ -47,6 +48,29 @@ const isUnreleased = (sprite, variant) => unreleasedOf(sprite).includes(variant)
 /** Cases possédées comptant dans la progression — hors variantes non publiées. */
 const ownedSlots = () => SPRITES.reduce((n, s) => n + ownedCount(s), 0);
 
+/**
+ * Niveau d'une case : 0 rien, 1 possédé, 2 maîtrisé.
+ * Un clic fait avancer d'un cran et revient à 0 après le dernier.
+ */
+const NIVEAUX = 3;
+const levelOf = (slot) => (state.mastered.has(slot) ? 2 : state.owned.has(slot) ? 1 : 0);
+
+function setLevel(slot, niveau) {
+  state.owned.delete(slot);
+  state.mastered.delete(slot);
+  if (niveau >= 1) state.owned.add(slot);
+  if (niveau >= 2) state.mastered.add(slot);
+}
+
+const cycleLevel = (slot) => setLevel(slot, (levelOf(slot) + 1) % NIVEAUX);
+
+/** Nombre de cases maîtrisées comptant dans la progression. */
+const masteredSlots = () =>
+  SPRITES.reduce(
+    (n, sp) => n + sp.variants.filter((v) => state.mastered.has(slotId(sp.id, v))).length,
+    0
+  );
+
 function abilityText(sprite) {
   return sprite.ability.verified ? t.ability[sprite.id] : t.card.abilityUnknown;
 }
@@ -59,6 +83,12 @@ function formatDrop(rate) {
 function fill(str, map) {
   return Object.entries(map).reduce((s, [k, v]) => s.split(k).join(v), str);
 }
+
+/** Petite couronne affichée sur les cases maîtrisées. */
+const COURONNE =
+  '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">' +
+  '<path d="M2 18 L4 6 L9 12 L12 4 L15 12 L20 6 L22 18 Z" fill="currentColor"/>' +
+  '<rect x="2" y="18.5" width="20" height="3" rx="1.5" fill="currentColor"/></svg>';
 
 /* ------------------------------------------------------------- rendering */
 
@@ -114,16 +144,19 @@ function cardHtml(sprite) {
   const variants = shownVariants(sprite)
     .map((v) => {
       const id = slotId(sprite.id, v);
-      const checked = state.owned.has(id);
+      const niveau = levelOf(id);
       const dim = state.variants.size && !state.variants.has(v) ? ' is-dimmed' : '';
       const soon = isUnreleased(sprite, v) ? ' is-unreleased' : '';
-      const title = soon ? ` title="${t.card.unreleasedHint}"` : '';
-      return `<label class="variant${checked ? ' is-owned' : ''}${dim}${soon}" style="${variantChipStyle(v)}"${title}>
-        <input type="checkbox" data-slot="${id}" ${checked ? 'checked' : ''}>
-        <span class="variant__art">${spriteImg(sprite, v, 40, `${nameOf(sprite)} — ${t.variant[v]}`)}</span>
+      const etat = [t.card.levelNone, t.card.levelOwned, t.card.levelMastered][niveau];
+      const infobulle = soon ? `${t.card.unreleasedHint} — ${etat}` : etat;
+      return `<button type="button" class="variant${dim}${soon}" data-slot="${id}"
+        data-level="${niveau}" style="${variantChipStyle(v)}"
+        title="${infobulle}" aria-label="${nameOf(sprite)} ${t.variant[v]} — ${etat}">
+        <span class="variant__art">${spriteImg(sprite, v, 40, '')}</span>
         <span class="variant__name">${t.variant[v]}</span>
+        ${niveau === 2 ? `<span class="variant__crown" aria-hidden="true">${COURONNE}</span>` : ''}
         ${soon ? `<span class="variant__soon">${t.card.unreleasedTag}</span>` : ''}
-      </label>`;
+      </button>`;
     })
     .join('');
 
@@ -172,6 +205,7 @@ function renderProgress() {
 
   $('#progress-pct').textContent = `${pct.toFixed(1).replace('.', lang === 'fr' ? ',' : '.')} %`;
   $('#progress-slots').textContent = `${slots} / ${TOTAL_SLOTS}`;
+  $('#progress-mastered').textContent = `${masteredSlots()} / ${TOTAL_SLOTS}`;
   $('#progress-sprites').textContent = `${unlocked} / ${SPRITES.length}`;
   $('#progress-complete').textContent = `${completed} / ${SPRITES.length}`;
   $('#progress-ring').style.setProperty('--pct', pct.toFixed(2));
@@ -205,23 +239,18 @@ function renderAll() {
 }
 
 function commit() {
-  state.updatedAt = store.save(state.owned);
+  state.updatedAt = store.save(state.owned, state.mastered);
   renderAll();
   pousserPlusTard(); // regroupe les cases cochees a la suite
 }
 
 /* --------------------------------------------------------------- actions */
 
-function toggleSlot(id, on) {
-  if (on) state.owned.add(id);
-  else state.owned.delete(id);
-}
-
 function toggleSprite(spriteId) {
   const sprite = SPRITES.find((s) => s.id === spriteId);
   if (!sprite) return;
   const on = !isComplete(sprite);
-  for (const v of shownVariants(sprite)) toggleSlot(slotId(sprite.id, v), on);
+  for (const v of shownVariants(sprite)) setLevel(slotId(sprite.id, v), on ? 1 : 0);
   commit();
 }
 
@@ -269,7 +298,7 @@ function discordSummary() {
     if (gaps.length) missing.push(`• ${nameOf(sprite)} : ${gaps.map((v) => t.variant[v]).join(', ')}`);
   }
   lines.push(missing.length ? missing.join('\n') : t.trade.nothingMissing);
-  lines.push('', store.shareUrl(state.owned));
+  lines.push('', store.shareUrl(state.owned, state.mastered));
   return lines.join('\n');
 }
 
@@ -336,7 +365,7 @@ function exportImage() {
 
 /* ------------------------------------------------- import depuis un lien */
 
-function showImportDialog(incoming, incomingUpdatedAt = 0) {
+function showImportDialog(incoming, incomingUpdatedAt = 0, incomingMastered = new Set()) {
   const dialog = $('#import-dialog');
   $('#import-compare').textContent = fill(t.trade.importCompare, {
     '%a': incoming.size,
@@ -344,8 +373,14 @@ function showImportDialog(incoming, incomingUpdatedAt = 0) {
   });
 
   const apply = (mode) => {
-    if (mode === 'replace') state.owned = new Set(incoming);
-    else if (mode === 'merge') state.owned = new Set([...state.owned, ...incoming]);
+    if (mode === 'replace') {
+      state.owned = new Set(incoming);
+      state.mastered = new Set(incomingMastered);
+    } else if (mode === 'merge') {
+      state.owned = new Set([...state.owned, ...incoming]);
+      // La maîtrise se fusionne aussi : elle ne peut que monter, jamais redescendre.
+      state.mastered = new Set([...state.mastered, ...incomingMastered]);
+    }
     dialog.close();
     store.clearUrlCode();
 
@@ -355,7 +390,7 @@ function showImportDialog(incoming, incomingUpdatedAt = 0) {
     // au contraire une version neuve, qui doit repartir vers le serveur.
     if (mode === 'replace' && incomingUpdatedAt) {
       state.updatedAt = incomingUpdatedAt;
-      store.save(state.owned);
+      store.save(state.owned, state.mastered);
       renderAll();
     } else {
       commit();
@@ -371,20 +406,24 @@ function showImportDialog(incoming, incomingUpdatedAt = 0) {
 function handleUrlCode() {
   const code = store.readUrlCode();
   if (!code) return;
-  const incoming = store.decode(code);
-  if (!incoming) return store.clearUrlCode();
+  const lu = store.decode(code);
+  if (!lu) return store.clearUrlCode();
 
-  const same =
-    incoming.size === state.owned.size && [...incoming].every((s) => state.owned.has(s));
-  if (same) return store.clearUrlCode();
+  const memeContenu =
+    lu.owned.size === state.owned.size &&
+    lu.mastered.size === state.mastered.size &&
+    [...lu.owned].every((s) => state.owned.has(s)) &&
+    [...lu.mastered].every((s) => state.mastered.has(s));
+  if (memeContenu) return store.clearUrlCode();
 
   if (state.owned.size === 0) {
-    state.owned = incoming;
+    state.owned = lu.owned;
+    state.mastered = lu.mastered;
     store.clearUrlCode();
     commit();
     return;
   }
-  showImportDialog(incoming);
+  showImportDialog(lu.owned, 0, lu.mastered);
 }
 
 /* ------------------------------------------------------------- listeners */
@@ -409,14 +448,12 @@ function bindImageFallback() {
 }
 
 function bindEvents() {
-  $('#grid').addEventListener('change', (e) => {
-    const box = e.target.closest('input[data-slot]');
-    if (!box) return;
-    toggleSlot(box.dataset.slot, box.checked);
-    commit();
-  });
-
   $('#grid').addEventListener('click', (e) => {
+    const case_ = e.target.closest('[data-slot]');
+    if (case_) {
+      cycleLevel(case_.dataset.slot);
+      return commit();
+    }
     const btn = e.target.closest('[data-toggle]');
     if (btn) toggleSprite(btn.dataset.toggle);
   });
@@ -483,6 +520,7 @@ function bindEvents() {
   $('#reset').addEventListener('click', () => {
     if (!confirm(t.hero.resetConfirm)) return;
     state.owned.clear();
+    state.mastered.clear();
     commit();
   });
 
@@ -491,7 +529,7 @@ function bindEvents() {
   });
 
   $('#copy-link').addEventListener('click', async (e) => {
-    if (await copyText(store.shareUrl(state.owned))) flash(e.currentTarget, t.trade.shareCopied);
+    if (await copyText(store.shareUrl(state.owned, state.mastered))) flash(e.currentTarget, t.trade.shareCopied);
   });
 
   $('#export-image').addEventListener('click', (e) => {
@@ -512,7 +550,7 @@ function bindEvents() {
   langLink.addEventListener('click', (e) => {
     e.preventDefault();
     const url = new URL(t.nav.langHref, window.location.href);
-    if (state.owned.size) url.searchParams.set('c', store.encode(state.owned));
+    if (state.owned.size) url.searchParams.set('c', store.encode(state.owned, state.mastered));
     window.location.href = url.toString();
   });
 }
@@ -529,7 +567,7 @@ const syncUi = () => ({
   form: $('#sync-form'),
   url: $('#sync-url'),
   room: $('#sync-room'),
-  key: $('#sync-key'),
+  generate: $('#sync-generate'),
   profile: $('#sync-profile'),
   connect: $('#sync-connect'),
   now: $('#sync-now'),
@@ -557,10 +595,11 @@ const heure = () =>
   new Date().toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
 
 /** Applique une collection distante en remplaçant l'actuelle. */
-function appliquerDistant(owned, updatedAt) {
+function appliquerDistant(owned, mastered, updatedAt) {
   state.owned = new Set(owned);
+  state.mastered = new Set([...(mastered || [])].filter((s) => state.owned.has(s)));
   state.updatedAt = updatedAt || Date.now();
-  store.save(state.owned);
+  store.save(state.owned, state.mastered);
   renderAll();
 }
 
@@ -588,10 +627,12 @@ async function synchroniser({ silencieux = false } = {}) {
     const memeContenu =
       distant &&
       distant.owned.length === local.length &&
-      local.every((s) => distant.owned.includes(s));
+      distant.mastered.length === state.mastered.size &&
+      local.every((s) => distant.owned.includes(s)) &&
+      [...state.mastered].every((s) => distant.mastered.includes(s));
 
     if (!distant || distant.updatedAt < state.updatedAt) {
-      await sync.push(config, state.owned, state.updatedAt || Date.now());
+      await sync.push(config, state.owned, state.mastered, state.updatedAt || Date.now());
       syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
     } else if (memeContenu) {
       syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
@@ -599,10 +640,10 @@ async function synchroniser({ silencieux = false } = {}) {
       // Le serveur est plus récent : on n'écrase jamais sans demander, sauf si
       // l'appareil est vierge.
       if (state.owned.size === 0) {
-        appliquerDistant(distant.owned, distant.updatedAt);
+        appliquerDistant(distant.owned, distant.mastered, distant.updatedAt);
         syncMessage(t.sync.pulled, 'is-ok');
       } else {
-        showImportDialog(new Set(distant.owned), distant.updatedAt);
+        showImportDialog(new Set(distant.owned), distant.updatedAt, new Set(distant.mastered || []));
       }
     }
 
@@ -685,13 +726,13 @@ function appliquerConfigUi() {
   ui.now.hidden = !connecte;
   ui.disconnect.hidden = !connecte;
   ui.others.hidden = !connecte;
-  [ui.url, ui.room, ui.key, ui.profile].forEach((champ) => {
+  ui.generate.disabled = connecte;
+  [ui.url, ui.room, ui.profile].forEach((champ) => {
     champ.disabled = connecte;
   });
   if (connecte) {
     ui.url.value = syncState.config.url;
     ui.room.value = syncState.config.room;
-    ui.key.value = syncState.config.key;
     ui.profile.value = syncState.config.profile;
   }
 }
@@ -704,33 +745,37 @@ function bindSync() {
     if (syncState.config) return;
 
     const config = {
-      url: ui.url.value.trim(),
+      url: sync.normalizeUrl(ui.url.value),
       room: ui.room.value.trim(),
-      key: ui.key.value,
       profile: ui.profile.value.trim(),
-      name: ui.profile.value.trim(),
     };
 
-    if (!config.url || !config.room || !config.key || !config.profile) {
+    if (!config.url || !config.room || !config.profile) {
       return syncMessage(t.sync.missing, 'is-error');
     }
-    // http:// est refusé : la clé transiterait en clair.
-    if (!/^https:\/\//i.test(config.url) && !/^http:\/\/(localhost|127\.)/i.test(config.url)) {
-      return syncMessage(t.sync.invalidUrl, 'is-error');
-    }
-    if (config.key.length < 8) return syncMessage(t.sync.shortKey, 'is-error');
+    if (!sync.isValidUrl(config.url)) return syncMessage(t.sync.invalidUrl, 'is-error');
+    // Le code du salon tient lieu de secret : trop court, il serait devinable.
+    if (config.room.length < 12) return syncMessage(t.sync.shortRoom, 'is-error');
 
     syncMessage(t.sync.syncing);
     try {
       await sync.testConnection(config);
     } catch (err) {
-      return syncMessage(fill(t.sync.failed, { '%d': err.message }), 'is-error');
+      const message = /permission|denied/i.test(err.message)
+        ? t.sync.denied
+        : fill(t.sync.failed, { '%d': err.message });
+      return syncMessage(message, 'is-error');
     }
 
     syncState.config = config;
     sync.saveConfig(config);
     appliquerConfigUi();
     await synchroniser();
+  });
+
+  ui.generate.addEventListener('click', () => {
+    ui.room.value = sync.randomRoom();
+    ui.room.focus();
   });
 
   ui.now.addEventListener('click', () => synchroniser());
@@ -758,6 +803,7 @@ function bindSync() {
   });
 
   syncState.config = sync.loadConfig();
+  if (!syncState.config && !ui.room.value) ui.room.value = sync.randomRoom();
   appliquerConfigUi();
   if (syncState.config) synchroniser({ silencieux: true });
 }
@@ -776,7 +822,7 @@ function telecharger(nom, contenu, type) {
 }
 
 function exporterSauvegarde() {
-  const data = store.buildBackup(state.owned);
+  const data = store.buildBackup(state.owned, state.mastered);
   const date = new Date().toISOString().slice(0, 10);
   telecharger(`sprite-tracker-${date}.json`, JSON.stringify(data, null, 2), 'application/json');
 }
@@ -791,11 +837,12 @@ async function importerSauvegarde(file) {
   // Même arbitrage que pour un lien partagé : remplacer, fusionner ou annuler.
   if (state.owned.size === 0) {
     state.owned = lu.owned;
+    state.mastered = lu.mastered || new Set();
     commit();
     etat(fill(t.card.variantsOwned, { '%o': state.owned.size, '%t': TOTAL_SLOTS }));
     return;
   }
-  showImportDialog(lu.owned);
+  showImportDialog(lu.owned, 0, lu.mastered);
 }
 
 let etatTimer;
@@ -910,6 +957,7 @@ function applyStrings() {
 function init() {
   const saved = store.load();
   state.owned = saved.owned;
+  state.mastered = saved.mastered;
   state.updatedAt = saved.updatedAt;
   state.showUnreleased = store.loadPref('showUnreleased', false);
   $('#show-unreleased').checked = state.showUnreleased;
