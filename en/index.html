@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sprite Tracker — Fortnite Sprite collection checklist</title>
+<meta name="description" content="Tick off your Sprites and variants, track your completion, find trading partners.">
+<meta name="theme-color" content="#0a0d18">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sprite Tracker — Fortnite Sprite collection">
+<meta property="og:description" content="The full checklist of Fortnite Sprites and their variants.">
+<link rel="canonical" href="./">
+<link rel="alternate" hreflang="fr" href="../fr/">
+<link rel="alternate" hreflang="en" href="../en/">
+<link rel="alternate" hreflang="x-default" href="../">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+<a class="skip" href="#collection">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#6fd2ff"/><stop offset="100%" stop-color="#b06bff"/>
+        </linearGradient></defs>
+        <path d="M32 6 C 42 22, 52 30, 52 40 a 20 20 0 0 1 -40 0 C 12 30, 22 22, 32 6 Z"
+              fill="url(#bg1)"/>
+        <circle cx="26" cy="36" r="3" fill="#0a0d18"/>
+        <circle cx="38" cy="36" r="3" fill="#0a0d18"/>
+      </svg>
+      Sprite Tracker
+    </a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="#collection" data-t="nav.collection">Ma collection</a>
+      <a href="#variantes" data-t="nav.variants">Variantes</a>
+      <a href="#echanges" data-t="nav.trade">Échanges</a>
+      <a href="#questions" data-t="nav.faq">FAQ</a>
+      <a class="lang" id="lang-link" href="../fr/" data-t="nav.lang">Français</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <p class="kicker" data-t="hero.kicker">Traqueur de collection</p>
+        <h1 data-t="hero.title">Sprite Tracker</h1>
+        <p data-t="hero.subtitle"></p>
+        <div class="hero__stats">
+          <div class="stat">
+            <b id="progress-slots">0 / 0</b>
+            <span data-t="hero.slotsLabel">variantes possédées</span>
+          </div>
+          <div class="stat">
+            <b id="progress-sprites">0 / 0</b>
+            <span data-t="hero.spritesLabel">Sprites débloqués</span>
+          </div>
+          <div class="stat">
+            <b id="progress-complete">0 / 0</b>
+            <span data-t="hero.completeLabel">Collections complètes</span>
+          </div>
+        </div>
+      </div>
+      <div class="ring" id="progress-ring" role="progressbar"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progress">
+        <div class="ring__inner">
+          <div class="ring__pct" id="progress-pct">0 %</div>
+          <div class="ring__sub" data-t="hero.progressLabel">Progression totale</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="collection">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-t="filters.heading">Tous les Sprites</h2>
+        <p><b id="total-sprites">0</b> Sprites · <b id="total-slots">0</b> variants</p>
+      </div>
+
+      <div class="panel toolbar">
+        <div class="toolbar__row">
+          <input type="search" id="search" placeholder="Rechercher un Sprite…">
+          <div id="status-filters" class="toolbar__row" role="group" aria-label="Status">
+            <button type="button" class="btn" data-status="all" aria-pressed="true" data-t="filters.all">Tous</button>
+            <button type="button" class="btn" data-status="owned" aria-pressed="false" data-t="filters.owned">Possédés</button>
+            <button type="button" class="btn" data-status="missing" aria-pressed="false" data-t="filters.missing">Manquants</button>
+          </div>
+          <label class="toolbar__row" style="gap:.4rem">
+            <span class="toolbar__label" style="min-width:auto" data-t="filters.sortLabel">Trier par</span>
+            <select id="sort">
+              <option value="rarity" data-t="filters.sortRarity">Rareté</option>
+              <option value="name" data-t="filters.sortName">Nom</option>
+              <option value="progress" data-t="filters.sortProgress">Progression</option>
+              <option value="drop" data-t="filters.sortDrop">Taux d'apparition</option>
+            </select>
+          </label>
+        </div>
+        <div class="toolbar__row">
+          <span class="toolbar__label" data-t="filters.rarity">Rareté</span>
+          <div id="rarity-filters" class="toolbar__row" role="group"></div>
+        </div>
+        <div class="toolbar__row">
+          <span class="toolbar__label" data-t="filters.variant">Variante</span>
+          <div id="variant-filters" class="toolbar__row" role="group"></div>
+        </div>
+        <div class="toolbar__row">
+          <button type="button" class="btn btn--ghost" id="clear-filters" data-t="filters.clear">Réinitialiser les filtres</button>
+          <button type="button" class="btn btn--ghost" id="reset" data-t="hero.reset">Tout décocher</button>
+          <span class="toolbar__meta" id="result-count"></span>
+        </div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="section" id="variantes">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-t="variants.heading">Les variantes expliquées</h2>
+        <p data-t="variants.intro"></p>
+      </div>
+      <ul class="legend" id="variant-legend"></ul>
+    </div>
+  </section>
+
+  <section class="section" id="echanges">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-t="trade.heading">Trouver un partenaire d'échange</h2>
+        <p data-t="trade.intro"></p>
+      </div>
+      <div class="panel">
+        <div class="trade">
+          <div class="trade__col">
+            <h3><span data-t="trade.want">Ce qu'il me manque</span> <span id="trade-want-count">0</span></h3>
+            <div id="trade-want"></div>
+          </div>
+          <div class="trade__col">
+            <h3><span data-t="trade.have">Ce que je possède</span> <span id="trade-have-count">0</span></h3>
+            <div id="trade-have"></div>
+          </div>
+        </div>
+        <div class="trade__actions">
+          <button type="button" class="btn btn--primary" id="copy-discord" data-t="trade.copy">Copier pour Discord</button>
+          <button type="button" class="btn" id="copy-link" data-t="trade.share">Copier le lien de partage</button>
+          <button type="button" class="btn" id="export-image" data-t="trade.exportImage">Exporter en image</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="questions">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-t="faq.heading">Questions fréquentes</h2>
+      </div>
+      <div class="faq" id="faq"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p data-t="footer.disclaimer"></p>
+    <p><a href="https://github.com/rachid598/sprite" data-t="footer.source">Code source</a></p>
+  </div>
+</footer>
+
+<dialog id="import-dialog">
+  <h2 data-t="trade.importTitle">Progression importée</h2>
+  <p data-t="trade.importBody"></p>
+  <span id="import-compare"></span>
+  <div class="dialog__actions">
+    <button type="button" class="btn btn--primary" data-import="replace" data-t="trade.importReplace">Remplacer la mienne</button>
+    <button type="button" class="btn" data-import="merge" data-t="trade.importMerge">Fusionner les deux</button>
+    <button type="button" class="btn btn--ghost" data-import="keep" data-t="trade.importKeep">Garder la mienne</button>
+  </div>
+</dialog>
+
+<script type="module" src="../assets/js/app.js"></script>
+</body>
+</html>
