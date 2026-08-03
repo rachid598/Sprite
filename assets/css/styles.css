@@ -730,64 +730,6 @@ label:focus-within {
   padding: 3rem 1rem;
 }
 
-/* -------------------------------------------------------------- legend */
-
-.legend {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.legend__item {
-  --chip-a: var(--accent);
-  --chip-b: var(--accent-2);
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 1.1rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.legend__item::before {
-  content: '';
-  position: absolute;
-  inset: -40% 40% 60% -40%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--chip-a) 35%, transparent), transparent 70%);
-}
-
-.legend__art {
-  position: relative;
-  line-height: 0;
-  display: block;
-  width: 52px;
-  margin-bottom: 0.5rem;
-}
-
-.legend__item h3 {
-  font-size: 1rem;
-  margin-bottom: 0.35rem;
-}
-
-.legend__item p {
-  color: var(--muted);
-  font-size: 0.87rem;
-}
-
-.legend__count {
-  display: inline-block;
-  margin-top: 0.6rem;
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--muted);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.15rem 0.55rem;
-}
-
 /* --------------------------------------------------------------- trade */
 
 .trade {
@@ -1352,50 +1294,6 @@ dialog.compare {
     opacity: 1;
     transform: none;
   }
-}
-
-/* ----------------------------------------------------------------- faq */
-
-.faq {
-  display: grid;
-  gap: 0.6rem;
-}
-
-.faq__item {
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 0.9rem 1.1rem;
-}
-
-.faq__q {
-  cursor: pointer;
-  font-weight: 700;
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.faq__q::-webkit-details-marker {
-  display: none;
-}
-
-.faq__q::after {
-  content: '+';
-  color: var(--accent);
-  font-size: 1.3rem;
-  line-height: 1;
-}
-
-.faq__item[open] .faq__q::after {
-  content: '−';
-}
-
-.faq__a {
-  color: var(--muted);
-  padding-top: 0.6rem;
-  font-size: 0.94rem;
 }
 
 /* -------------------------------------------------------------- dialog */

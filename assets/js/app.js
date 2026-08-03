@@ -536,14 +536,6 @@ function bindEvents() {
     exportImage();
     flash(e.currentTarget, t.trade.exportDone);
   });
-
-  $('#faq').addEventListener('click', (e) => {
-    const q = e.target.closest('.faq__q');
-    if (!q) return;
-    const item = q.parentElement;
-    const open = item.hasAttribute('open');
-    q.setAttribute('aria-expanded', String(!open));
-  });
 }
 
 /* ------------------------------------------------------- synchronisation */
@@ -1241,49 +1233,6 @@ function bindPwa() {
   majReseau();
 }
 
-/* -------------------------------------------------------- contenu statique */
-
-function renderVariantLegend() {
-  $('#variant-legend').innerHTML = VARIANTS.map((v) => {
-    const sample = SPRITES.find((s) => s.variants.includes(v.id)) || SPRITES[0];
-    const count = SPRITES.filter((s) => s.variants.includes(v.id)).length;
-    return `<li class="legend__item" style="${variantChipStyle(v.id)}">
-      <span class="legend__art">${spriteImg(sample, v.id, 52, t.variant[v.id])}</span>
-      <h3>${t.variant[v.id]}</h3>
-      <p>${t.variantDesc[v.id]}</p>
-      <span class="legend__count">${count} / ${SPRITES.length} Sprites</span>
-    </li>`;
-  }).join('');
-}
-
-function renderFaq() {
-  $('#faq').innerHTML = t.faq.items
-    .map((item) => {
-      const answer = fill(item.a, { '%s': SPRITES.length, '%v': TOTAL_SLOTS });
-      return `<details class="faq__item">
-        <summary class="faq__q" aria-expanded="false">${item.q}</summary>
-        <div class="faq__a"><p>${answer}</p></div>
-      </details>`;
-    })
-    .join('');
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: t.faq.items.map((item) => ({
-      '@type': 'Question',
-      name: item.q,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: fill(item.a, { '%s': SPRITES.length, '%v': TOTAL_SLOTS }),
-      },
-    })),
-  };
-  const script = document.createElement('script');
-  script.type = 'application/ld+json';
-  script.textContent = JSON.stringify(jsonLd);
-  document.head.appendChild(script);
-}
 
 /* ------------------------------------------------------------------ init */
 
@@ -1311,8 +1260,6 @@ function init() {
 
   applyStrings();
   renderFilters();
-  renderVariantLegend();
-  renderFaq();
   renderAll();
   bindImageFallback();
   bindEvents();

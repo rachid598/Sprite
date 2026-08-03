@@ -8,12 +8,10 @@ const fr = {
   },
   nav: {
     collection: 'Ma collection',
-    variants: 'Variantes',
     trade: 'Échanges',
     backup: 'Sauvegarde',
     compare: 'Comparer',
     sync: 'Synchro',
-    faq: 'FAQ',
   },
   hero: {
     kicker: 'Traqueur de collection',
@@ -74,16 +72,6 @@ const fr = {
     cube: 'Cube',
     quack: 'Quack',
   },
-  variantDesc: {
-    normal: 'La version de base, celle que vous débloquez en extrayant le Sprite pour la première fois.',
-    gold: 'Finition dorée. Bonus : XP d\'élimination triplée.',
-    gummy: 'Apparence translucide façon bonbon. Bonus : +20 % de Poussière de Sprite à l\'extraction.',
-    galaxy: 'Effet cosmique animé. Bonus : +30 % de munitions au ramassage.',
-    gem: 'Version cristalline à facettes. Bonus : dégâts de chute réduits d\'environ 30 %.',
-    holofoil: 'Reflets holographiques. Bonus : chance supplémentaire, pour toute l\'escouade, de trouver des variantes rares dans les coffres.',
-    cube: 'Finition corrompue inspirée du Cube. Bonus exact non confirmé.',
-    quack: 'Variante la plus rare, obtenue via la Maîtrise des Sprites plutôt que dans un coffre. Bonus exact non confirmé.',
-  },
   ability: {
     water: 'Régénère du bouclier tant que vous restez dans l\'eau.',
     earth: 'Chance d\'obtenir des objets rares supplémentaires en ouvrant un coffre.',
@@ -135,11 +123,6 @@ const fr = {
     vinijr: 'Vini Jr.',
     pollo: 'Pollo',
     johnwick: 'John Wick',
-  },
-  variants: {
-    heading: 'Les variantes expliquées',
-    intro:
-      'Chaque Sprite peut exister en plusieurs apparences. Une variante conserve l\'effet passif de base du Sprite et y ajoute un bonus qui lui est propre. Elles apparaissent bien plus rarement et coûtent plus cher en Poussière de Sprite.',
   },
   backup: {
     heading: 'Sauvegarde et installation',
@@ -252,47 +235,6 @@ const fr = {
     nothingMissing: 'Rien — collection complète !',
     nothingOwned: 'Aucune variante cochée pour le moment.',
     summaryTitle: 'Ma collection de Sprites',
-  },
-  faq: {
-    heading: 'Questions fréquentes',
-    items: [
-      {
-        q: 'Qu\'est-ce qu\'un Sprite dans Fortnite ?',
-        a: 'Ce sont de petits compagnons à collectionner, arrivés au chapitre 7 saison 3. On les trouve dans les coffres pendant une partie ; une fois extraits, ils sont débloqués définitivement sur votre compte et chacun apporte un effet passif quand il est invoqué.',
-      },
-      {
-        q: 'Combien y a-t-il de Sprites et de variantes ?',
-        a: 'Ce traqueur suit %s Sprites, pour %v cases à cocher au total une fois toutes les variantes comptées. La liste est mise à jour quand de nouveaux Sprites apparaissent en jeu.',
-      },
-      {
-        q: 'Comment est enregistrée ma progression ?',
-        a: 'Tout est stocké localement dans votre navigateur, sans compte ni serveur. Rien n\'est envoyé nulle part. Pour retrouver votre collection sur un autre appareil, utilisez le lien de partage : il encode vos cases cochées directement dans l\'adresse.',
-      },
-      {
-        q: 'Comment obtient-on des Sprites ?',
-        a: 'En ouvrant des coffres en partie. Un Sprite trouvé doit être extrait — vous devez survivre assez longtemps ou terminer l\'extraction — pour le conserver. Ensuite, l\'invoquer coûte de la Poussière de Sprite.',
-      },
-      {
-        q: 'Les variantes changent-elles l\'effet du Sprite ?',
-        a: 'Elles ne remplacent pas l\'effet passif de base, elles s\'y ajoutent. Une variante Or triple l\'XP d\'élimination, Gélifié rapporte plus de Poussière de Sprite à l\'extraction, Galaxie augmente les munitions ramassées, Gemme réduit les dégâts de chute et Holographique améliore les chances de l\'escouade de trouver des variantes rares. Les bonus de Cube et Quack ne sont pas encore confirmés.',
-      },
-      {
-        q: 'Comment obtenir la variante Quack ?',
-        a: 'C\'est la seule qui ne se trouve pas dans un coffre : elle s\'obtient via la Maîtrise des Sprites. C\'est aussi la plus rare, et seuls quelques Sprites la proposent.',
-      },
-      {
-        q: 'Pourquoi certains Sprites n\'ont-ils qu\'une seule variante ?',
-        a: 'Cacahuète Grillée, Pollo, Vini Jr. et John Wick sont liés à une collaboration ou à un évènement ponctuel et n\'existent que dans leur apparence de base. Si des variantes sont ajoutées plus tard, elles apparaîtront dans cette checklist.',
-      },
-      {
-        q: 'Quel est le Sprite le plus rare ?',
-        a: 'Point Zéro, de loin : son taux d\'apparition est de l\'ordre de 0,0003 %, très en dessous des autres Sprites mythiques qui tournent autour de 3 %.',
-      },
-      {
-        q: 'Ce site est-il officiel ?',
-        a: 'Non. C\'est un outil de fan, indépendant, gratuit et sans publicité. Fortnite et ses contenus appartiennent à Epic Games.',
-      },
-    ],
   },
   footer: {
     disclaimer:

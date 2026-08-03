@@ -1,8 +1,7 @@
 # Sprite Tracker
 
-Traqueur de collection pour les Sprites de Fortnite : checklist interactive de tous les
-Sprites et de leurs variantes, progression, recherche de partenaires d'échange, FAQ.
-En français.
+Traqueur de collection pour les Sprites de Fortnite, en français. Cinq onglets :
+Ma collection, Échanges, Comparer, Sauvegarde, Synchro.
 
 Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le navigateur.
 
@@ -32,7 +31,6 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   (`?c=…`). Ouvrir le lien sur un autre appareil propose de remplacer, fusionner ou ignorer.
 - **Échanges** — liste « ce qu'il me manque » / « ce que je possède », résumé formaté
   pour Discord, export PNG de la progression.
-- **FAQ** avec données structurées `FAQPage` générées automatiquement.
 - Accessible au clavier, responsive, respecte `prefers-reduced-motion`.
 
 ## Structure
