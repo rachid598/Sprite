@@ -18,6 +18,9 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
+- **Onglet Comparer** — vue dédiée face à un membre du salon : bandeau « vous vs
+  lui », quatre familles (il peut vous aider / vous pouvez l'aider / vous deux /
+  ni l'un ni l'autre) et grille illustrée variante par variante.
 - **Trois niveaux par case** — un clic marque *obtenu*, un deuxième *maîtrisé*
   (couronne dorée), un troisième efface.
 - **Synchronisation entre appareils** — Firebase Realtime Database via son API

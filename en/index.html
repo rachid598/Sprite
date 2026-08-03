@@ -42,6 +42,7 @@
       <a href="#collection" data-t="nav.collection">Ma collection</a>
       <a href="#variantes" data-t="nav.variants">Variantes</a>
       <a href="#echanges" data-t="nav.trade">Échanges</a>
+      <a href="#comparer" data-t="nav.compare">Comparer</a>
       <a href="#sauvegarde" data-t="nav.backup">Sauvegarde</a>
       <a href="#synchro" data-t="nav.sync">Synchro</a>
       <a href="#questions" data-t="nav.faq">FAQ</a>
@@ -132,6 +133,40 @@
       </div>
 
       <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+
+  <section class="section view" id="comparer" hidden>
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-t="compare.heading">Comparer les collections</h2>
+        <p data-t="compare.intro"></p>
+      </div>
+
+      <div class="panel compare__setup" id="compare-setup" hidden>
+        <p id="compare-setup-msg"></p>
+        <a class="btn btn--primary" href="#synchro" id="compare-goto-sync" data-t="compare.goSync">Aller à la synchro</a>
+      </div>
+
+      <div id="compare-main" hidden>
+        <div class="versus" id="compare-versus"></div>
+
+        <div class="panel toolbar compare__toolbar">
+          <div class="toolbar__row">
+            <label class="toolbar__row" style="gap:.4rem">
+              <span class="toolbar__label" style="min-width:auto" data-t="compare.with">Comparer avec</span>
+              <select id="compare-who"></select>
+            </label>
+            <button type="button" class="btn" id="compare-refresh" data-t="compare.refresh">Actualiser</button>
+            <button type="button" class="btn" id="compare-copy" data-t="compare.copyMissing">Copier ma liste de manques</button>
+            <span class="toolbar__meta" id="compare-count"></span>
+          </div>
+          <div class="toolbar__row" id="compare-filters" role="group"></div>
+        </div>
+
+        <div class="grid" id="compare-grid"></div>
+      </div>
     </div>
   </section>
 

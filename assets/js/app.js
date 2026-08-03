@@ -648,6 +648,7 @@ async function synchroniser({ silencieux = false } = {}) {
     }
 
     renderSyncProfiles();
+    if (document.body.classList.contains('is-comparing')) renderCompare();
   } catch (err) {
     syncMessage(fill(t.sync.failed, { '%d': err.message }), 'is-error');
   } finally {
@@ -806,6 +807,211 @@ function bindSync() {
   if (!syncState.config && !ui.room.value) ui.room.value = sync.randomRoom();
   appliquerConfigUi();
   if (syncState.config) synchroniser({ silencieux: true });
+}
+
+/* ------------------------------------------------- onglet « comparer » */
+
+const compareState = {
+  who: null, // identifiant du profil comparé
+  filter: 'theyHelp',
+};
+
+/** Les quatre familles de cases, dans l'ordre d'intérêt pour un échange. */
+const CATEGORIES = ['theyHelp', 'youHelp', 'both', 'neither'];
+
+/**
+ * Range chaque case dans une famille selon qui la possède.
+ * @returns {{theyHelp:string[], youHelp:string[], both:string[], neither:string[]}}
+ */
+function classerCases(autre) {
+  const siens = new Set(autre.owned);
+  const groupes = { theyHelp: [], youHelp: [], both: [], neither: [] };
+
+  for (const sprite of SPRITES) {
+    for (const v of shownVariants(sprite)) {
+      const id = slotId(sprite.id, v);
+      const moi = state.owned.has(id);
+      const lui = siens.has(id);
+      const famille = moi && lui ? 'both' : lui ? 'theyHelp' : moi ? 'youHelp' : 'neither';
+      groupes[famille].push(id);
+    }
+  }
+  return groupes;
+}
+
+function carteVersus(nom, owned, mastered, aMoi) {
+  const pct = ((owned / TOTAL_SLOTS) * 100).toFixed(0);
+  return `<div class="versus__side${aMoi ? ' is-me' : ''}">
+    <span class="versus__who">${nom}</span>
+    <span class="versus__pct">${pct} %</span>
+    <div class="meter"><i style="width:${pct}%"></i></div>
+    <span class="versus__detail">${owned} / ${TOTAL_SLOTS} · ${mastered} ${t.compare.mastered}</span>
+  </div>`;
+}
+
+function renderCompare() {
+  const setup = $('#compare-setup');
+  const principal = $('#compare-main');
+  const autres = Object.entries(syncState.profiles).filter(
+    ([id]) => id !== syncState.config?.profile
+  );
+
+  // Deux raisons de ne rien pouvoir comparer : pas de synchro, ou personne d'autre.
+  if (!syncState.config || !autres.length) {
+    $('#compare-setup-msg').textContent = syncState.config ? t.compare.alone : t.compare.needSync;
+    $('#compare-goto-sync').hidden = !!syncState.config;
+    setup.hidden = false;
+    principal.hidden = true;
+    return;
+  }
+  setup.hidden = true;
+  principal.hidden = false;
+
+  if (!compareState.who || !syncState.profiles[compareState.who]) {
+    compareState.who = autres[0][0];
+  }
+  const autre = syncState.profiles[compareState.who];
+
+  $('#compare-who').innerHTML = autres
+    .map(
+      ([id, p]) =>
+        `<option value="${id}"${id === compareState.who ? ' selected' : ''}>${p.name || id}</option>`
+    )
+    .join('');
+
+  const moi = syncState.profiles[syncState.config.profile];
+  $('#compare-versus').innerHTML =
+    carteVersus(t.compare.you, state.owned.size, state.mastered.size, true) +
+    '<span class="versus__vs">vs</span>' +
+    carteVersus(autre.name || compareState.who, autre.owned.length, autre.mastered.length, false);
+
+  const groupes = classerCases(autre);
+
+  $('#compare-filters').innerHTML = CATEGORIES.map(
+    (c) => `<button type="button" class="chip chip--${c}" data-cat="${c}"
+      aria-pressed="${compareState.filter === c}">${t.compare[c]} <b>${groupes[c].length}</b></button>`
+  ).join('');
+
+  const retenues = new Set(groupes[compareState.filter]);
+  $('#compare-count').textContent = t.compare[`${compareState.filter}Hint`] || '';
+
+  const siens = new Set(autre.owned);
+  const siensMaitrises = new Set(autre.mastered);
+
+  const cartes = SPRITES.map((sprite) => {
+    const cases = shownVariants(sprite).filter((v) => retenues.has(slotId(sprite.id, v)));
+    if (!cases.length) return '';
+
+    const tuiles = cases
+      .map((v) => {
+        const id = slotId(sprite.id, v);
+        const moiNiveau = levelOf(id);
+        const luiNiveau = siensMaitrises.has(id) ? 2 : siens.has(id) ? 1 : 0;
+        const pastille = (niveau, libelle) =>
+          `<span class="dot dot--${niveau}" title="${libelle}">${niveau === 2 ? '♛' : niveau === 1 ? '✓' : '·'}</span>`;
+        return `<div class="cmp-tile" style="${variantChipStyle(v)}">
+          <span class="cmp-tile__art">${spriteImg(sprite, v, 40, '')}</span>
+          <span class="cmp-tile__name">${t.variant[v]}</span>
+          <span class="cmp-tile__dots">
+            ${pastille(moiNiveau, t.compare.legendYou)}${pastille(luiNiveau, t.compare.legendThem)}
+          </span>
+        </div>`;
+      })
+      .join('');
+
+    const rarete = RARITY_INDEX[sprite.rarity];
+    return `<article class="card cmp-card" style="--rarity:${rarete.color}">
+      <header class="card__head">
+        <span class="card__art">${spriteImg(sprite, 'normal', 56, nameOf(sprite))}</span>
+        <span class="card__id">
+          <h3 class="card__name">${nameOf(sprite)}</h3>
+          <span class="badge">${t.rarity[sprite.rarity]}</span>
+        </span>
+        <span class="cmp-card__count">${cases.length}</span>
+      </header>
+      <div class="cmp-tiles">${tuiles}</div>
+    </article>`;
+  }).join('');
+
+  $('#compare-grid').innerHTML = cartes || `<p class="empty">${t.compare.empty}</p>`;
+}
+
+/** Liste formatée de ce que l'autre possède et pas nous, prête pour Discord. */
+function listeManques() {
+  const autre = syncState.profiles[compareState.who];
+  if (!autre) return '';
+  const siens = new Set(autre.owned);
+  const lignes = [];
+
+  for (const sprite of SPRITES) {
+    const manques = shownVariants(sprite).filter(
+      (v) => siens.has(slotId(sprite.id, v)) && !state.owned.has(slotId(sprite.id, v))
+    );
+    if (manques.length) lignes.push(`• ${nameOf(sprite)} : ${manques.map((v) => t.variant[v]).join(', ')}`);
+  }
+  const nom = autre.name || compareState.who;
+  return [
+    `**${fill(t.compare.theyHelp, {})} — ${nom}**`,
+    lignes.length ? lignes.join('\n') : t.compare.empty,
+  ].join('\n');
+}
+
+/** Bascule entre la vue normale et l'onglet de comparaison. */
+function showCompare(actif) {
+  document.body.classList.toggle('is-comparing', actif);
+  $$('main > section').forEach((sec) => {
+    if (sec.id === 'comparer') sec.hidden = !actif;
+    else sec.hidden = actif;
+  });
+  $$('.site-nav a').forEach((a) =>
+    a.classList.toggle('is-active', actif && a.getAttribute('href') === '#comparer')
+  );
+  if (actif) {
+    renderCompare();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+}
+
+function bindCompare() {
+  // Navigation : « Comparer » ouvre l'onglet, tout autre lien revient à la vue normale.
+  $$('.site-nav a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const cible = a.getAttribute('href');
+      if (cible === '#comparer') {
+        e.preventDefault();
+        history.replaceState(null, '', '#comparer');
+        showCompare(true);
+      } else if (document.body.classList.contains('is-comparing')) {
+        showCompare(false);
+      }
+    });
+  });
+
+  $('#compare-who').addEventListener('change', (e) => {
+    compareState.who = e.target.value;
+    renderCompare();
+  });
+
+  $('#compare-filters').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-cat]');
+    if (!btn) return;
+    compareState.filter = btn.dataset.cat;
+    renderCompare();
+  });
+
+  $('#compare-refresh').addEventListener('click', async () => {
+    await synchroniser();
+    renderCompare();
+  });
+
+  $('#compare-copy').addEventListener('click', async (e) => {
+    if (await copyText(listeManques())) flash(e.currentTarget, t.compare.copied);
+  });
+
+  $('#compare-goto-sync').addEventListener('click', () => showCompare(false));
+
+  // Lien direct vers #comparer, y compris depuis un signet
+  if (location.hash === '#comparer') showCompare(true);
 }
 
 /* ------------------------------------------- sauvegarde fichier & install */
@@ -972,6 +1178,7 @@ function init() {
   bindBackup();
   bindPwa();
   bindSync();
+  bindCompare();
   handleUrlCode();
 }
 
