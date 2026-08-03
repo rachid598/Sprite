@@ -9,8 +9,10 @@
 
 import { ALL_SLOTS } from './data.js';
 
-const KEY = 'sprite-tracker:v1';
-const CODE_VERSION = 1;
+const KEY = 'sprite-tracker:v2';
+// v2 : la liste des Sprites a été corrigée (24 Sprites, 109 cases) et certains
+// identifiants ont changé, donc l'ordre des bits diffère de la v1.
+const CODE_VERSION = 2;
 
 /** @returns {{owned:Set<string>, updatedAt:number}} */
 export function load() {
