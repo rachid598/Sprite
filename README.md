@@ -47,7 +47,7 @@ fr/manifest.webmanifest     manifeste d'installation
 assets/sprites/     illustrations des Sprites (117 fichiers .webp 128 px)
 assets/js/art.js    rendu des illustrations, avec repli SVG généré
 assets/js/pwa.js    service worker, invite d'installation, état réseau
-assets/js/sync.js   client de synchronisation (API REST Firebase)
+assets/js/salon.js  client de synchronisation (API REST Firebase)
 docs/firebase.md    guide de mise en place pas à pas
 server/             Worker Cloudflare + KV (voir server/README.md)
 assets/js/store.js  persistance locale et encodage du code de partage

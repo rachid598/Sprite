@@ -12,7 +12,9 @@ import { getStrings } from './i18n.js';
 import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
 import { registerServiceWorker, applyUpdate, trackInstall, estInstallee, estIos } from './pwa.js';
-import * as sync from './sync.js';
+// Fichier nommé « salon » et non « sync » : certains bloqueurs de publicité
+// filtrent les scripts contenant « sync », terme courant du pistage.
+import * as sync from './salon.js';
 
 const lang = 'fr'; // sert au formatage des nombres et au tri alphabétique
 const t = getStrings();
@@ -1236,18 +1238,32 @@ function bindPwa() {
 
 /* ------------------------------------------------------------------ init */
 
+/**
+ * Applique une modification à un élément seulement s'il existe.
+ *
+ * Un élément absent ne doit jamais interrompre le démarrage : c'est ce qui est
+ * arrivé quand une page récente s'est retrouvée servie avec un app.js périmé
+ * qui cherchait un bouton supprimé — toute la page restait vide.
+ */
+function surElement(selecteur, action) {
+  const el = $(selecteur);
+  if (el) action(el);
+}
+
 function applyStrings() {
   document.title = t.meta.title;
-  $('meta[name="description"]').setAttribute('content', t.meta.description);
+  surElement('meta[name="description"]', (el) => el.setAttribute('content', t.meta.description));
   $$('[data-t]').forEach((el) => {
     const path = el.dataset.t.split('.');
     const value = path.reduce((o, k) => (o ? o[k] : undefined), t);
     if (typeof value === 'string') el.textContent = value;
   });
-  $('#search').placeholder = t.filters.search;
-  $('#search').setAttribute('aria-label', t.filters.searchLabel);
-  $('#total-slots').textContent = TOTAL_SLOTS;
-  $('#total-sprites').textContent = SPRITES.length;
+  surElement('#search', (el) => {
+    el.placeholder = t.filters.search;
+    el.setAttribute('aria-label', t.filters.searchLabel);
+  });
+  surElement('#total-slots', (el) => (el.textContent = TOTAL_SLOTS));
+  surElement('#total-sprites', (el) => (el.textContent = SPRITES.length));
 }
 
 function init() {
@@ -1267,6 +1283,9 @@ function init() {
   bindPwa();
   bindSync();
   bindCompare();
+
+  // Signale au secours placé dans le HTML que l'application a bien démarré.
+  window.__spriteDemarre = true;
   handleUrlCode();
 }
 

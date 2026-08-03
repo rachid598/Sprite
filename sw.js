@@ -23,7 +23,7 @@ const FILES = [
   "assets/js/art.js",
   "assets/js/store.js",
   "assets/js/pwa.js",
-  "assets/js/sync.js",
+  "assets/js/salon.js",
   "assets/img/favicon.svg",
   "assets/img/icon-192.png",
   "assets/img/icon-512.png",
@@ -197,17 +197,19 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     (async () => {
-      const hit = await caches.match(req, { ignoreSearch: false });
+      // Correspondance exacte, version comprise.
+      const hit = await caches.match(req);
       if (hit) return hit;
-      // Les assets portent un ?v=<sha> : on réessaie sans, le contenu est identique.
-      const sansVersion = await caches.match(req, { ignoreSearch: true });
-      if (sansVersion) return sansVersion;
+
       try {
         const net = await fetch(req);
         if (net.ok) (await caches.open(CACHE)).put(req, net.clone());
         return net;
       } catch {
-        return Response.error();
+        // Hors ligne seulement : on accepte une autre version du même fichier,
+        // faute de mieux. Tant qu'on a le réseau, jamais — sinon une page
+        // fraîche se retrouverait servie avec du code périmé, et planterait.
+        return (await caches.match(req, { ignoreSearch: true })) || Response.error();
       }
     })()
   );

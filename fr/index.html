@@ -17,6 +17,82 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sprite Tracker">
 <link rel="stylesheet" href="../assets/css/styles.css">
+<script>
+/*
+ * Secours de démarrage — volontairement hors de app.js.
+ *
+ * Si l'application ne démarre pas, la page reste vide et muette : impossible
+ * pour l'utilisateur de comprendre ce qui se passe. Ce script vit dans le HTML,
+ * toujours récupéré sur le réseau, et sert de filet.
+ *
+ * Premier échec  : on nettoie le service worker et on recharge, ce qui répare
+ *                  un cache incohérent.
+ * Second échec   : le problème vient d'ailleurs — le plus souvent un bloqueur
+ *                  de publicité qui empêche le chargement d'un fichier. On
+ *                  l'explique au lieu de laisser une page blanche.
+ */
+(function () {
+  var CLE = 'sprite-tracker:reparation';
+  var DELAI = 6000;
+
+  function dejaTente() {
+    try { return !!sessionStorage.getItem(CLE); } catch (e) { return false; }
+  }
+  function noterTentative() {
+    try { sessionStorage.setItem(CLE, '1'); } catch (e) {}
+  }
+
+  function expliquer() {
+    if (document.getElementById('panne')) return;
+    var d = document.createElement('div');
+    d.id = 'panne';
+    d.setAttribute('role', 'alert');
+    d.innerHTML =
+      '<h2>Le site n\'a pas pu démarrer</h2>' +
+      '<p>La cause la plus fréquente est un <b>bloqueur de publicité</b> (AdGuard, ' +
+      'uBlock, Brave, DNS filtrant…) qui empêche le chargement d\'un fichier du site.</p>' +
+      '<p>Ajoutez <b>ce site à ses exceptions</b>, ou désactivez-le le temps d\'une visite, ' +
+      'puis rechargez. Votre collection n\'est pas perdue : elle est enregistrée sur cet ' +
+      'appareil.</p>' +
+      '<p><button type="button" id="panne-recharger">Recharger</button></p>';
+    document.body.appendChild(d);
+    document.getElementById('panne-recharger').onclick = function () {
+      try { sessionStorage.removeItem(CLE); } catch (e) {}
+      location.reload();
+    };
+  }
+
+  setTimeout(function () {
+    if (window.__spriteDemarre) return;            // tout va bien
+
+    if (dejaTente()) { expliquer(); return; }      // le nettoyage n'a rien changé
+    noterTentative();
+
+    if (!('serviceWorker' in navigator)) { expliquer(); return; }
+
+    navigator.serviceWorker.getRegistration().then(function (reg) {
+      var attente = reg && (reg.waiting || reg.installing);
+      if (attente) {
+        attente.postMessage('skip-waiting');
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+          location.reload();
+        });
+        return;
+      }
+      return navigator.serviceWorker.getRegistrations().then(function (regs) {
+        if (!regs.length) { expliquer(); return; }
+        return Promise.all(regs.map(function (r) { return r.unregister(); }))
+          .then(function () { location.reload(); });
+      });
+    }).catch(expliquer);
+  }, DELAI);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(function () {});
+  }
+})();
+</script>
+
 </head>
 <body>
 <a class="skip" href="#collection">Aller au contenu</a>

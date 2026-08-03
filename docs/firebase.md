@@ -165,6 +165,19 @@ Pour voir ce que contient la base : console Firebase → **Realtime Database** �
 onglet **Données**. Vous devez y voir `rooms` → votre code → `profiles` →
 `rachid` et `nico`.
 
+## Bloqueurs de publicité
+
+Un bloqueur agressif (AdGuard, uBlock, Brave, DNS filtrant) peut empêcher le
+chargement d'un fichier du site et laisser une page vide.
+
+Si cela arrive, le site affiche un message l'expliquant, avec un bouton pour
+recharger. La solution : **ajouter le site aux exceptions du bloqueur**, ou le
+désactiver le temps d'une visite. La collection n'est jamais perdue, elle reste
+enregistrée sur l'appareil.
+
+Le site ne contient ni publicité, ni traceur, ni requête vers un tiers — hormis
+votre propre base Firebase si vous avez activé la synchronisation.
+
 ## Et si je préfère ne pas utiliser Firebase ?
 
 La synchro est facultative. Sans elle, le site fonctionne exactement comme avant :
