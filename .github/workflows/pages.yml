@@ -1,8 +1,12 @@
 name: Deploy to GitHub Pages
 
 # GitHub Pages sert la branche `gh-pages` (source « Deploy from a branch »).
-# Ce workflow la garde alignée sur la branche par défaut à chaque push.
-# Le site est statique : rien à construire, on republie l'arbre tel quel.
+# Ce workflow la republie à chaque push sur la branche par défaut.
+#
+# Pages renvoie `cache-control: max-age=600` sur des noms de fichiers fixes :
+# sans numéro de version, un navigateur garde l'ancien JS/CSS après un
+# déploiement. On suffixe donc chaque asset par le SHA du commit — y compris les
+# imports entre modules, sinon seul le fichier d'entrée serait rafraîchi.
 
 on:
   push:
@@ -22,7 +26,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Versionner les assets
+        run: |
+          set -euo pipefail
+          SHA="$(git rev-parse --short HEAD)"
+
+          find . -name '*.html' -not -path './.git/*' -print0 | xargs -0 sed -i \
+            -e "s|\(assets/css/styles\.css\)\"|\1?v=$SHA\"|g" \
+            -e "s|\(assets/js/app\.js\)\"|\1?v=$SHA\"|g" \
+            -e "s|\(assets/img/favicon\.svg\)\"|\1?v=$SHA\"|g"
+
+          find ./assets/js -name '*.js' -print0 | xargs -0 sed -i \
+            -E "s|(from '\./[a-z0-9]+\.js)'|\1?v=$SHA'|g"
+
+          echo "Assets versionnés en $SHA :"
+          grep -o "assets/[a-z/]*\.[a-z]*?v=[a-z0-9]*" fr/index.html | sort -u
+
       - name: Publier sur gh-pages
         run: |
-          git push --force origin \
-            "${GITHUB_SHA}:refs/heads/gh-pages"
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy ${GITHUB_SHA}"
+          git push --force origin HEAD:refs/heads/gh-pages
