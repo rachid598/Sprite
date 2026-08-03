@@ -59,9 +59,10 @@ des entrées les invalide — dans ce cas, incrémenter `CODE_VERSION` dans
 
 ## Déploiement
 
-Le workflow `.github/workflows/pages.yml` publie automatiquement le dépôt sur
-GitHub Pages à chaque push sur la branche par défaut. Aucune étape de build :
-la racine est envoyée telle quelle, et `.nojekyll` évite le traitement Jekyll.
+GitHub Pages sert la branche `gh-pages` (source « Deploy from a branch »). Le
+workflow `.github/workflows/pages.yml` republie cette branche à chaque push sur
+la branche par défaut. Aucune étape de build : la racine est envoyée telle
+quelle, et `.nojekyll` évite le traitement Jekyll.
 
 Site publié : <https://rachid598.github.io/Sprite/>
 
