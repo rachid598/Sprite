@@ -59,9 +59,15 @@ des entrées les invalide — dans ce cas, incrémenter `CODE_VERSION` dans
 
 ## Déploiement
 
-N'importe quel hébergement statique (GitHub Pages, Netlify, Cloudflare Pages…) :
-publier la racine du dépôt telle quelle. Le fichier `.nojekyll` est présent pour
-GitHub Pages.
+Le workflow `.github/workflows/pages.yml` publie automatiquement le dépôt sur
+GitHub Pages à chaque push sur la branche par défaut. Aucune étape de build :
+la racine est envoyée telle quelle, et `.nojekyll` évite le traitement Jekyll.
+
+Site publié : <https://rachid598.github.io/Sprite/>
+
+Tous les chemins étant relatifs, le site fonctionne aussi bien à la racine d'un
+domaine que dans un sous-dossier (`/Sprite/`), et sur n'importe quel autre
+hébergement statique (Netlify, Cloudflare Pages…).
 
 ## Contenu
 
