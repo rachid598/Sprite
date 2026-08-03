@@ -1,8 +1,8 @@
 /*
  * Application installable et fonctionnement hors ligne.
  *
- * Le service worker vit à la racine du site (../sw.js depuis /fr/ ou /en/) :
- * sa portée couvre donc les deux langues et les assets partagés.
+ * Le service worker vit à la racine du site (../sw.js depuis /fr/) : sa portée
+ * couvre donc la page et tous les assets partagés.
  */
 
 const SW_URL = new URL('../../sw.js', import.meta.url);

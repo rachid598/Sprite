@@ -14,8 +14,8 @@ import * as store from './store.js';
 import { registerServiceWorker, applyUpdate, trackInstall, estInstallee, estIos } from './pwa.js';
 import * as sync from './sync.js';
 
-const lang = document.documentElement.lang === 'en' ? 'en' : 'fr';
-const t = getStrings(lang);
+const lang = 'fr'; // sert au formatage des nombres et au tri alphabétique
+const t = getStrings();
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
@@ -203,7 +203,7 @@ function renderProgress() {
   const unlocked = SPRITES.filter((s) => ownedCount(s) > 0).length;
   const completed = SPRITES.filter(isComplete).length;
 
-  $('#progress-pct').textContent = `${pct.toFixed(1).replace('.', lang === 'fr' ? ',' : '.')} %`;
+  $('#progress-pct').textContent = `${pct.toFixed(1).replace('.', ',')} %`;
   $('#progress-slots').textContent = `${slots} / ${TOTAL_SLOTS}`;
   $('#progress-mastered').textContent = `${masteredSlots()} / ${TOTAL_SLOTS}`;
   $('#progress-sprites').textContent = `${unlocked} / ${SPRITES.length}`;
@@ -543,15 +543,6 @@ function bindEvents() {
     const item = q.parentElement;
     const open = item.hasAttribute('open');
     q.setAttribute('aria-expanded', String(!open));
-  });
-
-  // Le lien de langue conserve le code de partage.
-  const langLink = $('#lang-link');
-  langLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    const url = new URL(t.nav.langHref, window.location.href);
-    if (state.owned.size) url.searchParams.set('c', store.encode(state.owned, state.mastered));
-    window.location.href = url.toString();
   });
 }
 
@@ -1274,7 +1265,6 @@ function applyStrings() {
   });
   $('#search').placeholder = t.filters.search;
   $('#search').setAttribute('aria-label', t.filters.searchLabel);
-  $('#lang-link').href = t.nav.langHref;
   $('#total-slots').textContent = TOTAL_SLOTS;
   $('#total-sprites').textContent = SPRITES.length;
 }

@@ -9,16 +9,13 @@
 const BUILD = '__BUILD__';
 const CACHE = 'sprite-tracker-' + BUILD;
 
-// 138 fichiers, dont 117 illustrations.
+// 135 fichiers, dont 117 illustrations.
 const FILES = [
   "./",
   "index.html",
   "fr/",
   "fr/index.html",
   "fr/manifest.webmanifest",
-  "en/",
-  "en/index.html",
-  "en/manifest.webmanifest",
   "assets/css/styles.css",
   "assets/js/app.js",
   "assets/js/data.js",

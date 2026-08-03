@@ -2,7 +2,7 @@
 
 Traqueur de collection pour les Sprites de Fortnite : checklist interactive de tous les
 Sprites et de leurs variantes, progression, recherche de partenaires d'échange, FAQ.
-Bilingue français / anglais.
+En français.
 
 Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le navigateur.
 
@@ -38,15 +38,14 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 ## Structure
 
 ```
-index.html          redirection vers la langue du navigateur
-fr/index.html       page française
-en/index.html       page anglaise (même squelette, attribut lang différent)
+index.html          redirection vers fr/
+fr/index.html       la page du site
 assets/css/         feuille de style unique
 assets/js/data.js   base de données des Sprites, variantes, raretés
-assets/js/i18n.js   toutes les chaînes FR / EN
+assets/js/i18n.js   tous les textes affichés
 sw.js               service worker (généré — voir tools/gen-sw.mjs)
 tools/gen-sw.mjs    régénère sw.js depuis la liste réelle des fichiers
-fr|en/manifest.webmanifest  manifeste d'installation par langue
+fr/manifest.webmanifest     manifeste d'installation
 assets/sprites/     illustrations des Sprites (117 fichiers .webp 128 px)
 assets/js/art.js    rendu des illustrations, avec repli SVG généré
 assets/js/pwa.js    service worker, invite d'installation, état réseau
@@ -70,8 +69,8 @@ npx http-server -p 8000 .
 
 1. Ajouter une entrée **à la fin** de `SPRITES` dans `assets/js/data.js` (id, rareté,
    taux d'apparition, forme, palette, variantes).
-2. Ajouter son nom dans `name` et, si l'effet est confirmé, dans `ability` des deux
-   langues de `assets/js/i18n.js`, puis passer `ability.verified` à `true`.
+2. Ajouter son nom dans `name` et, si l'effet est confirmé, dans `ability` de
+   `assets/js/i18n.js`, puis passer `ability.verified` à `true`.
 3. Si la forme n'existe pas encore, ajouter un tracé dans `SHAPES` (`assets/js/art.js`),
    sur une grille 64 × 64.
 

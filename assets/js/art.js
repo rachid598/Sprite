@@ -8,7 +8,7 @@
 
 import { VARIANT_INDEX } from './data.js';
 
-/** Résolu depuis l'URL du module : marche depuis /fr/ comme depuis /en/. */
+/** Résolu depuis l'URL du module, quel que soit le dossier de la page. */
 const SPRITE_DIR = new URL('../sprites/', import.meta.url).href;
 
 /**
