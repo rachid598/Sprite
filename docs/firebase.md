@@ -25,7 +25,16 @@ taper. Comptez cinq minutes, une seule fois.
 
 2. Cliquer **Créer une base de données**
 3. Emplacement : **Belgium (europe-west1)** si vous êtes en Europe
-4. Mode de sécurité : choisir **Démarrer en mode test**, puis **Activer**
+4. Mode de sécurité : garder **Commencer en mode verrouillé** — celui déjà
+   coché — puis **Activer**
+
+   Ne prenez pas *mode test* : il ouvre la base à tout le monde pendant 30 jours
+   puis la referme, et la synchro tomberait en panne du jour au lendemain. Comme
+   on écrit nos propres règles à l'étape 4, partir verrouillé est plus sûr et ne
+   demande aucun travail en plus.
+
+   Tant que l'étape 4 n'est pas faite, le site affichera « Accès refusé par
+   Firebase ». C'est normal.
 
 ## 3. Copier l'adresse
 
@@ -39,9 +48,8 @@ https://sprite-tracker-default-rtdb.europe-west1.firebasedatabase.app
 
 ## 4. Régler les autorisations
 
-Le mode test ouvre la base à tout le monde pendant 30 jours, puis la ferme —
-votre synchro cesserait de fonctionner du jour au lendemain. On remplace donc
-tout de suite la règle.
+En mode verrouillé, la base refuse tout. Cette étape est donc celle qui rend la
+synchronisation possible : sans elle, rien ne fonctionnera.
 
 1. Onglet **Règles**, en haut de la page de la base
 2. Effacer ce qui s'y trouve et coller exactement ceci :
@@ -110,7 +118,7 @@ collections. C'est proportionné pour des Sprites entre amis, mais :
 | Message | Cause | Correction |
 |---|---|---|
 | Adresse invalide | l'adresse ne finit pas par `.firebasedatabase.app` | recopier celle de l'étape 3, sans `/` ni `.json` à la fin |
-| Accès refusé par Firebase | règles non publiées, ou code de salon trop court | refaire l'étape 4, et utiliser **Générer** |
+| Accès refusé par Firebase | règles non publiées (base encore verrouillée), ou code de salon trop court | faire l'étape 4, et utiliser **Générer** |
 | Le code doit faire 12 caractères | salon saisi à la main, trop court | cliquer **Générer** |
 | Rien ne remonte sur l'autre appareil | prénoms identiques, ou salons différents | vérifier que le code du salon est **exactement** le même |
 
