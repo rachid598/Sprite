@@ -46,6 +46,38 @@ export function clearConfig() {
   }
 }
 
+/*
+ * Mémoire durable des réglages déjà utilisés.
+ *
+ * Séparée de la configuration active et jamais effacée automatiquement : se
+ * déconnecter, ou perdre la configuration, ne doit pas condamner l'accès au
+ * salon. Sans le code, la collection stockée sur Firebase serait irrécupérable.
+ */
+const DERNIERS_KEY = 'sprite-tracker:sync-last';
+
+export function rememberConfig(config) {
+  try {
+    localStorage.setItem(
+      DERNIERS_KEY,
+      JSON.stringify({ url: config.url, room: config.room, profile: config.profile })
+    );
+  } catch {
+    /* stockage indisponible */
+  }
+}
+
+/** @returns {{url:string, room:string, profile:string}|null} */
+export function loadLastConfig() {
+  try {
+    const brut = localStorage.getItem(DERNIERS_KEY);
+    if (!brut) return null;
+    const c = JSON.parse(brut);
+    return c && (c.url || c.room) ? c : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Nom de salon aléatoire : c'est lui qui protège l'accès, il doit être long. */
 export function randomRoom() {
   const mots = 'abcdefghijkmnpqrstuvwxyz23456789';

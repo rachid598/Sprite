@@ -745,6 +745,29 @@ function appliquerConfigUi() {
   }
 }
 
+/**
+ * Réaffiche les derniers réglages connus dans le formulaire.
+ * On ne tire un code de salon au hasard que s'il n'y a aucun historique : sinon
+ * on effacerait sous les yeux de l'utilisateur la seule trace de son salon.
+ */
+function prefillDepuisMemoire({ ecraser = false } = {}) {
+  const ui = syncUi();
+  const dernier = sync.loadLastConfig();
+
+  if (dernier) {
+    // `ecraser` sert à l'import d'une sauvegarde : ses réglages font autorité,
+    // y compris sur un code de salon tiré au hasard à l'ouverture.
+    const poser = (champ, valeur) => {
+      if (valeur && (ecraser || !champ.value)) champ.value = valeur;
+    };
+    poser(ui.url, dernier.url);
+    poser(ui.room, dernier.room);
+    poser(ui.profile, dernier.profile);
+  } else if (!ui.room.value) {
+    ui.room.value = sync.randomRoom();
+  }
+}
+
 function bindSync() {
   const ui = syncUi();
 
@@ -777,6 +800,7 @@ function bindSync() {
 
     syncState.config = config;
     sync.saveConfig(config);
+    sync.rememberConfig(config); // survit a une deconnexion ou a une perte
     appliquerConfigUi();
     await synchroniser();
   });
@@ -795,6 +819,8 @@ function bindSync() {
     sync.clearConfig();
     pousserPlusTard.cancel();
     appliquerConfigUi();
+    // On laisse l'adresse et le code affiches : sans eux, impossible de revenir.
+    prefillDepuisMemoire();
     syncMessage('');
     renderSyncProfiles();
   });
@@ -812,8 +838,8 @@ function bindSync() {
   });
 
   syncState.config = sync.loadConfig();
-  if (!syncState.config && !ui.room.value) ui.room.value = sync.randomRoom();
   appliquerConfigUi();
+  if (!syncState.config) prefillDepuisMemoire();
   if (syncState.config) synchroniser({ silencieux: true });
 }
 
@@ -1077,7 +1103,7 @@ function telecharger(nom, contenu, type) {
 }
 
 function exporterSauvegarde() {
-  const data = store.buildBackup(state.owned, state.mastered);
+  const data = store.buildBackup(state.owned, state.mastered, syncState.config || sync.loadLastConfig());
   const date = new Date().toISOString().slice(0, 10);
   telecharger(`sprite-tracker-${date}.json`, JSON.stringify(data, null, 2), 'application/json');
 }
@@ -1088,6 +1114,12 @@ async function importerSauvegarde(file) {
   if (!lu) {
     etat(t.backup.importError, true);
     return;
+  }
+  // La sauvegarde transporte les réglages de synchro : on les remet en mémoire
+  // pour que l'accès au salon soit récupérable, sans reconnecter d'autorité.
+  if (lu.sync) {
+    sync.rememberConfig(lu.sync);
+    if (!syncState.config) prefillDepuisMemoire({ ecraser: true });
   }
   // Même arbitrage que pour un lien partagé : remplacer, fusionner ou annuler.
   if (state.owned.size === 0) {

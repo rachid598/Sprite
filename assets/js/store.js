@@ -125,8 +125,12 @@ export function decode(code) {
 
 const BACKUP_FORMAT = 'sprite-tracker-backup';
 
-/** Objet de sauvegarde, lisible et ré-importable. */
-export function buildBackup(owned, mastered = new Set()) {
+/**
+ * Objet de sauvegarde, lisible et ré-importable.
+ * `sync` contient l'adresse, le salon et le profil : sans eux, la collection
+ * stockée sur le serveur serait irrécupérable en cas de perte de l'appareil.
+ */
+export function buildBackup(owned, mastered = new Set(), sync = null) {
   return {
     format: BACKUP_FORMAT,
     version: CODE_VERSION,
@@ -136,6 +140,7 @@ export function buildBackup(owned, mastered = new Set()) {
     code: encode(owned, mastered),
     owned: [...owned].sort(),
     mastered: [...mastered].sort(),
+    sync: sync ? { url: sync.url, room: sync.room, profile: sync.profile } : null,
   };
 }
 
@@ -154,6 +159,10 @@ export function readBackup(text) {
   if (!data || data.format !== BACKUP_FORMAT) return null;
 
   const valide = (s) => typeof s === 'string' && s.includes(':');
+  const lireSync = (d) =>
+    d.sync && typeof d.sync === 'object' && d.sync.url && d.sync.room
+      ? { url: String(d.sync.url), room: String(d.sync.room), profile: String(d.sync.profile || '') }
+      : null;
 
   // La liste explicite prime ; le code sert de secours s'il manque.
   if (Array.isArray(data.owned)) {
@@ -161,11 +170,11 @@ export function readBackup(text) {
     const mastered = new Set(
       (Array.isArray(data.mastered) ? data.mastered : []).filter((s) => valide(s) && owned.has(s))
     );
-    return { owned, mastered, exportedAt: data.exportedAt || '' };
+    return { owned, mastered, sync: lireSync(data), exportedAt: data.exportedAt || '' };
   }
   if (typeof data.code === 'string') {
     const lu = decode(data.code);
-    if (lu) return { ...lu, exportedAt: data.exportedAt || '' };
+    if (lu) return { ...lu, sync: lireSync(data), exportedAt: data.exportedAt || '' };
   }
   return null;
 }
