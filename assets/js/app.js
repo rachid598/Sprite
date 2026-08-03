@@ -5,10 +5,11 @@ import {
   RARITY_INDEX,
   VARIANT_INDEX,
   TOTAL_SLOTS,
+  SPRITE_INDEX,
   unreleasedOf,
 } from './data.js';
 import { getStrings } from './i18n.js';
-import { spriteSvg, variantChipStyle } from './art.js';
+import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
 
 const lang = document.documentElement.lang === 'en' ? 'en' : 'fr';
@@ -116,7 +117,7 @@ function cardHtml(sprite) {
       const title = soon ? ` title="${t.card.unreleasedHint}"` : '';
       return `<label class="variant${checked ? ' is-owned' : ''}${dim}${soon}" style="${variantChipStyle(v)}"${title}>
         <input type="checkbox" data-slot="${id}" ${checked ? 'checked' : ''}>
-        <span class="variant__art">${spriteSvg(sprite, v, 40)}</span>
+        <span class="variant__art">${spriteImg(sprite, v, 40, `${nameOf(sprite)} — ${t.variant[v]}`)}</span>
         <span class="variant__name">${t.variant[v]}</span>
         ${soon ? `<span class="variant__soon">${t.card.unreleasedTag}</span>` : ''}
       </label>`;
@@ -126,7 +127,7 @@ function cardHtml(sprite) {
   return `<article class="card${complete ? ' is-complete' : ''}" data-sprite="${sprite.id}"
       style="--rarity:${rarity.color}">
     <header class="card__head">
-      <span class="card__art">${spriteSvg(sprite, 'normal', 56)}</span>
+      <span class="card__art">${spriteImg(sprite, 'normal', 56, nameOf(sprite))}</span>
       <span class="card__id">
         <h3 class="card__name">${nameOf(sprite)}</h3>
         <span class="badge">${t.rarity[sprite.rarity]}</span>
@@ -373,6 +374,25 @@ function handleUrlCode() {
 
 /* ------------------------------------------------------------- listeners */
 
+/**
+ * Si une illustration ne se charge pas, on retombe sur le dessin SVG généré
+ * plutôt que d'afficher une icône cassée. L'évènement `error` d'une image ne
+ * remonte pas : on l'intercepte en phase de capture.
+ */
+function bindImageFallback() {
+  document.addEventListener(
+    'error',
+    (e) => {
+      const img = e.target;
+      if (!(img instanceof HTMLImageElement) || !img.classList.contains('sprite-img')) return;
+      const sprite = SPRITE_INDEX[img.dataset.sprite];
+      if (!sprite) return;
+      img.outerHTML = spriteSvg(sprite, img.dataset.variant, Number(img.dataset.size) || 48);
+    },
+    true
+  );
+}
+
 function bindEvents() {
   $('#grid').addEventListener('change', (e) => {
     const box = e.target.closest('input[data-slot]');
@@ -489,7 +509,7 @@ function renderVariantLegend() {
     const sample = SPRITES.find((s) => s.variants.includes(v.id)) || SPRITES[0];
     const count = SPRITES.filter((s) => s.variants.includes(v.id)).length;
     return `<li class="legend__item" style="${variantChipStyle(v.id)}">
-      <span class="legend__art">${spriteSvg(sample, v.id, 52)}</span>
+      <span class="legend__art">${spriteImg(sample, v.id, 52, t.variant[v.id])}</span>
       <h3>${t.variant[v.id]}</h3>
       <p>${t.variantDesc[v.id]}</p>
       <span class="legend__count">${count} / ${SPRITES.length} Sprites</span>
@@ -554,6 +574,7 @@ function init() {
   renderVariantLegend();
   renderFaq();
   renderAll();
+  bindImageFallback();
   bindEvents();
   handleUrlCode();
 }

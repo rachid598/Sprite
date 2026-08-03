@@ -1,9 +1,28 @@
 /*
- * Illustrations générées : chaque Sprite est dessiné en SVG à partir de sa forme
- * et de sa palette. Aucune image externe, donc aucun chargement réseau.
+ * Illustrations des Sprites.
+ *
+ * On affiche les vraies images du jeu (assets/sprites/<sprite>_<variante>.webp),
+ * hébergées avec le site. `spriteSvg` reste utilisé comme repli si un fichier
+ * manque : voir le gestionnaire d'erreur dans app.js.
  */
 
 import { VARIANT_INDEX } from './data.js';
+
+/** Résolu depuis l'URL du module : marche depuis /fr/ comme depuis /en/. */
+const SPRITE_DIR = new URL('../sprites/', import.meta.url).href;
+
+/**
+ * Balise <img> pointant sur l'illustration officielle d'un Sprite.
+ * @param {object} sprite entrée de SPRITES
+ * @param {string} variant identifiant de variante
+ * @param {number} size côté en pixels
+ * @param {string} label texte alternatif
+ */
+export function spriteImg(sprite, variant = 'normal', size = 64, label = '') {
+  return `<img class="sprite-img" src="${SPRITE_DIR}${sprite.id}_${variant}.webp"
+    width="${size}" height="${size}" alt="${label}" loading="lazy" decoding="async"
+    data-sprite="${sprite.id}" data-variant="${variant}" data-size="${size}">`;
+}
 
 const SHAPES = {
   drop: 'M32 8 C 44 24, 52 33, 52 41 a 20 20 0 0 1 -40 0 C 12 33, 20 24, 32 8 Z',

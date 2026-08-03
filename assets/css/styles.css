@@ -430,7 +430,7 @@ label:focus-within {
 }
 
 .variant.is-unreleased .variant__art {
-  opacity: 0.5;
+  opacity: 0.28;
 }
 
 .variant__soon {
@@ -608,9 +608,25 @@ label:focus-within {
   pointer-events: none;
 }
 
+.sprite-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.card__art .sprite-img {
+  width: 52px;
+}
+
+/* Case non possédée : on assombrit sans désaturer, sinon toutes les variantes
+   d'un même Sprite deviendraient indiscernables. */
 .variant__art {
-  filter: grayscale(1) brightness(0.65);
-  transition: filter 0.18s ease;
+  width: 44px;
+  opacity: 0.42;
+  filter: brightness(0.8);
+  transition: opacity 0.18s ease, filter 0.18s ease;
   line-height: 0;
 }
 
@@ -630,6 +646,7 @@ label:focus-within {
 }
 
 .variant.is-owned .variant__art {
+  opacity: 1;
   filter: none;
 }
 
@@ -707,6 +724,7 @@ label:focus-within {
   position: relative;
   line-height: 0;
   display: block;
+  width: 52px;
   margin-bottom: 0.5rem;
 }
 

@@ -29,7 +29,8 @@ en/index.html       page anglaise (même squelette, attribut lang différent)
 assets/css/         feuille de style unique
 assets/js/data.js   base de données des Sprites, variantes, raretés
 assets/js/i18n.js   toutes les chaînes FR / EN
-assets/js/art.js    illustrations SVG générées (aucune image externe)
+assets/sprites/     illustrations des Sprites (117 fichiers .webp 128 px)
+assets/js/art.js    rendu des illustrations, avec repli SVG généré
 assets/js/store.js  persistance locale et encodage du code de partage
 assets/js/app.js    rendu, filtres, interactions
 ```
@@ -70,11 +71,17 @@ Tous les chemins étant relatifs, le site fonctionne aussi bien à la racine d'u
 domaine que dans un sous-dossier (`/Sprite/`), et sur n'importe quel autre
 hébergement statique (Netlify, Cloudflare Pages…).
 
-## Contenu
+## Contenu et illustrations
 
 Les effets passifs marqués comme non confirmés le sont volontairement : seuls les effets
 documentés publiquement sont affichés, le reste attend confirmation plutôt que d'être
 inventé.
+
+Les 117 illustrations de `assets/sprites/` sont les visuels des Sprites tirés du jeu,
+redimensionnés en 128 px et hébergés avec le site (pas de lien direct vers un serveur
+tiers). Ils appartiennent à Epic Games et sont utilisés ici dans le cadre d'un projet de
+fan non commercial. `assets/js/art.js` conserve un dessin SVG généré, affiché
+automatiquement si une image venait à manquer.
 
 Projet de fan indépendant, sans lien avec Epic Games. Fortnite est une marque d'Epic
 Games, Inc.
