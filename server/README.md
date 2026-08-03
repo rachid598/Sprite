@@ -82,14 +82,15 @@ L'étape 4 est celle qu'on oublie : sans binding nommé `SYNC`, le service répo
 
 Dans la section **Synchro** :
 
-| Champ | Vous | Votre ami |
+| Champ | Rachid | Nico |
 |---|---|---|
 | Adresse du serveur | la même | la même |
 | Salon | le même | le même |
 | Clé du salon | la même | la même |
-| Votre profil | `rachid` | `pote` |
+| Votre profil | `rachid` | `nico` |
 
-Le profil doit différer : c'est lui qui sépare les deux collections.
+Le profil doit différer : c'est lui qui sépare les deux collections. Chacun garde
+le sien sur tous ses appareils.
 
 ## Modèle
 
