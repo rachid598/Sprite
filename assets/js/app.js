@@ -11,7 +11,7 @@ import {
 import { getStrings } from './i18n.js';
 import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
-import { registerServiceWorker, applyUpdate, trackInstall, estInstallee } from './pwa.js';
+import { registerServiceWorker, applyUpdate, trackInstall, estInstallee, estIos } from './pwa.js';
 import * as sync from './sync.js';
 
 const lang = document.documentElement.lang === 'en' ? 'en' : 'fr';
@@ -1138,11 +1138,37 @@ function bindBackup() {
 
 function bindPwa() {
   const bouton = $('#install-app');
+  const conseil = $('.backup__hint');
+  let invitePossible = false;
+
   const installer = trackInstall((installable) => {
+    invitePossible = installable;
     bouton.hidden = !installable;
+    if (installable) conseil.textContent = t.backup.installHint;
   });
   bouton.addEventListener('click', () => installer());
-  if (estInstallee()) bouton.hidden = true;
+
+  /**
+   * Le bouton ne peut apparaître que si le navigateur propose une invite.
+   * Sur iOS il n'y en a jamais, et sur Android elle peut tarder : sans
+   * explication, l'utilisateur croit que l'installation est impossible.
+   */
+  const expliquerInstallation = () => {
+    if (estInstallee()) {
+      bouton.hidden = true;
+      conseil.textContent = t.backup.installedAlready;
+    } else if (!invitePossible) {
+      // On se fie à la capacité du navigateur plutôt qu'à son identité : sans
+      // `beforeinstallprompt`, aucune invite ne viendra jamais et l'installation
+      // sera forcément manuelle (Safari, iOS, Firefox…).
+      const inviteSupportee = 'onbeforeinstallprompt' in window;
+      conseil.textContent =
+        estIos() || !inviteSupportee ? t.backup.installIos : t.backup.installAndroid;
+    }
+  };
+  expliquerInstallation();
+  // `beforeinstallprompt` arrive parfois après le chargement : on laisse sa chance.
+  setTimeout(expliquerInstallation, 2500);
 
   // Une nouvelle version en attente : on propose, on n'impose pas. La bannière
   // reste jusqu'à ce que l'utilisateur tranche, sinon elle passerait inaperçue.

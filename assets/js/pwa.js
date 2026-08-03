@@ -78,3 +78,14 @@ export function trackInstall(onChange) {
 /** true quand la page tourne dans la fenêtre de l'application installée. */
 export const estInstallee = () =>
   window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+
+/**
+ * iOS et iPadOS ne connaissent pas `beforeinstallprompt` : l'installation y est
+ * forcément manuelle, il faut donc expliquer la marche à suivre plutôt que
+ * d'attendre une invite qui ne viendra jamais.
+ *
+ * L'iPad récent s'annonce comme un Mac : on le reconnaît à son écran tactile.
+ */
+export const estIos = () =>
+  /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);

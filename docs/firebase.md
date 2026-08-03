@@ -97,6 +97,22 @@ Le plus simple est de vous envoyer l'adresse et le code du salon par message.
 
 ---
 
+## Installer l'application
+
+Sur **Android** et sur **ordinateur** (Chrome, Edge), le bouton
+« Installer l'application » apparaît tout seul dans la section Sauvegarde.
+
+Sur **iPhone et iPad**, il n'existe aucune invite automatique : l'installation
+est forcément manuelle.
+
+1. Ouvrir le site **dans Safari** — pas Chrome, ni un lien ouvert depuis Discord
+   ou une autre application
+2. Toucher le bouton **Partager** (le carré avec une flèche vers le haut)
+3. Faire défiler et choisir **Sur l'écran d'accueil**
+
+C'est une limite d'iOS, pas du site : Apple ne permet l'installation que depuis
+Safari, et sans proposition automatique.
+
 ## Retrouver sa collection plus tard
 
 Nouveau téléphone, navigateur réinstallé, données effacées : il suffit de

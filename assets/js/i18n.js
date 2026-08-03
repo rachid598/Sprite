@@ -155,6 +155,11 @@ const fr = {
     installed: 'Application installée',
     installHint:
       'Installez le site comme une application : il s\'ouvre en plein écran et fonctionne sans connexion, illustrations comprises.',
+    installIos:
+      'Sur iPhone et iPad, l\'installation est manuelle : touchez le bouton Partager en bas de Safari, puis « Sur l\'écran d\'accueil ». Cela ne fonctionne que depuis Safari, pas depuis Chrome ni un lien ouvert dans une autre application.',
+    installAndroid:
+      'Si le bouton ne s\'affiche pas : ouvrez le menu ⋮ de Chrome, puis « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ».',
+    installedAlready: 'L\'application est déjà installée sur cet appareil.',
     offlineReady: 'Prêt pour le hors ligne',
     offline: 'Hors ligne — les données affichées viennent du cache.',
     updateReady: 'Une nouvelle version du site est disponible.',
@@ -453,6 +458,11 @@ const en = {
     installed: 'App installed',
     installHint:
       'Install the site as an app: it opens fullscreen and works with no connection, artwork included.',
+    installIos:
+      'On iPhone and iPad, installing is manual: tap the Share button at the bottom of Safari, then "Add to Home Screen". This only works from Safari, not Chrome or a link opened inside another app.',
+    installAndroid:
+      'If the button does not appear: open Chrome\'s ⋮ menu, then "Install app" or "Add to Home screen".',
+    installedAlready: 'The app is already installed on this device.',
     offlineReady: 'Ready for offline use',
     offline: 'Offline — showing cached data.',
     updateReady: 'A new version of the site is available.',
