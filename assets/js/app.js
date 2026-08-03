@@ -1,4 +1,12 @@
-import { SPRITES, VARIANTS, RARITIES, RARITY_INDEX, VARIANT_INDEX, TOTAL_SLOTS } from './data.js';
+import {
+  SPRITES,
+  VARIANTS,
+  RARITIES,
+  RARITY_INDEX,
+  VARIANT_INDEX,
+  TOTAL_SLOTS,
+  unreleasedOf,
+} from './data.js';
 import { getStrings } from './i18n.js';
 import { spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
@@ -15,6 +23,7 @@ const state = {
   variants: new Set(),
   query: '',
   sort: 'rarity',
+  showUnreleased: false,
 };
 
 /* ---------------------------------------------------------------- helpers */
@@ -23,6 +32,16 @@ const slotId = (spriteId, variantId) => `${spriteId}:${variantId}`;
 const nameOf = (sprite) => t.name[sprite.id] || sprite.id;
 const ownedCount = (sprite) => sprite.variants.filter((v) => state.owned.has(slotId(sprite.id, v))).length;
 const isComplete = (sprite) => ownedCount(sprite) === sprite.variants.length;
+
+/** Variantes à afficher : les publiées, plus les non publiées si l'option est active. */
+const shownVariants = (sprite) =>
+  state.showUnreleased ? [...sprite.variants, ...unreleasedOf(sprite)] : sprite.variants;
+
+/** Les variantes non publiées sont cochables mais ne comptent pas dans le total. */
+const isUnreleased = (sprite, variant) => unreleasedOf(sprite).includes(variant);
+
+/** Cases possédées comptant dans la progression — hors variantes non publiées. */
+const ownedSlots = () => SPRITES.reduce((n, s) => n + ownedCount(s), 0);
 
 function abilityText(sprite) {
   return sprite.ability.verified ? t.ability[sprite.id] : t.card.abilityUnknown;
@@ -60,9 +79,8 @@ function matchesFilters(sprite) {
   }
 
   // Une variante filtrée doit exister sur le Sprite…
-  const variants = state.variants.size
-    ? sprite.variants.filter((v) => state.variants.has(v))
-    : sprite.variants;
+  const shown = shownVariants(sprite);
+  const variants = state.variants.size ? shown.filter((v) => state.variants.has(v)) : shown;
   if (!variants.length) return false;
 
   // …et respecter le statut demandé sur au moins une de ces variantes.
@@ -89,15 +107,18 @@ function cardHtml(sprite) {
   const complete = owned === total;
   const rarity = RARITY_INDEX[sprite.rarity];
 
-  const variants = sprite.variants
+  const variants = shownVariants(sprite)
     .map((v) => {
       const id = slotId(sprite.id, v);
       const checked = state.owned.has(id);
       const dim = state.variants.size && !state.variants.has(v) ? ' is-dimmed' : '';
-      return `<label class="variant${checked ? ' is-owned' : ''}${dim}" style="${variantChipStyle(v)}">
+      const soon = isUnreleased(sprite, v) ? ' is-unreleased' : '';
+      const title = soon ? ` title="${t.card.unreleasedHint}"` : '';
+      return `<label class="variant${checked ? ' is-owned' : ''}${dim}${soon}" style="${variantChipStyle(v)}"${title}>
         <input type="checkbox" data-slot="${id}" ${checked ? 'checked' : ''}>
         <span class="variant__art">${spriteSvg(sprite, v, 40)}</span>
         <span class="variant__name">${t.variant[v]}</span>
+        ${soon ? `<span class="variant__soon">${t.card.unreleasedTag}</span>` : ''}
       </label>`;
     })
     .join('');
@@ -140,7 +161,7 @@ function renderGrid() {
 }
 
 function renderProgress() {
-  const slots = state.owned.size;
+  const slots = ownedSlots();
   const pct = TOTAL_SLOTS ? (slots / TOTAL_SLOTS) * 100 : 0;
   const unlocked = SPRITES.filter((s) => ownedCount(s) > 0).length;
   const completed = SPRITES.filter(isComplete).length;
@@ -157,7 +178,7 @@ function renderTrade() {
   const missing = [];
   const have = [];
   for (const sprite of SPRITES) {
-    for (const v of sprite.variants) {
+    for (const v of shownVariants(sprite)) {
       const entry = `${nameOf(sprite)} · ${t.variant[v]}`;
       (state.owned.has(slotId(sprite.id, v)) ? have : missing).push(entry);
     }
@@ -195,7 +216,7 @@ function toggleSprite(spriteId) {
   const sprite = SPRITES.find((s) => s.id === spriteId);
   if (!sprite) return;
   const on = !isComplete(sprite);
-  for (const v of sprite.variants) toggleSlot(slotId(sprite.id, v), on);
+  for (const v of shownVariants(sprite)) toggleSlot(slotId(sprite.id, v), on);
   commit();
 }
 
@@ -230,9 +251,10 @@ async function copyText(text) {
 }
 
 function discordSummary() {
-  const pct = ((state.owned.size / TOTAL_SLOTS) * 100).toFixed(1);
+  const owned = ownedSlots();
+  const pct = ((owned / TOTAL_SLOTS) * 100).toFixed(1);
   const lines = [
-    `**${t.trade.summaryTitle}** — ${state.owned.size}/${TOTAL_SLOTS} (${pct}%)`,
+    `**${t.trade.summaryTitle}** — ${owned}/${TOTAL_SLOTS} (${pct}%)`,
     '',
     `__${t.trade.want}__`,
   ];
@@ -264,14 +286,15 @@ function exportImage() {
   ctx.font = 'bold 46px system-ui, sans-serif';
   ctx.fillText(t.trade.summaryTitle, 60, 96);
 
-  const pct = (state.owned.size / TOTAL_SLOTS) * 100;
+  const owned = ownedSlots();
+  const pct = (owned / TOTAL_SLOTS) * 100;
   ctx.font = 'bold 120px system-ui, sans-serif';
   ctx.fillStyle = '#7ad0ff';
   ctx.fillText(`${pct.toFixed(1)} %`, 60, 220);
 
   ctx.font = '28px system-ui, sans-serif';
   ctx.fillStyle = '#c7cede';
-  ctx.fillText(`${state.owned.size} / ${TOTAL_SLOTS} ${t.hero.slotsLabel}`, 60, 268);
+  ctx.fillText(`${owned} / ${TOTAL_SLOTS} ${t.hero.slotsLabel}`, 60, 268);
 
   // Barre de progression
   ctx.fillStyle = 'rgba(255,255,255,.12)';
@@ -400,6 +423,13 @@ function bindEvents() {
     renderGrid();
   });
 
+  $('#show-unreleased').addEventListener('change', (e) => {
+    state.showUnreleased = e.target.checked;
+    store.savePref('showUnreleased', state.showUnreleased);
+    renderGrid();
+    renderTrade();
+  });
+
   $('#clear-filters').addEventListener('click', () => {
     state.status = 'all';
     state.rarities.clear();
@@ -516,6 +546,8 @@ function applyStrings() {
 function init() {
   const saved = store.load();
   state.owned = saved.owned;
+  state.showUnreleased = store.loadPref('showUnreleased', false);
+  $('#show-unreleased').checked = state.showUnreleased;
 
   applyStrings();
   renderFilters();

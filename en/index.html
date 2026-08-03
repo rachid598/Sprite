@@ -109,6 +109,11 @@
           <div id="variant-filters" class="toolbar__row" role="group"></div>
         </div>
         <div class="toolbar__row">
+          <label class="switch">
+            <input type="checkbox" id="show-unreleased">
+            <span class="switch__track" aria-hidden="true"><span class="switch__dot"></span></span>
+            <span data-t="filters.showUnreleased">Afficher les variantes à venir</span>
+          </label>
           <button type="button" class="btn btn--ghost" id="clear-filters" data-t="filters.clear">Réinitialiser les filtres</button>
           <button type="button" class="btn btn--ghost" id="reset" data-t="hero.reset">Tout décocher</button>
           <span class="toolbar__meta" id="result-count"></span>

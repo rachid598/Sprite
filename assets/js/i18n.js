@@ -44,6 +44,7 @@ const fr = {
     sortName: 'Nom',
     sortProgress: 'Progression',
     sortDrop: 'Taux d\'apparition',
+    showUnreleased: 'Afficher les variantes à venir',
   },
   card: {
     dropRate: 'Apparition',
@@ -53,6 +54,9 @@ const fr = {
     checkAll: 'Tout cocher',
     uncheckAll: 'Tout décocher',
     complete: 'Complet',
+    unreleasedTag: 'à venir',
+    unreleasedHint:
+      'Variante présente dans les fichiers du jeu mais pas encore disponible — elle ne compte pas dans le total.',
   },
   rarity: { rare: 'Rare', epic: 'Épique', legendary: 'Légendaire', mythic: 'Mythique' },
   variant: {
@@ -247,6 +251,7 @@ const en = {
     sortName: 'Name',
     sortProgress: 'Progress',
     sortDrop: 'Drop rate',
+    showUnreleased: 'Show upcoming variants',
   },
   card: {
     dropRate: 'Drop rate',
@@ -256,6 +261,9 @@ const en = {
     checkAll: 'Tick all',
     uncheckAll: 'Untick all',
     complete: 'Complete',
+    unreleasedTag: 'upcoming',
+    unreleasedHint:
+      'Variant present in the game files but not available yet — it does not count towards the total.',
   },
   rarity: { rare: 'Rare', epic: 'Epic', legendary: 'Legendary', mythic: 'Mythic' },
   variant: {

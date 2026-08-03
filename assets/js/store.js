@@ -39,6 +39,28 @@ export function save(owned) {
   return payload.updatedAt;
 }
 
+const PREF_KEY = 'sprite-tracker:prefs';
+
+/** Préférences d'affichage, indépendantes de la collection. */
+export function loadPref(name, fallback) {
+  try {
+    const prefs = JSON.parse(localStorage.getItem(PREF_KEY) || '{}');
+    return name in prefs ? prefs[name] : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export function savePref(name, value) {
+  try {
+    const prefs = JSON.parse(localStorage.getItem(PREF_KEY) || '{}');
+    prefs[name] = value;
+    localStorage.setItem(PREF_KEY, JSON.stringify(prefs));
+  } catch {
+    /* stockage indisponible : la préférence vaut pour la session seulement */
+  }
+}
+
 function bytesToBase64Url(bytes) {
   let bin = '';
   for (const b of bytes) bin += String.fromCharCode(b);

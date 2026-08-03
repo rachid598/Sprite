@@ -2,7 +2,9 @@
  * Base de données des Sprites — 24 Sprites, 109 cases (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
- * `variants` liste les identifiants de variantes disponibles pour ce Sprite.
+ * `variants` liste les variantes disponibles en jeu pour ce Sprite.
+ * `unreleased` liste les variantes déjà présentes dans les fichiers du jeu mais
+ *   pas encore sorties : masquées par défaut et exclues du total de 109.
  * `ability.verified` = true quand l'effet est documenté publiquement.
  */
 
@@ -33,6 +35,7 @@ export const SPRITES = [
     shape: 'drop',
     palette: ['#2ec5ff', '#0a6cd8'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'quack'],
+    unreleased: ['gem'],
     ability: { verified: true },
   },
   {
@@ -42,6 +45,7 @@ export const SPRITES = [
     shape: 'leaf',
     palette: ['#7bd66a', '#1d7a3c'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube', 'quack'],
+    unreleased: ['gem'],
     ability: { verified: true },
   },
   {
@@ -78,6 +82,7 @@ export const SPRITES = [
     shape: 'duck',
     palette: ['#ffd94d', '#e08a12'],
     variants: ['normal', 'gold', 'gummy', 'galaxy'],
+    unreleased: ['gem'],
     ability: { verified: true },
   },
   {
@@ -96,6 +101,7 @@ export const SPRITES = [
     shape: 'demon',
     palette: ['#ff5a6e', '#8c0f2e'],
     variants: ['normal', 'gold', 'gummy', 'galaxy'],
+    unreleased: ['gem'],
     ability: { verified: true },
   },
   {
@@ -114,6 +120,7 @@ export const SPRITES = [
     shape: 'orb',
     palette: ['#b58cff', '#5a2fb8'],
     variants: ['normal', 'gold', 'gummy', 'galaxy'],
+    unreleased: ['gem'],
     ability: { verified: true },
   },
   {
@@ -141,6 +148,7 @@ export const SPRITES = [
     shape: 'bolt',
     palette: ['#ff5fa8', '#7a1050'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube'],
+    unreleased: ['gem'],
     ability: { verified: true },
   },
   {
@@ -186,6 +194,7 @@ export const SPRITES = [
     shape: 'scythe',
     palette: ['#9d8cff', '#1c1030'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'cube'],
+    unreleased: ['gem'],
     ability: { verified: true },
   },
   {
@@ -195,6 +204,7 @@ export const SPRITES = [
     shape: 'zero',
     palette: ['#ffd86b', '#ff6a2e'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'cube', 'quack'],
+    unreleased: ['gem'],
     ability: { verified: true },
   },
   {
@@ -248,8 +258,18 @@ export const RARITY_INDEX = Object.fromEntries(RARITIES.map((r, i) => [r.id, { .
 export const VARIANT_INDEX = Object.fromEntries(VARIANTS.map((v, i) => [v.id, { ...v, order: i }]));
 export const SPRITE_INDEX = Object.fromEntries(SPRITES.map((s) => [s.id, s]));
 
-/** Nombre total de cases à cocher (Sprite × variante) : 109. */
+/** Variantes non publiées d'un Sprite (tableau vide par défaut). */
+export const unreleasedOf = (sprite) => sprite.unreleased || [];
+
+/** Nombre de cases comptant dans la progression : 109, hors variantes non publiées. */
 export const TOTAL_SLOTS = SPRITES.reduce((n, s) => n + s.variants.length, 0);
 
-/** Liste ordonnée et stable de toutes les cases — ordre des bits des codes de partage. */
-export const ALL_SLOTS = SPRITES.flatMap((s) => s.variants.map((v) => `${s.id}:${v}`));
+/**
+ * Ordre des bits des codes de partage : d'abord les 109 cases publiées, puis les
+ * non publiées. Les ajouts se font donc en fin de liste et les anciens codes
+ * restent lisibles.
+ */
+export const ALL_SLOTS = [
+  ...SPRITES.flatMap((s) => s.variants.map((v) => `${s.id}:${v}`)),
+  ...SPRITES.flatMap((s) => unreleasedOf(s).map((v) => `${s.id}:${v}`)),
+];
