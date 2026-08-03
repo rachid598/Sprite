@@ -98,6 +98,48 @@ export function decode(code) {
   }
 }
 
+/* ---------------------------------------------------- sauvegarde fichier */
+
+const BACKUP_FORMAT = 'sprite-tracker-backup';
+
+/** Objet de sauvegarde, lisible et ré-importable. */
+export function buildBackup(owned) {
+  return {
+    format: BACKUP_FORMAT,
+    version: CODE_VERSION,
+    exportedAt: new Date().toISOString(),
+    count: owned.size,
+    code: encode(owned),
+    owned: [...owned].sort(),
+  };
+}
+
+/**
+ * Relit une sauvegarde.
+ * @returns {{owned:Set<string>, exportedAt:string}|null} null si le fichier
+ *          n'est pas une sauvegarde exploitable.
+ */
+export function readBackup(text) {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!data || data.format !== BACKUP_FORMAT) return null;
+
+  // La liste explicite prime ; le code sert de secours s'il manque.
+  if (Array.isArray(data.owned)) {
+    const owned = new Set(data.owned.filter((s) => typeof s === 'string' && s.includes(':')));
+    return { owned, exportedAt: data.exportedAt || '' };
+  }
+  if (typeof data.code === 'string') {
+    const owned = decode(data.code);
+    if (owned) return { owned, exportedAt: data.exportedAt || '' };
+  }
+  return null;
+}
+
 export function shareUrl(owned) {
   const url = new URL(window.location.href);
   url.hash = '';

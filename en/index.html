@@ -14,6 +14,11 @@
 <link rel="alternate" hreflang="en" href="../en/">
 <link rel="alternate" hreflang="x-default" href="../">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sprite Tracker">
 <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
@@ -37,6 +42,7 @@
       <a href="#collection" data-t="nav.collection">Ma collection</a>
       <a href="#variantes" data-t="nav.variants">Variantes</a>
       <a href="#echanges" data-t="nav.trade">Échanges</a>
+      <a href="#sauvegarde" data-t="nav.backup">Sauvegarde</a>
       <a href="#questions" data-t="nav.faq">FAQ</a>
       <a class="lang" id="lang-link" href="../fr/" data-t="nav.lang">Français</a>
     </nav>
@@ -156,6 +162,26 @@
           <button type="button" class="btn" id="copy-link" data-t="trade.share">Copier le lien de partage</button>
           <button type="button" class="btn" id="export-image" data-t="trade.exportImage">Exporter en image</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section" id="sauvegarde">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-t="backup.heading">Sauvegarde et installation</h2>
+        <p data-t="backup.intro"></p>
+      </div>
+      <div class="panel backup">
+        <div class="backup__row">
+          <button type="button" class="btn btn--primary" id="export-backup" data-t="backup.export">Exporter la sauvegarde</button>
+          <button type="button" class="btn" id="import-backup" data-t="backup.import">Importer une sauvegarde</button>
+          <input type="file" id="backup-file" accept="application/json,.json" hidden>
+          <button type="button" class="btn" id="install-app" hidden data-t="backup.install">Installer l'application</button>
+          <span class="backup__state" id="backup-state"></span>
+        </div>
+        <p class="backup__hint" data-t="backup.installHint"></p>
       </div>
     </div>
   </section>

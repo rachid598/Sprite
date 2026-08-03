@@ -39,8 +39,13 @@ jobs:
           find ./assets/js -name '*.js' -print0 | xargs -0 sed -i \
             -E "s|(from '\./[a-z0-9]+\.js)'|\1?v=$SHA'|g"
 
+          # Le service worker garde une URL stable (sinon il ne se met jamais à
+          # jour) : c'est son contenu qui change, ce qui suffit à le renouveler.
+          sed -i "s|__BUILD__|$SHA|" sw.js
+
           echo "Assets versionnés en $SHA :"
           grep -o "assets/[a-z/]*\.[a-z]*?v=[a-z0-9]*" fr/index.html | sort -u
+          grep -n "const BUILD" sw.js
 
       - name: Publier sur gh-pages
         run: |

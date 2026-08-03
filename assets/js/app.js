@@ -11,6 +11,7 @@ import {
 import { getStrings } from './i18n.js';
 import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
+import { registerServiceWorker, applyUpdate, trackInstall, estInstallee } from './pwa.js';
 
 const lang = document.documentElement.lang === 'en' ? 'en' : 'fr';
 const t = getStrings(lang);
@@ -502,6 +503,90 @@ function bindEvents() {
   });
 }
 
+/* ------------------------------------------- sauvegarde fichier & install */
+
+function telecharger(nom, contenu, type) {
+  const blob = new Blob([contenu], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nom;
+  a.click();
+  // Laisse au navigateur le temps de démarrer le téléchargement.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exporterSauvegarde() {
+  const data = store.buildBackup(state.owned);
+  const date = new Date().toISOString().slice(0, 10);
+  telecharger(`sprite-tracker-${date}.json`, JSON.stringify(data, null, 2), 'application/json');
+}
+
+async function importerSauvegarde(file) {
+  const texte = await file.text();
+  const lu = store.readBackup(texte);
+  if (!lu) {
+    etat(t.backup.importError, true);
+    return;
+  }
+  // Même arbitrage que pour un lien partagé : remplacer, fusionner ou annuler.
+  if (state.owned.size === 0) {
+    state.owned = lu.owned;
+    commit();
+    etat(fill(t.card.variantsOwned, { '%o': state.owned.size, '%t': TOTAL_SLOTS }));
+    return;
+  }
+  showImportDialog(lu.owned);
+}
+
+let etatTimer;
+function etat(message, erreur = false) {
+  const el = $('#backup-state');
+  el.textContent = message;
+  el.classList.toggle('is-error', erreur);
+  clearTimeout(etatTimer);
+  etatTimer = setTimeout(() => {
+    el.textContent = '';
+    el.classList.remove('is-error');
+  }, 5000);
+}
+
+function bindBackup() {
+  $('#export-backup').addEventListener('click', (e) => {
+    exporterSauvegarde();
+    flash(e.currentTarget, t.backup.exported);
+  });
+
+  $('#import-backup').addEventListener('click', () => $('#backup-file').click());
+
+  $('#backup-file').addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    if (file) await importerSauvegarde(file);
+    e.target.value = ''; // permet de réimporter le même fichier
+  });
+}
+
+function bindPwa() {
+  const bouton = $('#install-app');
+  const installer = trackInstall((installable) => {
+    bouton.hidden = !installable;
+  });
+  bouton.addEventListener('click', () => installer());
+  if (estInstallee()) bouton.hidden = true;
+
+  registerServiceWorker((reg) => {
+    if (confirm(`${t.backup.updateReady}\n${t.backup.updateApply} ?`)) applyUpdate(reg);
+  });
+
+  const majReseau = () => {
+    document.body.classList.toggle('is-offline', !navigator.onLine);
+    if (!navigator.onLine) etat(t.backup.offline);
+  };
+  window.addEventListener('online', majReseau);
+  window.addEventListener('offline', majReseau);
+  majReseau();
+}
+
 /* -------------------------------------------------------- contenu statique */
 
 function renderVariantLegend() {
@@ -576,6 +661,8 @@ function init() {
   renderAll();
   bindImageFallback();
   bindEvents();
+  bindBackup();
+  bindPwa();
   handleUrlCode();
 }
 

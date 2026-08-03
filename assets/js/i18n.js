@@ -10,6 +10,7 @@ const fr = {
     collection: 'Ma collection',
     variants: 'Variantes',
     trade: 'Échanges',
+    backup: 'Sauvegarde',
     faq: 'FAQ',
     lang: 'English',
     langHref: '../en/',
@@ -136,6 +137,25 @@ const fr = {
     intro:
       'Chaque Sprite peut exister en plusieurs apparences. Une variante conserve l\'effet passif de base du Sprite et y ajoute un bonus qui lui est propre. Elles apparaissent bien plus rarement et coûtent plus cher en Poussière de Sprite.',
   },
+  backup: {
+    heading: 'Sauvegarde et installation',
+    intro:
+      'Votre collection est enregistrée dans ce navigateur. Exportez-la dans un fichier pour la conserver à l\'abri, la transférer sur un autre appareil ou la partager avec un ami.',
+    export: 'Exporter la sauvegarde',
+    exported: 'Fichier téléchargé',
+    import: 'Importer une sauvegarde',
+    importError: 'Ce fichier n\'est pas une sauvegarde valide.',
+    install: 'Installer l\'application',
+    installed: 'Application installée',
+    installHint:
+      'Installez le site comme une application : il s\'ouvre en plein écran et fonctionne sans connexion, illustrations comprises.',
+    offlineReady: 'Prêt pour le hors ligne',
+    offline: 'Hors ligne — les données affichées viennent du cache.',
+    updateReady: 'Une nouvelle version est disponible.',
+    updateApply: 'Mettre à jour',
+    lastSaved: 'Dernier enregistrement : %d',
+    never: 'jamais',
+  },
   trade: {
     heading: 'Trouver un partenaire d\'échange',
     intro:
@@ -217,6 +237,7 @@ const en = {
     collection: 'My collection',
     variants: 'Variants',
     trade: 'Trading',
+    backup: 'Backup',
     faq: 'FAQ',
     lang: 'Français',
     langHref: '../fr/',
@@ -342,6 +363,25 @@ const en = {
     heading: 'Variants explained',
     intro:
       'Each Sprite can come in several looks. A variant keeps the Sprite\'s base passive and adds a bonus of its own. They drop far less often and cost more Sprite Dust.',
+  },
+  backup: {
+    heading: 'Backup and install',
+    intro:
+      'Your collection is stored in this browser. Export it to a file to keep it safe, move it to another device or share it with a friend.',
+    export: 'Export backup',
+    exported: 'File downloaded',
+    import: 'Import a backup',
+    importError: 'This file is not a valid backup.',
+    install: 'Install the app',
+    installed: 'App installed',
+    installHint:
+      'Install the site as an app: it opens fullscreen and works with no connection, artwork included.',
+    offlineReady: 'Ready for offline use',
+    offline: 'Offline — showing cached data.',
+    updateReady: 'A new version is available.',
+    updateApply: 'Update',
+    lastSaved: 'Last saved: %d',
+    never: 'never',
   },
   trade: {
     heading: 'Find a trading partner',

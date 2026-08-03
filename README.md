@@ -12,7 +12,12 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 - **Progression** — pourcentage global, Sprites débloqués, collections complétées.
 - **Filtres** — statut (tous / possédés / manquants), rareté, variante, recherche texte,
   tri par rareté, nom, progression ou taux d'apparition.
+- **Application installable** — manifeste + service worker : le site s'installe sur
+  téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 117
+  illustrations comprises (136 fichiers pré-mis en cache).
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
+- **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
+  même arbitrage remplacer / fusionner que pour les liens partagés.
 - **Partage & synchronisation** — la collection est encodée en champ de bits dans l'URL
   (`?c=…`). Ouvrir le lien sur un autre appareil propose de remplacer, fusionner ou ignorer.
 - **Échanges** — liste « ce qu'il me manque » / « ce que je possède », résumé formaté
@@ -29,8 +34,12 @@ en/index.html       page anglaise (même squelette, attribut lang différent)
 assets/css/         feuille de style unique
 assets/js/data.js   base de données des Sprites, variantes, raretés
 assets/js/i18n.js   toutes les chaînes FR / EN
+sw.js               service worker (généré — voir tools/gen-sw.mjs)
+tools/gen-sw.mjs    régénère sw.js depuis la liste réelle des fichiers
+fr|en/manifest.webmanifest  manifeste d'installation par langue
 assets/sprites/     illustrations des Sprites (117 fichiers .webp 128 px)
 assets/js/art.js    rendu des illustrations, avec repli SVG généré
+assets/js/pwa.js    service worker, invite d'installation, état réseau
 assets/js/store.js  persistance locale et encodage du code de partage
 assets/js/app.js    rendu, filtres, interactions
 ```
@@ -52,6 +61,9 @@ npx http-server -p 8000 .
    langues de `assets/js/i18n.js`, puis passer `ability.verified` à `true`.
 3. Si la forme n'existe pas encore, ajouter un tracé dans `SHAPES` (`assets/js/art.js`),
    sur une grille 64 × 64.
+
+4. Si vous ajoutez ou retirez des fichiers, régénérer le service worker pour que le
+   mode hors ligne reste complet : `node tools/gen-sw.mjs`.
 
 Les codes de partage sont un champ de bits calculé sur l'ordre de `ALL_SLOTS`. Ajouter
 des entrées en fin de liste garde les anciens liens valides ; **réordonner ou supprimer**
