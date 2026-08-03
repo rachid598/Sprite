@@ -18,6 +18,10 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
+- **Synchronisation entre appareils** — serveur optionnel (Cloudflare Worker + KV,
+  `server/`). Un salon contient plusieurs profils nommés : chacun synchronise sa
+  propre collection entre ses appareils et consulte celle des autres. Les profils
+  ne sont jamais fusionnés entre eux, et une comparaison montre qui possède quoi.
 - **Partage & synchronisation** — la collection est encodée en champ de bits dans l'URL
   (`?c=…`). Ouvrir le lien sur un autre appareil propose de remplacer, fusionner ou ignorer.
 - **Échanges** — liste « ce qu'il me manque » / « ce que je possède », résumé formaté
@@ -40,6 +44,8 @@ fr|en/manifest.webmanifest  manifeste d'installation par langue
 assets/sprites/     illustrations des Sprites (117 fichiers .webp 128 px)
 assets/js/art.js    rendu des illustrations, avec repli SVG généré
 assets/js/pwa.js    service worker, invite d'installation, état réseau
+assets/js/sync.js   client de synchronisation
+server/             Worker Cloudflare + KV (voir server/README.md)
 assets/js/store.js  persistance locale et encodage du code de partage
 assets/js/app.js    rendu, filtres, interactions
 ```
@@ -82,6 +88,19 @@ Site publié : <https://rachid598.github.io/Sprite/>
 Tous les chemins étant relatifs, le site fonctionne aussi bien à la racine d'un
 domaine que dans un sous-dossier (`/Sprite/`), et sur n'importe quel autre
 hébergement statique (Netlify, Cloudflare Pages…).
+
+## Synchronisation
+
+Optionnelle : sans serveur configuré, le site reste entièrement local. Mise en
+place détaillée dans `server/README.md`.
+
+Arbitrage des versions, par profil :
+
+- le serveur est plus récent et l'appareil est vierge → la collection descend ;
+- l'appareil est plus récent → elle remonte ;
+- les deux ont changé → l'utilisateur choisit *remplacer*, *fusionner* ou *garder*.
+  Rien n'est jamais écrasé en silence, et un `PUT` portant un horodatage plus
+  ancien que la version stockée est refusé par le serveur (`409`).
 
 ## Contenu et illustrations
 

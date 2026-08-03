@@ -12,6 +12,7 @@ import { getStrings } from './i18n.js';
 import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
 import { registerServiceWorker, applyUpdate, trackInstall, estInstallee } from './pwa.js';
+import * as sync from './sync.js';
 
 const lang = document.documentElement.lang === 'en' ? 'en' : 'fr';
 const t = getStrings(lang);
@@ -26,6 +27,7 @@ const state = {
   query: '',
   sort: 'rarity',
   showUnreleased: false,
+  updatedAt: 0, // date du dernier changement local, sert d'arbitre a la synchro
 };
 
 /* ---------------------------------------------------------------- helpers */
@@ -203,8 +205,9 @@ function renderAll() {
 }
 
 function commit() {
-  store.save(state.owned);
+  state.updatedAt = store.save(state.owned);
   renderAll();
+  pousserPlusTard(); // regroupe les cases cochees a la suite
 }
 
 /* --------------------------------------------------------------- actions */
@@ -333,7 +336,7 @@ function exportImage() {
 
 /* ------------------------------------------------- import depuis un lien */
 
-function showImportDialog(incoming) {
+function showImportDialog(incoming, incomingUpdatedAt = 0) {
   const dialog = $('#import-dialog');
   $('#import-compare').textContent = fill(t.trade.importCompare, {
     '%a': incoming.size,
@@ -345,7 +348,18 @@ function showImportDialog(incoming) {
     else if (mode === 'merge') state.owned = new Set([...state.owned, ...incoming]);
     dialog.close();
     store.clearUrlCode();
-    commit();
+
+    // « Remplacer » aligne l'appareil sur la version distante : on en reprend
+    // l'horodatage, sinon la synchro croirait l'appareil plus récent et
+    // renverrait aussitôt cette même version. Fusionner ou garder produisent
+    // au contraire une version neuve, qui doit repartir vers le serveur.
+    if (mode === 'replace' && incomingUpdatedAt) {
+      state.updatedAt = incomingUpdatedAt;
+      store.save(state.owned);
+      renderAll();
+    } else {
+      commit();
+    }
   };
 
   $$('[data-import]', dialog).forEach((btn) => {
@@ -503,6 +517,251 @@ function bindEvents() {
   });
 }
 
+/* ------------------------------------------------------- synchronisation */
+
+const syncState = {
+  config: null,
+  profiles: {},
+  enCours: false,
+};
+
+const syncUi = () => ({
+  form: $('#sync-form'),
+  url: $('#sync-url'),
+  room: $('#sync-room'),
+  key: $('#sync-key'),
+  profile: $('#sync-profile'),
+  connect: $('#sync-connect'),
+  now: $('#sync-now'),
+  disconnect: $('#sync-disconnect'),
+  state: $('#sync-state'),
+  others: $('#sync-others'),
+  list: $('#sync-profiles'),
+});
+
+let syncTimer;
+function syncMessage(texte, type = '') {
+  const el = $('#sync-state');
+  el.textContent = texte;
+  el.className = `sync__state ${type}`;
+  clearTimeout(syncTimer);
+  if (type !== 'is-ok') {
+    syncTimer = setTimeout(() => {
+      el.textContent = '';
+      el.className = 'sync__state';
+    }, 6000);
+  }
+}
+
+const heure = () =>
+  new Date().toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
+
+/** Applique une collection distante en remplaçant l'actuelle. */
+function appliquerDistant(owned, updatedAt) {
+  state.owned = new Set(owned);
+  state.updatedAt = updatedAt || Date.now();
+  store.save(state.owned);
+  renderAll();
+}
+
+/**
+ * Réconcilie l'appareil et le serveur pour NOTRE profil.
+ * Le plus récent gagne ; en cas d'écart réel on laisse l'utilisateur trancher.
+ */
+async function synchroniser({ silencieux = false } = {}) {
+  const config = syncState.config;
+  if (!config || syncState.enCours) return;
+  if (!navigator.onLine) {
+    if (!silencieux) syncMessage(t.sync.offline);
+    return;
+  }
+
+  syncState.enCours = true;
+  if (!silencieux) syncMessage(t.sync.syncing);
+
+  try {
+    const profiles = await sync.pull(config);
+    syncState.profiles = profiles;
+
+    const distant = profiles[config.profile];
+    const local = [...state.owned];
+    const memeContenu =
+      distant &&
+      distant.owned.length === local.length &&
+      local.every((s) => distant.owned.includes(s));
+
+    if (!distant || distant.updatedAt < state.updatedAt) {
+      await sync.push(config, state.owned, state.updatedAt || Date.now());
+      syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
+    } else if (memeContenu) {
+      syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
+    } else if (distant.updatedAt > state.updatedAt) {
+      // Le serveur est plus récent : on n'écrase jamais sans demander, sauf si
+      // l'appareil est vierge.
+      if (state.owned.size === 0) {
+        appliquerDistant(distant.owned, distant.updatedAt);
+        syncMessage(t.sync.pulled, 'is-ok');
+      } else {
+        showImportDialog(new Set(distant.owned), distant.updatedAt);
+      }
+    }
+
+    renderSyncProfiles();
+  } catch (err) {
+    syncMessage(fill(t.sync.failed, { '%d': err.message }), 'is-error');
+  } finally {
+    syncState.enCours = false;
+  }
+}
+
+const pousserPlusTard = sync.debounce(() => {
+  if (syncState.config) synchroniser({ silencieux: true });
+}, 2500);
+
+function renderSyncProfiles() {
+  const ui = syncUi();
+  const entrees = Object.entries(syncState.profiles);
+  ui.others.hidden = !syncState.config;
+
+  if (!entrees.length) {
+    ui.list.innerHTML = `<li class="sync__empty">${t.sync.othersEmpty}</li>`;
+    return;
+  }
+
+  ui.list.innerHTML = entrees
+    .sort(([a], [b]) => a.localeCompare(b, lang))
+    .map(([id, p]) => {
+      const moi = id === syncState.config?.profile;
+      const pct = ((p.count / TOTAL_SLOTS) * 100).toFixed(0);
+      return `<li class="sync__profile${moi ? ' is-me' : ''}">
+        <span class="sync__name">${p.name || id}${moi ? ` <em>(${t.sync.you})</em>` : ''}</span>
+        <span class="sync__count">${p.count} / ${TOTAL_SLOTS} · ${pct} %</span>
+        ${moi ? '' : `<button type="button" class="btn btn--ghost" data-compare="${id}">${t.sync.compare}</button>`}
+      </li>`;
+    })
+    .join('');
+}
+
+/** Liste lisible des cases d'un ensemble, triée comme la grille. */
+function libelles(slots) {
+  return SPRITES.flatMap((s) =>
+    [...s.variants, ...unreleasedOf(s)]
+      .filter((v) => slots.has(slotId(s.id, v)))
+      .map((v) => `${nameOf(s)} · ${t.variant[v]}`)
+  );
+}
+
+function comparer(profileId) {
+  const autre = syncState.profiles[profileId];
+  if (!autre) return;
+
+  const siens = new Set(autre.owned);
+  const luiSeul = new Set([...siens].filter((s) => !state.owned.has(s)));
+  const moiSeul = new Set([...state.owned].filter((s) => !siens.has(s)));
+  const nom = autre.name || profileId;
+
+  const bloc = (titre, ensemble) => {
+    const items = libelles(ensemble);
+    return `<div class="compare__col">
+      <h4>${titre} <span>${items.length}</span></h4>
+      ${
+        items.length
+          ? `<ul>${items.map((i) => `<li>${i}</li>`).join('')}</ul>`
+          : `<p class="trade__empty">${t.sync.nothing}</p>`
+      }
+    </div>`;
+  };
+
+  $('#compare-body').innerHTML =
+    bloc(fill(t.sync.theyHave, { '%d': nom }), luiSeul) +
+    bloc(fill(t.sync.youHave, { '%d': nom }), moiSeul);
+  $('#compare-dialog').showModal();
+}
+
+function appliquerConfigUi() {
+  const ui = syncUi();
+  const connecte = !!syncState.config;
+  ui.connect.hidden = connecte;
+  ui.now.hidden = !connecte;
+  ui.disconnect.hidden = !connecte;
+  ui.others.hidden = !connecte;
+  [ui.url, ui.room, ui.key, ui.profile].forEach((champ) => {
+    champ.disabled = connecte;
+  });
+  if (connecte) {
+    ui.url.value = syncState.config.url;
+    ui.room.value = syncState.config.room;
+    ui.key.value = syncState.config.key;
+    ui.profile.value = syncState.config.profile;
+  }
+}
+
+function bindSync() {
+  const ui = syncUi();
+
+  ui.form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (syncState.config) return;
+
+    const config = {
+      url: ui.url.value.trim(),
+      room: ui.room.value.trim(),
+      key: ui.key.value,
+      profile: ui.profile.value.trim(),
+      name: ui.profile.value.trim(),
+    };
+
+    if (!config.url || !config.room || !config.key || !config.profile) {
+      return syncMessage(t.sync.missing, 'is-error');
+    }
+    // http:// est refusé : la clé transiterait en clair.
+    if (!/^https:\/\//i.test(config.url) && !/^http:\/\/(localhost|127\.)/i.test(config.url)) {
+      return syncMessage(t.sync.invalidUrl, 'is-error');
+    }
+    if (config.key.length < 8) return syncMessage(t.sync.shortKey, 'is-error');
+
+    syncMessage(t.sync.syncing);
+    try {
+      await sync.testConnection(config);
+    } catch (err) {
+      return syncMessage(fill(t.sync.failed, { '%d': err.message }), 'is-error');
+    }
+
+    syncState.config = config;
+    sync.saveConfig(config);
+    appliquerConfigUi();
+    await synchroniser();
+  });
+
+  ui.now.addEventListener('click', () => synchroniser());
+
+  ui.disconnect.addEventListener('click', () => {
+    syncState.config = null;
+    syncState.profiles = {};
+    sync.clearConfig();
+    pousserPlusTard.cancel();
+    appliquerConfigUi();
+    syncMessage('');
+    renderSyncProfiles();
+  });
+
+  ui.list.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-compare]');
+    if (btn) comparer(btn.dataset.compare);
+  });
+
+  $('#compare-close').addEventListener('click', () => $('#compare-dialog').close());
+
+  // Reprise dès que le réseau revient.
+  window.addEventListener('online', () => {
+    if (syncState.config) synchroniser({ silencieux: true });
+  });
+
+  syncState.config = sync.loadConfig();
+  appliquerConfigUi();
+  if (syncState.config) synchroniser({ silencieux: true });
+}
+
 /* ------------------------------------------- sauvegarde fichier & install */
 
 function telecharger(nom, contenu, type) {
@@ -651,6 +910,7 @@ function applyStrings() {
 function init() {
   const saved = store.load();
   state.owned = saved.owned;
+  state.updatedAt = saved.updatedAt;
   state.showUnreleased = store.loadPref('showUnreleased', false);
   $('#show-unreleased').checked = state.showUnreleased;
 
@@ -663,6 +923,7 @@ function init() {
   bindEvents();
   bindBackup();
   bindPwa();
+  bindSync();
   handleUrlCode();
 }
 

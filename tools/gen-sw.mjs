@@ -36,6 +36,8 @@ const shell = [
   'assets/js/i18n.js',
   'assets/js/art.js',
   'assets/js/store.js',
+  'assets/js/pwa.js',
+  'assets/js/sync.js',
   'assets/img/favicon.svg',
   'assets/img/icon-192.png',
   'assets/img/icon-512.png',

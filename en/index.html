@@ -43,6 +43,7 @@
       <a href="#variantes" data-t="nav.variants">Variantes</a>
       <a href="#echanges" data-t="nav.trade">Échanges</a>
       <a href="#sauvegarde" data-t="nav.backup">Sauvegarde</a>
+      <a href="#synchro" data-t="nav.sync">Synchro</a>
       <a href="#questions" data-t="nav.faq">FAQ</a>
       <a class="lang" id="lang-link" href="../fr/" data-t="nav.lang">Français</a>
     </nav>
@@ -186,6 +187,52 @@
     </div>
   </section>
 
+
+  <section class="section" id="synchro">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-t="sync.heading">Synchronisation entre appareils</h2>
+        <p data-t="sync.intro"></p>
+      </div>
+
+      <div class="panel">
+        <form class="sync__form" id="sync-form">
+          <label class="field">
+            <span data-t="sync.url">Adresse du serveur</span>
+            <input type="url" id="sync-url" placeholder="https://sprite-sync.exemple.workers.dev" required>
+            <small data-t="sync.urlHint"></small>
+          </label>
+          <label class="field">
+            <span data-t="sync.room">Salon</span>
+            <input type="text" id="sync-room" placeholder="nos-sprites" required>
+            <small data-t="sync.roomHint"></small>
+          </label>
+          <label class="field">
+            <span data-t="sync.key">Clé du salon</span>
+            <input type="password" id="sync-key" minlength="8" required>
+            <small data-t="sync.keyHint"></small>
+          </label>
+          <label class="field">
+            <span data-t="sync.profile">Votre profil</span>
+            <input type="text" id="sync-profile" placeholder="rachid" required>
+            <small data-t="sync.profileHint"></small>
+          </label>
+          <div class="sync__actions">
+            <button type="submit" class="btn btn--primary" id="sync-connect" data-t="sync.connect">Connecter</button>
+            <button type="button" class="btn" id="sync-now" hidden data-t="sync.syncNow">Synchroniser</button>
+            <button type="button" class="btn btn--ghost" id="sync-disconnect" hidden data-t="sync.disconnect">Se déconnecter</button>
+            <span class="sync__state" id="sync-state"></span>
+          </div>
+        </form>
+
+        <div class="sync__others" id="sync-others" hidden>
+          <h3 data-t="sync.others">Collections du salon</h3>
+          <ul class="sync__list" id="sync-profiles"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="questions">
     <div class="wrap">
       <div class="section__head">
@@ -211,6 +258,14 @@
     <button type="button" class="btn btn--primary" data-import="replace" data-t="trade.importReplace">Remplacer la mienne</button>
     <button type="button" class="btn" data-import="merge" data-t="trade.importMerge">Fusionner les deux</button>
     <button type="button" class="btn btn--ghost" data-import="keep" data-t="trade.importKeep">Garder la mienne</button>
+  </div>
+</dialog>
+
+
+<dialog id="compare-dialog" class="compare">
+  <div class="compare__body" id="compare-body"></div>
+  <div class="dialog__actions">
+    <button type="button" class="btn btn--primary" id="compare-close" data-t="sync.close">Fermer</button>
   </div>
 </dialog>
 

@@ -1,0 +1,10 @@
+name = "sprite-sync"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Espace de stockage : à créer une fois avec
+#   npx wrangler kv namespace create SYNC
+# puis recopier l'identifiant renvoyé ci-dessous.
+[[kv_namespaces]]
+binding = "SYNC"
+id = "REMPLACER_PAR_VOTRE_ID"
