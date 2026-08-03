@@ -97,6 +97,29 @@ Le plus simple est de vous envoyer l'adresse et le code du salon par message.
 
 ---
 
+## Retrouver sa collection plus tard
+
+Nouveau téléphone, navigateur réinstallé, données effacées : il suffit de
+remettre les **trois mêmes valeurs** dans la section Synchro.
+
+| Champ | Doit être |
+|---|---|
+| Adresse Firebase | identique |
+| Code du salon | identique, **caractère pour caractère** |
+| Votre prénom | identique, **majuscules comprises** |
+
+`rachid` et `Rachid` sont deux profils différents. Une faute de frappe ne
+provoque pas d'erreur : elle crée simplement un profil vide, et vous verrez
+`0 / 109` au lieu de votre collection. Dans ce cas, déconnectez-vous et
+ressaisissez le bon prénom, rien n'est perdu.
+
+Sur un appareil vierge, la collection descend toute seule. Si vous aviez déjà
+coché des cases avant de vous connecter, le site vous demande quoi faire —
+**fusionner** est presque toujours le bon choix : il garde tout des deux côtés.
+
+Notez ces trois valeurs quelque part, ou gardez un export `.json` : sans elles,
+la collection stockée sur Firebase est inaccessible.
+
 ## Ce que ça coûte
 
 Rien. L'offre gratuite de Firebase inclut 1 Go de stockage et 10 Go de trafic

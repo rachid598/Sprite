@@ -159,7 +159,9 @@ self.addEventListener('install', (event) => {
       await Promise.all(
         FILES.map((f) => cache.add(new Request(f, { cache: 'reload' })).catch(() => {}))
       );
-      await self.skipWaiting();
+      // Pas de skipWaiting() ici : la nouvelle version reste « en attente » pour
+      // que la page puisse proposer la mise à jour au lieu de l'imposer. C'est
+      // le message 'skip-waiting' plus bas qui la déclenche.
     })()
   );
 });

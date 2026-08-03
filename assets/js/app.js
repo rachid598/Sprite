@@ -561,6 +561,9 @@ const syncState = {
   config: null,
   profiles: {},
   enCours: false,
+  // false tant que cet appareil ne s'est pas accordé avec le serveur : avant
+  // cela, il n'a aucune raison de croire sa version plus complète.
+  reconcilie: false,
 };
 
 const syncUi = () => ({
@@ -631,21 +634,34 @@ async function synchroniser({ silencieux = false } = {}) {
       local.every((s) => distant.owned.includes(s)) &&
       [...state.mastered].every((s) => distant.mastered.includes(s));
 
-    if (!distant || distant.updatedAt < state.updatedAt) {
+    // Cases présentes sur le serveur que cet appareil n'a pas : les pousser
+    // telles quelles les effacerait.
+    const effacerait = distant ? distant.owned.filter((s) => !state.owned.has(s)) : [];
+
+    if (memeContenu) {
+      syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
+    } else if (state.owned.size === 0 && distant) {
+      // Appareil vierge : on récupère simplement la collection du serveur.
+      appliquerDistant(distant.owned, distant.mastered, distant.updatedAt);
+      syncMessage(t.sync.pulled, 'is-ok');
+    } else if (!distant || (distant.updatedAt < state.updatedAt && !effacerait.length)) {
+      // L'appareil est en avance et n'efface rien : il fait autorité.
       await sync.push(config, state.owned, state.mastered, state.updatedAt || Date.now());
       syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
-    } else if (memeContenu) {
+    } else if (distant.updatedAt < state.updatedAt && syncState.reconcilie) {
+      // Décocher une case est légitime — mais seulement une fois que cet
+      // appareil s'est déjà accordé avec le serveur au moins une fois.
+      await sync.push(config, state.owned, state.mastered, state.updatedAt || Date.now());
       syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
-    } else if (distant.updatedAt > state.updatedAt) {
-      // Le serveur est plus récent : on n'écrase jamais sans demander, sauf si
-      // l'appareil est vierge.
-      if (state.owned.size === 0) {
-        appliquerDistant(distant.owned, distant.mastered, distant.updatedAt);
-        syncMessage(t.sync.pulled, 'is-ok');
-      } else {
-        showImportDialog(new Set(distant.owned), distant.updatedAt, new Set(distant.mastered || []));
-      }
+    } else {
+      // Premier accord après connexion, ou serveur plus récent : les deux
+      // versions diffèrent vraiment, on laisse l'utilisateur trancher plutôt
+      // que d'effacer quoi que ce soit.
+      showImportDialog(new Set(distant.owned), distant.updatedAt, new Set(distant.mastered || []));
     }
+
+    // À partir d'ici, cet appareil connaît l'état du serveur.
+    syncState.reconcilie = true;
 
     renderSyncProfiles();
     if (document.body.classList.contains('is-comparing')) renderCompare();
@@ -784,6 +800,7 @@ function bindSync() {
   ui.disconnect.addEventListener('click', () => {
     syncState.config = null;
     syncState.profiles = {};
+    syncState.reconcilie = false;
     sync.clearConfig();
     pousserPlusTard.cancel();
     appliquerConfigUi();
@@ -807,6 +824,47 @@ function bindSync() {
   if (!syncState.config && !ui.room.value) ui.room.value = sync.randomRoom();
   appliquerConfigUi();
   if (syncState.config) synchroniser({ silencieux: true });
+}
+
+/* ------------------------------------------------------------ bannières */
+
+/**
+ * Petite bannière en bas de l'écran.
+ * @param {string} message
+ * @param {{action?: {label:string, run:Function}, duration?:number, tone?:string}} options
+ *        `duration: 0` garde la bannière jusqu'à une action ou une fermeture.
+ * @returns {{close:Function, element:HTMLElement}}
+ */
+function toast(message, { action, duration = 5000, tone = '' } = {}) {
+  const el = document.createElement('div');
+  el.className = `toast${tone ? ` toast--${tone}` : ''}`;
+  el.innerHTML = `<span class="toast__text"></span>
+    ${action ? `<button type="button" class="toast__action"></button>` : ''}
+    <button type="button" class="toast__close" aria-label="Fermer">✕</button>`;
+  $('.toast__text', el).textContent = message;
+
+  const close = () => {
+    el.classList.add('is-leaving');
+    // Laisse l'animation de sortie se jouer avant de retirer l'élément.
+    setTimeout(() => el.remove(), 220);
+  };
+
+  if (action) {
+    const btn = $('.toast__action', el);
+    btn.textContent = action.label;
+    btn.addEventListener('click', () => {
+      action.run();
+      close();
+    });
+  }
+  $('.toast__close', el).addEventListener('click', close);
+
+  $('#toasts').appendChild(el);
+  // Force un reflow pour que la transition d'entrée démarre.
+  requestAnimationFrame(() => el.classList.add('is-in'));
+
+  if (duration > 0) setTimeout(close, duration);
+  return { close, element: el };
 }
 
 /* ------------------------------------------------- onglet « comparer » */
@@ -1086,13 +1144,48 @@ function bindPwa() {
   bouton.addEventListener('click', () => installer());
   if (estInstallee()) bouton.hidden = true;
 
+  // Une nouvelle version en attente : on propose, on n'impose pas. La bannière
+  // reste jusqu'à ce que l'utilisateur tranche, sinon elle passerait inaperçue.
   registerServiceWorker((reg) => {
-    if (confirm(`${t.backup.updateReady}\n${t.backup.updateApply} ?`)) applyUpdate(reg);
+    toast(t.backup.updateReady, {
+      duration: 0,
+      tone: 'update',
+      action: {
+        label: t.backup.updateApply,
+        run: () => {
+          toast(t.backup.updateDoing, { duration: 3000 });
+          // Marque le rechargement pour pouvoir confirmer une fois revenu.
+          try {
+            sessionStorage.setItem('sprite-tracker:updated', '1');
+          } catch {
+            /* stockage indisponible : on perd juste la confirmation */
+          }
+          applyUpdate(reg);
+        },
+      },
+    });
   });
 
+  // Retour après une mise à jour appliquée : on confirme brièvement.
+  try {
+    if (sessionStorage.getItem('sprite-tracker:updated')) {
+      sessionStorage.removeItem('sprite-tracker:updated');
+      toast(t.backup.updateDone, { tone: 'ok' });
+    }
+  } catch {
+    /* rien à confirmer */
+  }
+
+  let bandeauHorsLigne = null;
   const majReseau = () => {
-    document.body.classList.toggle('is-offline', !navigator.onLine);
-    if (!navigator.onLine) etat(t.backup.offline);
+    const horsLigne = !navigator.onLine;
+    document.body.classList.toggle('is-offline', horsLigne);
+    if (horsLigne && !bandeauHorsLigne) {
+      bandeauHorsLigne = toast(t.backup.offline, { duration: 0, tone: 'warn' });
+    } else if (!horsLigne && bandeauHorsLigne) {
+      bandeauHorsLigne.close();
+      bandeauHorsLigne = null;
+    }
   };
   window.addEventListener('online', majReseau);
   window.addEventListener('offline', majReseau);
