@@ -1,7 +1,7 @@
 # Sprite Tracker
 
-Traqueur de collection pour les Sprites de Fortnite, en français. Cinq onglets :
-Ma collection, Échanges, Comparer, Sauvegarde, Synchro.
+Traqueur de collection pour les Sprites de Fortnite, en français. Quatre onglets :
+Ma collection, Comparer, Sauvegarde, Synchro.
 
 Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le navigateur.
 
@@ -9,8 +9,10 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 
 - **Checklist** — une case par couple Sprite × variante (117 cases pour 24 Sprites).
 - **Progression** — pourcentage global, Sprites débloqués, collections complétées.
-- **Filtres** — statut (tous / possédés / manquants), rareté, variante, recherche texte,
-  tri par rareté, nom, progression ou taux d'apparition.
+- **Filtres** — statut (tous / possédés / manquants / maîtrisés), rareté, variante,
+  recherche texte, tri par rareté, nom, progression, maîtrise ou taux d'apparition.
+- **Progression par rareté** — une barre par rareté sous les compteurs, en plus du
+  total général.
 - **Application installable** — manifeste + service worker : le site s'installe sur
   téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 117
   illustrations comprises (136 fichiers pré-mis en cache).
@@ -21,7 +23,12 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   lui », quatre familles (il peut vous aider / vous pouvez l'aider / vous deux /
   ni l'un ni l'autre) et grille illustrée variante par variante.
 - **Trois niveaux par case** — un clic marque *obtenu*, un deuxième *maîtrisé*
-  (couronne dorée), un troisième efface.
+  (couronne dorée), un troisième efface. Deux boutons par carte : « Tout cocher »
+  et « Tout maîtriser ».
+- **Décochage réversible** — « Tout décocher » laisse une bannière *Annuler*
+  pendant quinze secondes, l'état d'avant étant conservé en mémoire.
+- **Rappel de sauvegarde** — au-delà de quinze cases cochées sans export ni
+  synchro, une bannière propose d'enregistrer un fichier.
 - **Synchronisation entre appareils** — Firebase Realtime Database via son API
   REST, sans bibliothèque ni outil à installer (`docs/firebase.md`). Un salon
   contient plusieurs profils nommés : chacun synchronise sa propre collection
@@ -29,8 +36,8 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   auto-hébergée reste disponible dans `server/`.
 - **Partage & synchronisation** — la collection est encodée en champ de bits dans l'URL
   (`?c=…`). Ouvrir le lien sur un autre appareil propose de remplacer, fusionner ou ignorer.
-- **Échanges** — liste « ce qu'il me manque » / « ce que je possède », résumé formaté
-  pour Discord, export PNG de la progression.
+  Le lien, l'export PNG et le détail « ce qu'il me manque / ce que je possède »
+  sont regroupés en bas de l'onglet Comparer.
 - Accessible au clavier, responsive, respecte `prefers-reduced-motion`.
 
 ## Structure
@@ -63,22 +70,68 @@ npx http-server -p 8000 .
 # puis http://127.0.0.1:8000/fr/
 ```
 
-## Ajouter ou modifier un Sprite
+## Mettre à jour les données du jeu
 
-1. Ajouter une entrée **à la fin** de `SPRITES` dans `assets/js/data.js` (id, rareté,
-   taux d'apparition, forme, palette, variantes).
-2. Ajouter son nom dans `name` et, si l'effet est confirmé, dans `ability` de
-   `assets/js/i18n.js`, puis passer `ability.verified` à `true`.
-3. Si la forme n'existe pas encore, ajouter un tracé dans `SHAPES` (`assets/js/art.js`),
-   sur une grille 64 × 64.
+À chaque saison, Fortnite ajoute des Sprites et des variantes. La règle absolue de
+cette mise à jour : **la progression déjà enregistrée ne doit jamais disparaître.**
 
-4. Si vous ajoutez ou retirez des fichiers, régénérer le service worker pour que le
-   mode hors ligne reste complet : `node tools/gen-sw.mjs`.
+### Ce qui garantit qu'aucune case n'est perdue
 
-Les codes de partage sont un champ de bits calculé sur l'ordre de `ALL_SLOTS`. Ajouter
-des entrées en fin de liste garde les anciens liens valides ; **réordonner ou supprimer**
-des entrées les invalide — dans ce cas, incrémenter `CODE_VERSION` dans
-`assets/js/store.js`.
+Une case est stockée sous la forme `<idDuSprite>:<idDeLaVariante>` — par exemple
+`reaper:gold`. Deux mécanismes la protègent :
+
+- **Ajouter est sans risque.** Un nouveau Sprite ou une nouvelle variante ne touche
+  à aucune clé existante. `ALL_SLOTS` place les nouveautés en fin de liste, donc les
+  anciens codes de partage et les anciennes sauvegardes restent lisibles.
+- **Renommer se déclare.** Changer un `id` sans rien dire ferait disparaître les
+  cases correspondantes. C'est le rôle de `RENAMES` et `VARIANT_RENAMES` dans
+  `assets/js/data.js` : `migrateSlot()` traduit l'ancien nom vers le nouveau à
+  **chaque lecture** — `localStorage`, fichier `.json` importé, code de partage.
+  Ces entrées ne coûtent rien et ne s'enlèvent jamais.
+
+Ce qui est **interdit** sans précaution : supprimer un Sprite ou une variante, ou
+réordonner `ALL_SLOTS`. Les deux invalident les codes de partage existants. Si c'est
+inévitable, incrémenter `CODE_VERSION` dans `assets/js/store.js`.
+
+### Sources
+
+Se limiter à des sources vérifiables, et croiser au moins deux d'entre elles avant
+d'écrire quoi que ce soit :
+
+| Source | Sert à |
+|---|---|
+| <https://fortnite.gg/sprites> | liste des Sprites, variantes, taux d'apparition |
+| Notes de mise à jour d'Epic Games | confirmation des sorties et des effets passifs |
+| Fichiers du jeu extraits (FModel, dataminers) | variantes présentes mais pas encore sorties |
+
+Une variante vue uniquement dans les fichiers du jeu va dans `unreleased`, pas dans
+`variants` : elle reste masquée par défaut et **ne compte pas** dans le total. Un
+effet passif non documenté publiquement garde `ability.verified: false` — le site
+affiche alors « Effet non confirmé » plutôt que d'inventer.
+
+### Marche à suivre
+
+1. Ajouter l'entrée **à la fin** de `SPRITES` dans `assets/js/data.js` (id, rareté,
+   taux d'apparition, forme, palette, variantes, éventuellement `unreleased`).
+2. Ajouter son nom dans `name`, et son effet dans `ability`, dans `assets/js/i18n.js`.
+3. Ajouter l'illustration dans `assets/sprites/` (`.webp`, 128 px), une par variante.
+   Si aucune image n'existe, `assets/js/art.js` dessine un repli SVG à partir de
+   `SHAPES` (grille 64 × 64) et de la palette.
+4. Si un identifiant existant change, **ajouter l'ancien dans `RENAMES`** — ne jamais
+   se contenter de le remplacer.
+5. Mettre `DATA_DATE` à la date du jour : elle s'affiche en pied de page.
+6. Régénérer le service worker pour que le hors ligne reste complet :
+   `node tools/gen-sw.mjs`.
+7. Vérifier que le total attendu tombe juste, puis publier :
+
+```bash
+node -e "import('./assets/js/data.js').then(d => console.log(
+  d.TOTAL_SLOTS, 'cases publiées ·', d.ALL_SLOTS.length, 'au total'))"
+```
+
+Une mise à jour bien faite se voit à ceci : après rechargement, le nombre de cases
+cochées est **identique ou supérieur** à celui d'avant. S'il baisse, un identifiant a
+changé sans passer par `RENAMES`.
 
 ## Déploiement
 

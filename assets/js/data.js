@@ -254,6 +254,60 @@ export const SPRITES = [
   },
 ];
 
+/**
+ * Date de dernière vérification des données, affichée dans la page.
+ * À changer en même temps que le contenu de SPRITES.
+ */
+export const DATA_DATE = '2026-08-04';
+
+/**
+ * Anciens identifiants → nouveaux.
+ *
+ * Renommer un `id` sans cela ferait disparaître les cases correspondantes de la
+ * collection : elles sont stockées sous la forme `<id>:<variante>`. Toute
+ * entrée ajoutée ici est migrée automatiquement au chargement, et peut y rester
+ * indéfiniment — le coût est nul.
+ */
+export const RENAMES = {
+  // ancien: 'nouveau'
+  knight: 'batman',
+  striker11: 'vinijr',
+  agent: 'johnwick',
+  soccer: 'striker',
+  drifter: 'aura',
+  grimreaper: 'reaper',
+  fossilmeal: 'batman',
+  theburntpeanut: 'peanut',
+  cokeparmesan: 'vinijr',
+  companystargazer: 'pollo',
+  fillergrunt: 'johnwick',
+};
+
+/** Variantes renommées, même principe. */
+export const VARIANT_RENAMES = {
+  basic: 'normal',
+  candy: 'gummy',
+  holo: 'holofoil',
+};
+
+/**
+ * Ramène une case au vocabulaire courant.
+ * @param {string} slot au format `<sprite>:<variante>`
+ * @returns {string|null} null si le Sprite ou la variante n'existe plus
+ */
+export function migrateSlot(slot) {
+  const [sprite, variante] = String(slot).split(':');
+  if (!sprite || !variante) return null;
+
+  const s = RENAMES[sprite] || sprite;
+  const v = VARIANT_RENAMES[variante] || variante;
+
+  const entree = SPRITES.find((x) => x.id === s);
+  if (!entree) return null;
+  if (!entree.variants.includes(v) && !(entree.unreleased || []).includes(v)) return null;
+  return `${s}:${v}`;
+}
+
 export const RARITY_INDEX = Object.fromEntries(RARITIES.map((r, i) => [r.id, { ...r, order: i }]));
 export const VARIANT_INDEX = Object.fromEntries(VARIANTS.map((v, i) => [v.id, { ...v, order: i }]));
 export const SPRITE_INDEX = Object.fromEntries(SPRITES.map((s) => [s.id, s]));

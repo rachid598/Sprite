@@ -6,6 +6,7 @@ import {
   VARIANT_INDEX,
   TOTAL_SLOTS,
   SPRITE_INDEX,
+  DATA_DATE,
   unreleasedOf,
 } from './data.js';
 import { getStrings } from './i18n.js';
@@ -50,6 +51,10 @@ const isUnreleased = (sprite, variant) => unreleasedOf(sprite).includes(variant)
 /** Cases possédées comptant dans la progression — hors variantes non publiées. */
 const ownedSlots = () => SPRITES.reduce((n, s) => n + ownedCount(s), 0);
 
+/** Cases maîtrisées d'un Sprite donné. */
+const masteredCount = (sprite) =>
+  sprite.variants.filter((v) => state.mastered.has(slotId(sprite.id, v))).length;
+
 /**
  * Niveau d'une case : 0 rien, 1 possédé, 2 maîtrisé.
  * Un clic fait avancer d'un cran et revient à 0 après le dernier.
@@ -67,11 +72,11 @@ function setLevel(slot, niveau) {
 const cycleLevel = (slot) => setLevel(slot, (levelOf(slot) + 1) % NIVEAUX);
 
 /** Nombre de cases maîtrisées comptant dans la progression. */
-const masteredSlots = () =>
-  SPRITES.reduce(
-    (n, sp) => n + sp.variants.filter((v) => state.mastered.has(slotId(sp.id, v))).length,
-    0
-  );
+const masteredSlots = () => SPRITES.reduce((n, sp) => n + masteredCount(sp), 0);
+
+/** Vrai quand toutes les variantes affichées d'un Sprite portent la couronne. */
+const allMastered = (sprite) =>
+  shownVariants(sprite).every((v) => state.mastered.has(slotId(sprite.id, v)));
 
 function abilityText(sprite) {
   return sprite.ability.verified ? t.ability[sprite.id] : t.card.abilityUnknown;
@@ -122,6 +127,7 @@ function matchesFilters(sprite) {
   // …et respecter le statut demandé sur au moins une de ces variantes.
   if (state.status === 'owned') return variants.some((v) => state.owned.has(slotId(sprite.id, v)));
   if (state.status === 'missing') return variants.some((v) => !state.owned.has(slotId(sprite.id, v)));
+  if (state.status === 'mastered') return variants.some((v) => state.mastered.has(slotId(sprite.id, v)));
   return true;
 }
 
@@ -132,6 +138,7 @@ function sortSprites(list) {
     name: byName,
     progress: (a, b) =>
       ownedCount(b) / b.variants.length - ownedCount(a) / a.variants.length || byName(a, b),
+    mastery: (a, b) => masteredCount(b) - masteredCount(a) || byName(a, b),
     drop: (a, b) => a.dropRate - b.dropRate || byName(a, b),
   };
   return [...list].sort(sorters[state.sort] || sorters.rarity);
@@ -181,9 +188,14 @@ function cardHtml(sprite) {
       <span class="card__count">${fill(t.card.variantsOwned, { '%o': owned, '%t': total })}</span>
     </div>
     <div class="variants">${variants}</div>
-    <button type="button" class="card__toggle" data-toggle="${sprite.id}">
-      ${complete ? t.card.uncheckAll : t.card.checkAll}
-    </button>
+    <div class="card__actions">
+      <button type="button" class="card__toggle" data-toggle="${sprite.id}">
+        ${complete ? t.card.uncheckAll : t.card.checkAll}
+      </button>
+      <button type="button" class="card__toggle" data-master="${sprite.id}">
+        ${allMastered(sprite) ? t.card.unmasterAll : t.card.masterAll}
+      </button>
+    </div>
   </article>`;
 }
 
@@ -212,6 +224,26 @@ function renderProgress() {
   $('#progress-complete').textContent = `${completed} / ${SPRITES.length}`;
   $('#progress-ring').style.setProperty('--pct', pct.toFixed(2));
   $('#progress-ring').setAttribute('aria-valuenow', pct.toFixed(1));
+
+  renderRarityProgress();
+}
+
+/** Détail « Mythique 4 / 23 », une ligne par rareté, sous les compteurs. */
+function renderRarityProgress() {
+  const liste = $('#progress-rarity');
+  if (!liste) return;
+
+  liste.innerHTML = RARITIES.map((r) => {
+    const sprites = SPRITES.filter((s) => s.rarity === r.id);
+    const total = sprites.reduce((n, s) => n + s.variants.length, 0);
+    const got = sprites.reduce((n, s) => n + ownedCount(s), 0);
+    const part = total ? (got / total) * 100 : 0;
+    return `<li class="rarity-row" style="--rarity:${r.color}">
+      <span class="rarity-row__name">${t.rarity[r.id]}</span>
+      <span class="meter meter--thin"><i style="width:${part}%"></i></span>
+      <span class="rarity-row__count">${got} / ${total}</span>
+    </li>`;
+  }).join('');
 }
 
 function renderTrade() {
@@ -256,6 +288,18 @@ function toggleSprite(spriteId) {
   commit();
 }
 
+/**
+ * Couronne toutes les variantes d'un Sprite, ou les ramène à « possédé » si
+ * elles le sont déjà toutes. Retirer la couronne ne décoche jamais la case.
+ */
+function toggleMastery(spriteId) {
+  const sprite = SPRITES.find((s) => s.id === spriteId);
+  if (!sprite) return;
+  const niveau = allMastered(sprite) ? 1 : 2;
+  for (const v of shownVariants(sprite)) setLevel(slotId(sprite.id, v), niveau);
+  commit();
+}
+
 function flash(button, message) {
   const original = button.dataset.label || button.textContent.trim();
   button.dataset.label = original;
@@ -284,24 +328,6 @@ async function copyText(text) {
     ta.remove();
     return ok;
   }
-}
-
-function discordSummary() {
-  const owned = ownedSlots();
-  const pct = ((owned / TOTAL_SLOTS) * 100).toFixed(1);
-  const lines = [
-    `**${t.trade.summaryTitle}** — ${owned}/${TOTAL_SLOTS} (${pct}%)`,
-    '',
-    `__${t.trade.want}__`,
-  ];
-  const missing = [];
-  for (const sprite of SPRITES) {
-    const gaps = sprite.variants.filter((v) => !state.owned.has(slotId(sprite.id, v)));
-    if (gaps.length) missing.push(`• ${nameOf(sprite)} : ${gaps.map((v) => t.variant[v]).join(', ')}`);
-  }
-  lines.push(missing.length ? missing.join('\n') : t.trade.nothingMissing);
-  lines.push('', store.shareUrl(state.owned, state.mastered));
-  return lines.join('\n');
 }
 
 function exportImage() {
@@ -457,7 +483,9 @@ function bindEvents() {
       return commit();
     }
     const btn = e.target.closest('[data-toggle]');
-    if (btn) toggleSprite(btn.dataset.toggle);
+    if (btn) return toggleSprite(btn.dataset.toggle);
+    const couronne = e.target.closest('[data-master]');
+    if (couronne) toggleMastery(couronne.dataset.master);
   });
 
   $('#status-filters').addEventListener('click', (e) => {
@@ -521,13 +549,28 @@ function bindEvents() {
 
   $('#reset').addEventListener('click', () => {
     if (!confirm(t.hero.resetConfirm)) return;
+
+    // Filet de sécurité : la confirmation du navigateur se clique trop vite pour
+    // protéger d'un geste malheureux. On garde l'état d'avant le temps d'une
+    // bannière, ce qui rend l'effacement réellement réversible.
+    const avant = { owned: new Set(state.owned), mastered: new Set(state.mastered) };
     state.owned.clear();
     state.mastered.clear();
     commit();
-  });
 
-  $('#copy-discord').addEventListener('click', async (e) => {
-    if (await copyText(discordSummary())) flash(e.currentTarget, t.trade.copied);
+    toast(t.hero.resetDone, {
+      duration: 15000,
+      tone: 'warn',
+      action: {
+        label: t.hero.undo,
+        run: () => {
+          state.owned = avant.owned;
+          state.mastered = avant.mastered;
+          commit();
+          toast(t.hero.undone, { tone: 'ok' });
+        },
+      },
+    });
   });
 
   $('#copy-link').addEventListener('click', async (e) => {
@@ -1100,6 +1143,32 @@ function exporterSauvegarde() {
   const data = store.buildBackup(state.owned, state.mastered, syncState.config || sync.loadLastConfig());
   const date = new Date().toISOString().slice(0, 10);
   telecharger(`sprite-tracker-${date}.json`, JSON.stringify(data, null, 2), 'application/json');
+  store.savePref('lastBackup', Date.now());
+}
+
+/** Seuil à partir duquel une collection mérite d'être mise à l'abri. */
+const RAPPEL_SEUIL = 15;
+
+/**
+ * Rappelle d'exporter une sauvegarde quand la collection représente déjà un
+ * vrai travail et qu'aucun fichier n'a jamais été enregistré. Le rappel ne
+ * s'affiche pas si la synchro est active : la collection est alors déjà ailleurs.
+ */
+function rappelSauvegarde() {
+  if (syncState.config) return;
+  if (store.loadPref('lastBackup', 0)) return;
+
+  const coches = ownedSlots();
+  if (coches < RAPPEL_SEUIL) return;
+
+  toast(fill(t.backup.remind, { '%d': coches }), {
+    duration: 12000,
+    tone: 'warn',
+    action: {
+      label: t.backup.remindAction,
+      run: () => exporterSauvegarde(),
+    },
+  });
 }
 
 async function importerSauvegarde(file) {
@@ -1264,6 +1333,16 @@ function applyStrings() {
   });
   surElement('#total-slots', (el) => (el.textContent = TOTAL_SLOTS));
   surElement('#total-sprites', (el) => (el.textContent = SPRITES.length));
+
+  // Date de dernière vérification des données : dit d'un coup d'œil si le site
+  // a été mis à jour depuis la dernière saison.
+  surElement('#data-date', (el) => {
+    const d = new Date(`${DATA_DATE}T00:00:00`);
+    const lisible = Number.isNaN(d.getTime())
+      ? DATA_DATE
+      : d.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+    el.textContent = fill(t.hero.dataDate, { '%d': lisible });
+  });
 }
 
 function init() {
@@ -1271,6 +1350,12 @@ function init() {
   state.owned = saved.owned;
   state.mastered = saved.mastered;
   state.updatedAt = saved.updatedAt;
+
+  // Le stockage contenait d'anciens identifiants : on le réécrit au vocabulaire
+  // courant, en gardant l'horodatage d'origine. Sans cela la migration serait
+  // refaite à chaque ouverture ; avec un horodatage neuf, la synchro croirait
+  // cet appareil plus récent que le serveur et écraserait ce qu'il contient.
+  if (saved.migrated) store.save(state.owned, state.mastered, state.updatedAt);
   state.showUnreleased = store.loadPref('showUnreleased', false);
   $('#show-unreleased').checked = state.showUnreleased;
 
@@ -1287,6 +1372,9 @@ function init() {
   // Signale au secours placé dans le HTML que l'application a bien démarré.
   window.__spriteDemarre = true;
   handleUrlCode();
+
+  // Laisse la page s'installer avant d'ajouter une bannière de plus.
+  setTimeout(rappelSauvegarde, 4000);
 }
 
 init();

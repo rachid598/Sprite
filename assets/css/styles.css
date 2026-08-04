@@ -186,6 +186,57 @@ a {
   font-size: 0.85rem;
 }
 
+/* détail de progression par rareté */
+.rarities {
+  margin-top: 1.6rem;
+  max-width: 26rem;
+}
+
+.rarities__label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.rarities__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.rarity-row {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.85rem;
+}
+
+.rarity-row__name {
+  color: var(--rarity);
+  font-weight: 600;
+}
+
+.rarity-row__count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* `.meter` est défini plus bas : on qualifie pour ne pas dépendre de l'ordre. */
+.rarity-row .meter--thin {
+  display: block; /* l'élément est un <span> */
+  height: 5px;
+}
+
+.rarity-row .meter--thin i {
+  background: var(--rarity);
+}
+
 /* anneau de progression */
 .ring {
   --pct: 0;
@@ -245,6 +296,17 @@ a {
 
 .section__head p {
   color: var(--muted);
+}
+
+/* second titre à l'intérieur d'une même section */
+.section__head--sub {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.section__head--sub h3 {
+  font-size: 1.2rem;
 }
 
 .panel {
@@ -707,8 +769,14 @@ label:focus-within {
   opacity: 0.32;
 }
 
-.card__toggle {
+.card__actions {
   margin-top: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+
+.card__toggle {
   border: 1px dashed var(--line);
   background: none;
   color: var(--muted);
@@ -738,7 +806,7 @@ label:focus-within {
   gap: 1rem;
 }
 
-.trade__col h3 {
+.trade__col h4 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -746,7 +814,7 @@ label:focus-within {
   margin-bottom: 0.7rem;
 }
 
-.trade__col h3 span {
+.trade__col h4 span {
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--muted);
@@ -782,7 +850,27 @@ label:focus-within {
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
+}
+
+.trade__details {
   margin-top: 1.2rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+
+.trade__details summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.trade__details summary:hover {
+  color: var(--text);
+}
+
+.trade__details[open] summary {
+  margin-bottom: 1rem;
 }
 
 /* ----------------------------------------------------- sauvegarde / PWA */

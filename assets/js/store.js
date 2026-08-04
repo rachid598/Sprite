@@ -7,7 +7,7 @@
  * ALL_SLOTS ne l'est pas — d'où l'octet de version.
  */
 
-import { ALL_SLOTS } from './data.js';
+import { ALL_SLOTS, migrateSlot } from './data.js';
 
 const KEY = 'sprite-tracker:v3';
 const ANCIENNE_CLE = 'sprite-tracker:v2';
@@ -16,31 +16,50 @@ const ANCIENNE_CLE = 'sprite-tracker:v2';
 const CODE_VERSION = 3;
 
 /**
- * @returns {{owned:Set<string>, mastered:Set<string>, updatedAt:number}}
+ * @returns {{owned:Set<string>, mastered:Set<string>, updatedAt:number, migrated:boolean}}
  * `mastered` est toujours un sous-ensemble de `owned`.
+ * `migrated` vaut true si au moins une case portait un ancien nom : l'appelant
+ * peut alors réécrire le stockage pour qu'il reparte du vocabulaire courant.
  */
 export function load() {
-  const vide = { owned: new Set(), mastered: new Set(), updatedAt: 0 };
+  const vide = { owned: new Set(), mastered: new Set(), updatedAt: 0, migrated: false };
   try {
     const raw = localStorage.getItem(KEY) || localStorage.getItem(ANCIENNE_CLE);
     if (!raw) return vide;
     const parsed = JSON.parse(raw);
-    const owned = new Set(Array.isArray(parsed.owned) ? parsed.owned : []);
+
+    // Les cases sont migrées à la lecture : un Sprite renommé dans data.js ne
+    // doit jamais faire disparaître la progression correspondante.
+    let migrated = false;
+    const migrer = (liste) => {
+      const sortie = new Set();
+      for (const brut of Array.isArray(liste) ? liste : []) {
+        const propre = migrateSlot(brut);
+        if (propre !== brut) migrated = true; // renommée, ou disparue du jeu
+        if (propre) sortie.add(propre);
+      }
+      return sortie;
+    };
+
+    const owned = migrer(parsed.owned);
     // Les sauvegardes v2 ne connaissent pas la maîtrise : tout reste « possédé ».
-    const mastered = new Set(
-      (Array.isArray(parsed.mastered) ? parsed.mastered : []).filter((s) => owned.has(s))
-    );
-    return { owned, mastered, updatedAt: Number(parsed.updatedAt) || 0 };
+    const mastered = new Set([...migrer(parsed.mastered)].filter((s) => owned.has(s)));
+    return { owned, mastered, updatedAt: Number(parsed.updatedAt) || 0, migrated };
   } catch {
     return vide;
   }
 }
 
-export function save(owned, mastered = new Set()) {
+/**
+ * @param {number} [updatedAt] horodatage à conserver. Sert aux réécritures
+ *   techniques (migration) : les inventer plus récents ferait croire à la
+ *   synchro que cet appareil est en avance, et il écraserait le serveur.
+ */
+export function save(owned, mastered = new Set(), updatedAt = Date.now()) {
   const payload = {
     owned: [...owned],
     mastered: [...mastered].filter((s) => owned.has(s)),
-    updatedAt: Date.now(),
+    updatedAt,
   };
   try {
     localStorage.setItem(KEY, JSON.stringify(payload));
@@ -166,9 +185,12 @@ export function readBackup(text) {
 
   // La liste explicite prime ; le code sert de secours s'il manque.
   if (Array.isArray(data.owned)) {
-    const owned = new Set(data.owned.filter(valide));
+    const owned = new Set(data.owned.filter(valide).map(migrateSlot).filter(Boolean));
     const mastered = new Set(
-      (Array.isArray(data.mastered) ? data.mastered : []).filter((s) => valide(s) && owned.has(s))
+      (Array.isArray(data.mastered) ? data.mastered : [])
+        .filter(valide)
+        .map(migrateSlot)
+        .filter((s) => s && owned.has(s))
     );
     return { owned, mastered, sync: lireSync(data), exportedAt: data.exportedAt || '' };
   }
