@@ -27,6 +27,9 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   et « Tout maîtriser ».
 - **Décochage réversible** — « Tout décocher » laisse une bannière *Annuler*
   pendant quinze secondes, l'état d'avant étant conservé en mémoire.
+- **Verrou d'édition** — un bouton cadenas bloque la saisie pour éviter les clics
+  involontaires. Filtres, tri, comparaison, export et synchro restent actifs ;
+  seule la modification des cases est suspendue. Le choix est mémorisé.
 - **Rappel de sauvegarde** — au-delà de quinze cases cochées sans export ni
   synchro, une bannière propose d'enregistrer un fichier.
 - **Synchronisation entre appareils** — Firebase Realtime Database via son API
@@ -114,6 +117,9 @@ affiche alors « Effet non confirmé » plutôt que d'inventer.
 1. Ajouter l'entrée **à la fin** de `SPRITES` dans `assets/js/data.js` (id, rareté,
    taux d'apparition, forme, palette, variantes, éventuellement `unreleased`).
 2. Ajouter son nom dans `name`, et son effet dans `ability`, dans `assets/js/i18n.js`.
+   Les libellés de `name` et de `variant` sont **purement d'affichage** : les clés
+   servent au stockage, jamais les textes. Corriger un nom français ne touche donc
+   à aucune progression enregistrée.
 3. Ajouter l'illustration dans `assets/sprites/` (`.webp`, 128 px), une par variante.
    Si aucune image n'existe, `assets/js/art.js` dessine un repli SVG à partir de
    `SHAPES` (grille 64 × 64) et de la palette.

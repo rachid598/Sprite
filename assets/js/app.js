@@ -31,6 +31,9 @@ const state = {
   query: '',
   sort: 'rarity',
   showUnreleased: false,
+  // Verrou d'édition : protège la collection des clics involontaires pendant
+  // qu'on parcourt la grille. N'affecte que la saisie, jamais l'affichage.
+  locked: false,
   updatedAt: 0, // date du dernier changement local, sert d'arbitre a la synchro
 };
 
@@ -300,6 +303,44 @@ function toggleMastery(spriteId) {
   commit();
 }
 
+/* ------------------------------------------------------ verrou d'édition */
+
+let verrouToast = null;
+
+/** Un seul rappel à la fois, sinon les bannières s'empilent au moindre clic. */
+function signalerVerrou() {
+  if (verrouToast) return;
+  verrouToast = toast(t.filters.lockedHint, {
+    duration: 3000,
+    action: {
+      label: t.filters.unlock,
+      run: () => setLock(false),
+    },
+  });
+  setTimeout(() => {
+    verrouToast = null;
+  }, 3200);
+}
+
+/**
+ * Applique le verrou. Seule la saisie est bloquée : filtres, tri, recherche,
+ * comparaison, export et synchro continuent de fonctionner normalement.
+ */
+function setLock(verrouille, { silencieux = false } = {}) {
+  state.locked = verrouille;
+  store.savePref('locked', verrouille);
+
+  document.body.classList.toggle('is-locked', verrouille);
+  surElement('#lock-toggle', (el) => {
+    el.setAttribute('aria-pressed', String(verrouille));
+    surElement('.lock__label', (l) => (l.textContent = verrouille ? t.filters.unlock : t.filters.lock), el);
+  });
+  // « Tout décocher » est le geste le plus coûteux : il suit le verrou.
+  surElement('#reset', (el) => (el.disabled = verrouille));
+
+  if (!silencieux) toast(verrouille ? t.filters.locked : t.filters.unlocked, { tone: verrouille ? 'warn' : 'ok' });
+}
+
 function flash(button, message) {
   const original = button.dataset.label || button.textContent.trim();
   button.dataset.label = original;
@@ -477,16 +518,22 @@ function bindImageFallback() {
 
 function bindEvents() {
   $('#grid').addEventListener('click', (e) => {
-    const case_ = e.target.closest('[data-slot]');
-    if (case_) {
-      cycleLevel(case_.dataset.slot);
+    const cible = e.target.closest('[data-slot], [data-toggle], [data-master]');
+    if (!cible) return;
+
+    // Verrou : on ne modifie rien, mais on dit pourquoi — un clic sans effet
+    // et sans explication laisserait croire à une panne.
+    if (state.locked) return signalerVerrou();
+
+    if (cible.dataset.slot) {
+      cycleLevel(cible.dataset.slot);
       return commit();
     }
-    const btn = e.target.closest('[data-toggle]');
-    if (btn) return toggleSprite(btn.dataset.toggle);
-    const couronne = e.target.closest('[data-master]');
-    if (couronne) toggleMastery(couronne.dataset.master);
+    if (cible.dataset.toggle) return toggleSprite(cible.dataset.toggle);
+    toggleMastery(cible.dataset.master);
   });
+
+  $('#lock-toggle').addEventListener('click', () => setLock(!state.locked));
 
   $('#status-filters').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-status]');
@@ -1314,8 +1361,8 @@ function bindPwa() {
  * arrivé quand une page récente s'est retrouvée servie avec un app.js périmé
  * qui cherchait un bouton supprimé — toute la page restait vide.
  */
-function surElement(selecteur, action) {
-  const el = $(selecteur);
+function surElement(selecteur, action, racine = document) {
+  const el = $(selecteur, racine);
   if (el) action(el);
 }
 
@@ -1362,6 +1409,8 @@ function init() {
   applyStrings();
   renderFilters();
   renderAll();
+  // Silencieux : au chargement, le verrou n'est pas une nouvelle à annoncer.
+  setLock(store.loadPref('locked', false), { silencieux: true });
   bindImageFallback();
   bindEvents();
   bindBackup();

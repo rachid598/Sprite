@@ -41,6 +41,11 @@ const fr = {
     rarity: 'Rareté',
     variant: 'Variante',
     clear: 'Réinitialiser les filtres',
+    lock: 'Verrouiller l\'édition',
+    unlock: 'Déverrouiller l\'édition',
+    locked: 'Édition verrouillée — vos cases sont protégées des clics involontaires.',
+    unlocked: 'Édition déverrouillée.',
+    lockedHint: 'Édition verrouillée : déverrouillez pour modifier votre collection.',
     empty: 'Aucun Sprite ne correspond à ces filtres.',
     countOne: '%d Sprite affiché',
     countMany: '%d Sprites affichés',
@@ -70,15 +75,20 @@ const fr = {
     levelMastered: 'Maîtrisé — cliquez pour effacer',
   },
   rarity: { rare: 'Rare', epic: 'Épique', legendary: 'Légendaire', mythic: 'Mythique' },
+  /*
+   * Noms affichés des variantes. Ce sont des libellés, pas des identifiants :
+   * les clés (`normal`, `holofoil`…) servent au stockage et ne changent JAMAIS.
+   * Corriger un nom ici est donc sans risque pour la progression enregistrée.
+   */
   variant: {
     normal: 'Normal',
     gold: 'Or',
     gummy: 'Gélifié',
     galaxy: 'Galaxie',
     gem: 'Gemme',
-    holofoil: 'Holographique',
+    holofoil: 'Irisé',
     cube: 'Cube',
-    quack: 'Quack',
+    quack: 'Canardesque',
   },
   ability: {
     water: 'Régénère du bouclier tant que vous restez dans l\'eau.',
