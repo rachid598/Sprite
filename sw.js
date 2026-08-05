@@ -177,7 +177,27 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  const url = new URL(req.url);
+  if (req.method !== 'GET' || url.origin !== self.location.origin) return;
+
+  // Le manifeste porte le nom et l'icône de l'application installée. Android
+  // le relit régulièrement pour décider s'il faut mettre à jour le raccourci ;
+  // servi depuis le cache, il y verrait toujours l'ancienne version et ne
+  // renommerait jamais l'application. Réseau d'abord, cache en secours.
+  if (url.pathname.endsWith('.webmanifest')) {
+    event.respondWith(
+      (async () => {
+        try {
+          const net = await fetch(req);
+          if (net.ok) (await caches.open(CACHE)).put(req, net.clone());
+          return net;
+        } catch {
+          return (await caches.match(req)) || Response.error();
+        }
+      })()
+    );
+    return;
+  }
 
   if (req.mode === 'navigate') {
     event.respondWith(
