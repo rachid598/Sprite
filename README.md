@@ -1,4 +1,4 @@
-# Sprite Tracker
+# Spiritdex
 
 Traqueur de collection pour les Sprites de Fortnite, en français. Quatre onglets :
 Ma collection, Comparer, Sauvegarde, Synchro.

@@ -9,6 +9,12 @@
 
 import { BIT_SLOTS, migrateSlot } from './data.js';
 
+/*
+ * Ces clés gardent l'ancien nom du projet — c'est volontaire. Elles désignent
+ * la collection déjà enregistrée dans les navigateurs : les renommer en même
+ * temps que l'application la rendrait invisible du jour au lendemain, sans
+ * message d'erreur. Un nom affiché change ; une clé de stockage, jamais.
+ */
 const KEY = 'sprite-tracker:v3';
 const ANCIENNE_CLE = 'sprite-tracker:v2';
 // v3 : chaque case a deux niveaux — possédé, puis maîtrisé. Le code de partage

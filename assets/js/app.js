@@ -424,7 +424,7 @@ function exportImage() {
 
   ctx.font = '20px system-ui, sans-serif';
   ctx.fillStyle = '#8b93a7';
-  ctx.fillText(window.location.host || 'sprite-tracker', 60, h - 40);
+  ctx.fillText(window.location.host || 'spiritdex', 60, h - 40);
 
   const link = document.createElement('a');
   link.download = 'sprite-collection.png';
@@ -1189,7 +1189,7 @@ function telecharger(nom, contenu, type) {
 function exporterSauvegarde() {
   const data = store.buildBackup(state.owned, state.mastered, syncState.config || sync.loadLastConfig());
   const date = new Date().toISOString().slice(0, 10);
-  telecharger(`sprite-tracker-${date}.json`, JSON.stringify(data, null, 2), 'application/json');
+  telecharger(`spiritdex-${date}.json`, JSON.stringify(data, null, 2), 'application/json');
   store.savePref('lastBackup', Date.now());
 }
 

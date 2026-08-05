@@ -2,7 +2,7 @@
 
 const fr = {
   meta: {
-    title: 'Sprite Tracker — Collection et checklist des Sprites Fortnite',
+    title: 'Spiritdex — Collection et checklist des Sprites Fortnite',
     description:
       'Cochez vos Sprites et vos variantes, suivez votre progression, trouvez des partenaires d\'échange. Gratuit, sans compte, tout reste sur votre appareil.',
   },
@@ -14,7 +14,7 @@ const fr = {
   },
   hero: {
     kicker: 'Traqueur de collection',
-    title: 'Sprite Tracker',
+    title: 'Spiritdex',
     subtitle:
       'La checklist complète des Sprites Fortnite et de leurs variantes. Cochez ce que vous possédez, votre progression est enregistrée sur votre appareil.',
     progressLabel: 'Progression totale',
@@ -86,7 +86,7 @@ const fr = {
     gummy: 'Gélifié',
     galaxy: 'Galaxie',
     gem: 'Gemme',
-    holofoil: 'Irisé',
+    holofoil: 'Iridescent',
     cube: 'Cube',
     quack: 'Canardesque',
   },
