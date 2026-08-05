@@ -319,11 +319,66 @@ export const unreleasedOf = (sprite) => sprite.unreleased || [];
 export const TOTAL_SLOTS = SPRITES.reduce((n, s) => n + s.variants.length, 0);
 
 /**
- * Ordre des bits des codes de partage : d'abord les 109 cases publiées, puis les
- * non publiées. Les ajouts se font donc en fin de liste et les anciens codes
- * restent lisibles.
+ * Ordre historique des bits des codes de partage. **Figé.**
+ *
+ * Déduire cet ordre de SPRITES serait une erreur : ajouter une variante à un
+ * Sprite du milieu de la liste décalerait tous les bits suivants, et un ancien
+ * lien de partage se décoderait alors sur les mauvais Sprites — une corruption
+ * silencieuse, pire qu'une perte visible.
+ *
+ * Règles : ne jamais réordonner, ne jamais retirer une ligne. Une case retirée
+ * du jeu garde sa place — elle est simplement ignorée au décodage. Les cases
+ * absentes d'ici sont ajoutées en fin de `ALL_SLOTS`, ce qui rend l'oubli sans
+ * conséquence ; `node tools/check-data.mjs` le signale et affiche la liste à
+ * jour à recopier.
+ */
+const SLOT_ORDER = [
+  'water:normal', 'water:gold', 'water:gummy', 'water:galaxy',
+  'water:holofoil', 'water:quack', 'earth:normal', 'earth:gold',
+  'earth:gummy', 'earth:galaxy', 'earth:cube', 'earth:quack',
+  'fire:normal', 'fire:gold', 'fire:gummy', 'fire:galaxy',
+  'fire:holofoil', 'fire:cube', 'fire:quack', 'fishy:normal',
+  'fishy:gold', 'fishy:gummy', 'fishy:galaxy', 'fishy:cube',
+  'air:normal', 'air:gold', 'air:gummy', 'air:galaxy',
+  'air:holofoil', 'duck:normal', 'duck:gold', 'duck:gummy',
+  'duck:galaxy', 'ghost:normal', 'ghost:gold', 'ghost:gummy',
+  'ghost:galaxy', 'ghost:holofoil', 'demon:normal', 'demon:gold',
+  'demon:gummy', 'demon:galaxy', 'king:normal', 'king:gold',
+  'king:gummy', 'king:galaxy', 'king:holofoil', 'aura:normal',
+  'aura:gold', 'aura:gummy', 'aura:galaxy', 'striker:normal',
+  'striker:gold', 'striker:gummy', 'striker:galaxy', 'striker:holofoil',
+  'dream:normal', 'dream:gold', 'dream:gummy', 'dream:galaxy',
+  'dream:cube', 'punk:normal', 'punk:gold', 'punk:gummy',
+  'punk:galaxy', 'punk:cube', 'boss:normal', 'boss:gold',
+  'boss:gummy', 'boss:galaxy', 'boss:cube', 'seven:normal',
+  'seven:gold', 'seven:gummy', 'seven:galaxy', 'seven:holofoil',
+  'llama:normal', 'llama:gold', 'llama:gummy', 'llama:galaxy',
+  'llama:gem', 'peely:normal', 'peely:gold', 'peely:gummy',
+  'peely:galaxy', 'peely:holofoil', 'reaper:normal', 'reaper:gold',
+  'reaper:gummy', 'reaper:galaxy', 'reaper:holofoil', 'reaper:cube',
+  'zeropoint:normal', 'zeropoint:gold', 'zeropoint:gummy', 'zeropoint:galaxy',
+  'zeropoint:holofoil', 'zeropoint:cube', 'zeropoint:quack', 'batman:normal',
+  'batman:gold', 'batman:gummy', 'batman:galaxy', 'batman:holofoil',
+  'batman:cube', 'peanut:normal', 'vinijr:normal', 'pollo:normal',
+  'johnwick:normal', 'water:gem', 'earth:gem', 'duck:gem',
+  'demon:gem', 'aura:gem', 'punk:gem', 'reaper:gem',
+  'zeropoint:gem',
+];
+
+/**
+ * Ordre des bits effectivement utilisé : l'historique, puis les cases apparues
+ * depuis. Les nouveautés se retrouvent donc toujours à la fin.
  */
 export const ALL_SLOTS = [
-  ...SPRITES.flatMap((s) => s.variants.map((v) => `${s.id}:${v}`)),
-  ...SPRITES.flatMap((s) => unreleasedOf(s).map((v) => `${s.id}:${v}`)),
+  ...SLOT_ORDER,
+  ...[
+    ...SPRITES.flatMap((s) => s.variants.map((v) => `${s.id}:${v}`)),
+    ...SPRITES.flatMap((s) => unreleasedOf(s).map((v) => `${s.id}:${v}`)),
+  ].filter((slot) => !SLOT_ORDER.includes(slot) && !SLOT_ORDER.some((o) => migrateSlot(o) === slot)),
 ];
+
+/**
+ * Case courante correspondant à chaque bit : `null` si elle a disparu du jeu.
+ * Passer par `migrateSlot` fait suivre les renommages sans toucher à l'ordre.
+ */
+export const BIT_SLOTS = ALL_SLOTS.map(migrateSlot);

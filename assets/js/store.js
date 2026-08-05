@@ -7,7 +7,7 @@
  * ALL_SLOTS ne l'est pas — d'où l'octet de version.
  */
 
-import { ALL_SLOTS, migrateSlot } from './data.js';
+import { BIT_SLOTS, migrateSlot } from './data.js';
 
 const KEY = 'sprite-tracker:v3';
 const ANCIENNE_CLE = 'sprite-tracker:v2';
@@ -103,13 +103,18 @@ function base64UrlToBytes(str) {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 }
 
-const OCTETS = Math.ceil(ALL_SLOTS.length / 8);
+const OCTETS = Math.ceil(BIT_SLOTS.length / 8);
 
-/** Un octet de version, puis le champ « possédé », puis le champ « maîtrisé ». */
+/**
+ * Un octet de version, puis le champ « possédé », puis le champ « maîtrisé ».
+ * Les positions viennent de BIT_SLOTS, figé : un code émis aujourd'hui reste
+ * lisible après l'ajout de Sprites ou de variantes.
+ */
 export function encode(owned, mastered = new Set()) {
   const bits = new Uint8Array(1 + OCTETS * 2);
   bits[0] = CODE_VERSION;
-  ALL_SLOTS.forEach((slot, i) => {
+  BIT_SLOTS.forEach((slot, i) => {
+    if (!slot) return; // case retirée du jeu : le bit reste à zéro
     if (owned.has(slot)) bits[1 + (i >> 3)] |= 1 << (i & 7);
     if (mastered.has(slot)) bits[1 + OCTETS + (i >> 3)] |= 1 << (i & 7);
   });
@@ -126,7 +131,8 @@ export function decode(code) {
     if (!bytes.length || bytes[0] !== CODE_VERSION) return null;
     const owned = new Set();
     const mastered = new Set();
-    ALL_SLOTS.forEach((slot, i) => {
+    BIT_SLOTS.forEach((slot, i) => {
+      if (!slot) return; // case disparue depuis l'émission du code
       const o = bytes[1 + (i >> 3)];
       const m = bytes[1 + OCTETS + (i >> 3)];
       if (o !== undefined && o & (1 << (i & 7))) owned.add(slot);
