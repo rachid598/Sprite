@@ -262,7 +262,6 @@ export const SPRITES = [
     shape: 'demon',
     palette: ['#ff8ad4', '#5b1f6e'],
     variants: ['normal'],
-    noArt: true, // illustration du jeu pas encore ajoutée : dessin de repli
     ability: { verified: true },
   },
 ];

@@ -19,8 +19,8 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 - **Cochage instantané** — un clic ne met à jour que la case et sa carte, jamais
   toute la grille (133 ms → 33 ms sur processeur bridé ×4).
 - **Application installable** — manifeste + service worker : le site s'installe sur
-  téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 117
-  illustrations comprises (135 fichiers pré-mis en cache).
+  téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 118
+  illustrations comprises (136 fichiers pré-mis en cache).
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
@@ -61,7 +61,7 @@ assets/js/i18n.js   tous les textes affichés
 sw.js               service worker (généré — voir tools/gen-sw.mjs)
 tools/gen-sw.mjs    régénère sw.js depuis la liste réelle des fichiers
 fr/manifest.webmanifest     manifeste d'installation
-assets/sprites/     illustrations des Sprites (117 fichiers .webp 128 px)
+assets/sprites/     illustrations des Sprites (118 fichiers .webp 128 px)
 assets/js/art.js    rendu des illustrations, avec repli SVG généré
 assets/js/pwa.js    service worker, invite d'installation, état réseau
 assets/js/salon.js  client de synchronisation (API REST Firebase)
@@ -192,7 +192,7 @@ Les effets passifs marqués comme non confirmés le sont volontairement : seuls 
 documentés publiquement sont affichés, le reste attend confirmation plutôt que d'être
 inventé.
 
-Les 117 illustrations de `assets/sprites/` sont les visuels des Sprites tirés du jeu,
+Les 118 illustrations de `assets/sprites/` sont les visuels des Sprites tirés du jeu,
 redimensionnés en 128 px et hébergés avec le site (pas de lien direct vers un serveur
 tiers). Ils appartiennent à Epic Games et sont utilisés ici dans le cadre d'un projet de
 fan non commercial. `assets/js/art.js` conserve un dessin SVG généré, affiché

@@ -9,7 +9,7 @@
 const BUILD = '__BUILD__';
 const CACHE = 'sprite-tracker-' + BUILD;
 
-// 135 fichiers, dont 117 illustrations.
+// 136 fichiers, dont 118 illustrations.
 const FILES = [
   "./",
   "index.html",
@@ -89,6 +89,7 @@ const FILES = [
   "assets/sprites/ghost_gummy.webp",
   "assets/sprites/ghost_holofoil.webp",
   "assets/sprites/ghost_normal.webp",
+  "assets/sprites/ironmouse_normal.webp",
   "assets/sprites/johnwick_normal.webp",
   "assets/sprites/king_galaxy.webp",
   "assets/sprites/king_gold.webp",
