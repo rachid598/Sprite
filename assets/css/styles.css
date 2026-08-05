@@ -796,7 +796,13 @@ label:focus-within {
 .btn--lock {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--muted);
+}
+
+.btn--lock:hover {
+  color: var(--text);
 }
 
 /* Cadenas dessiné en CSS : ouvert par défaut, fermé une fois verrouillé. */
@@ -826,9 +832,15 @@ label:focus-within {
   transition: transform 0.18s ease;
 }
 
+/* Verrouillé : un fond doré discret suffit à le signaler, sans crier. */
 .btn--lock[aria-pressed='true'] {
   color: #f5c542; /* même or que les couronnes */
-  border-color: currentColor;
+  background: rgba(245, 197, 66, 0.12);
+  border-color: rgba(245, 197, 66, 0.3);
+}
+
+.btn--lock[aria-pressed='true']:hover {
+  background: rgba(245, 197, 66, 0.18);
 }
 
 .btn--lock[aria-pressed='true'] .lock__icon::before {
@@ -854,6 +866,40 @@ body.is-locked .card__actions {
 .btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/*
+ * Sur petit écran, chaque bouton large prend une ligne entière et la barre
+ * d'outils s'étire. Le cadenas se réduit alors à son icône : la cible tactile
+ * reste pleine, le texte passe en étiquette accessible.
+ */
+@media (max-width: 640px) {
+  .btn--lock {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    flex: none;
+  }
+
+  /* Les quatre statuts tiennent sur une ligne plutôt que de déborder. */
+  #status-filters {
+    gap: 0.35rem;
+  }
+
+  #status-filters .btn {
+    flex: 1;
+    padding: 0.55rem 0.3rem;
+    font-size: 0.84rem;
+  }
+
+  .lock__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

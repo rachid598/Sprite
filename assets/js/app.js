@@ -332,8 +332,13 @@ function setLock(verrouille, { silencieux = false } = {}) {
 
   document.body.classList.toggle('is-locked', verrouille);
   surElement('#lock-toggle', (el) => {
+    const libelle = verrouille ? t.filters.unlock : t.filters.lock;
     el.setAttribute('aria-pressed', String(verrouille));
-    surElement('.lock__label', (l) => (l.textContent = verrouille ? t.filters.unlock : t.filters.lock), el);
+    // Sur petit écran le texte est masqué : il doit rester lisible au survol
+    // comme au lecteur d'écran, sinon le bouton n'est qu'un cadenas muet.
+    el.setAttribute('aria-label', libelle);
+    el.setAttribute('title', libelle);
+    surElement('.lock__label', (l) => (l.textContent = libelle), el);
   });
   // « Tout décocher » est le geste le plus coûteux : il suit le verrou.
   surElement('#reset', (el) => (el.disabled = verrouille));
