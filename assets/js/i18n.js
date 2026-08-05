@@ -40,6 +40,9 @@ const fr = {
     masteredOnly: 'Maîtrisés',
     rarity: 'Rareté',
     variant: 'Variante',
+    more: 'Rareté et variante',
+    activeOne: '%d filtre actif',
+    activeMany: '%d filtres actifs',
     clear: 'Réinitialiser les filtres',
     lock: 'Verrouiller l\'édition',
     unlock: 'Déverrouiller l\'édition',
@@ -115,6 +118,8 @@ const fr = {
     vinijr: 'Glissade destructrice accompagnée d\'un bonus de cadence de tir.',
     pollo: 'Régénère le bouclier de l\'escouade après une élimination.',
     johnwick: 'Révèle les ennemis proches quand vous mettez un joueur à terre.',
+    ironmouse:
+      'Régénère vos points de vie quand ils sont bas ; pendant la régénération, vous êtes furtif et en gravité réduite.',
   },
   name: {
     water: 'Eau',
@@ -141,6 +146,7 @@ const fr = {
     vinijr: 'Vini Jr.',
     pollo: 'Pollo',
     johnwick: 'John Wick',
+    ironmouse: 'Ironmouse',
   },
   backup: {
     heading: 'Sauvegarde et installation',
@@ -167,6 +173,8 @@ const fr = {
     updateDone: 'Application mise à jour.',
     updateDoing: 'Mise à jour…',
     remind: 'Pensez à exporter une sauvegarde : %d cases cochées et aucun fichier enregistré.',
+    remindStale:
+      'Votre dernière sauvegarde date de %a cases, vous en avez %d aujourd\'hui. Pensez à la refaire.',
     remindAction: 'Exporter',
     lastSaved: 'Dernier enregistrement : %d',
     never: 'jamais',

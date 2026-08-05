@@ -212,6 +212,23 @@ function renderGrid() {
 
   const label = visible.length === 1 ? t.filters.countOne : t.filters.countMany;
   $('#result-count').textContent = fill(label, { '%d': visible.length });
+
+  majBadgeFiltres();
+}
+
+/**
+ * Compte les filtres masqués par le panneau replié.
+ * Sans ce repère, un filtre actif hors de vue donnerait l'impression que des
+ * Sprites ont disparu.
+ */
+function majBadgeFiltres() {
+  const actifs = state.rarities.size + state.variants.size;
+  surElement('#filters-active', (el) => {
+    el.hidden = actifs === 0;
+    el.textContent = fill(actifs === 1 ? t.filters.activeOne : t.filters.activeMany, {
+      '%d': actifs,
+    });
+  });
 }
 
 function renderProgress() {
@@ -249,7 +266,20 @@ function renderRarityProgress() {
   }).join('');
 }
 
+/*
+ * Les deux listes d'échange totalisent plus de deux cents lignes et vivent dans
+ * un onglet qu'on ne regarde presque jamais en cochant. On les marque périmées
+ * et on ne les reconstruit qu'à l'ouverture de l'onglet Comparer.
+ */
+let tradeAJour = false;
+
+function invaliderTrade() {
+  tradeAJour = false;
+  if (document.body.classList.contains('is-comparing')) renderTrade();
+}
+
 function renderTrade() {
+  tradeAJour = true;
   const missing = [];
   const have = [];
   for (const sprite of SPRITES) {
@@ -281,6 +311,93 @@ function commit() {
   pousserPlusTard(); // regroupe les cases cochees a la suite
 }
 
+/* ------------------------------------------------- mise à jour ciblée */
+
+/**
+ * Réécrit une seule case, sans toucher au reste du DOM.
+ *
+ * Reconstruire toute la grille à chaque clic recréait près de 900 éléments et
+ * une centaine d'images : mesuré à 33 ms en moyenne et jusqu'à 121 ms sur un
+ * téléphone modeste, avec un scintillement des illustrations à chaque coche.
+ */
+function majCase(bouton, sprite, variante) {
+  const niveau = levelOf(bouton.dataset.slot);
+  const etat = [t.card.levelNone, t.card.levelOwned, t.card.levelMastered][niveau];
+  const soon = isUnreleased(sprite, variante);
+
+  bouton.dataset.level = niveau;
+  bouton.title = soon ? `${t.card.unreleasedHint} — ${etat}` : etat;
+  bouton.setAttribute('aria-label', `${nameOf(sprite)} ${t.variant[variante]} — ${etat}`);
+
+  const couronne = $('.variant__crown', bouton);
+  if (niveau === 2 && !couronne) {
+    const span = document.createElement('span');
+    span.className = 'variant__crown';
+    span.setAttribute('aria-hidden', 'true');
+    span.innerHTML = COURONNE;
+    // Avant l'étiquette « à venir » s'il y en a une, pour garder l'ordre du gabarit.
+    bouton.insertBefore(span, $('.variant__soon', bouton));
+  } else if (niveau !== 2 && couronne) {
+    couronne.remove();
+  }
+}
+
+/** Remet à jour l'entête d'une carte : compteur, barre et libellés des boutons. */
+function majCarte(carte, sprite) {
+  const owned = ownedCount(sprite);
+  const total = sprite.variants.length;
+  const complete = owned === total;
+
+  carte.classList.toggle('is-complete', complete);
+  surElement('.card__count', (el) => {
+    el.textContent = fill(t.card.variantsOwned, { '%o': owned, '%t': total });
+  }, carte);
+  surElement('.meter i', (el) => (el.style.width = `${(owned / total) * 100}%`), carte);
+  surElement('[data-toggle]', (el) => {
+    el.textContent = complete ? t.card.uncheckAll : t.card.checkAll;
+  }, carte);
+  surElement('[data-master]', (el) => {
+    el.textContent = allMastered(sprite) ? t.card.unmasterAll : t.card.masterAll;
+  }, carte);
+
+  // La coche « complet » n'existe dans le gabarit que lorsqu'elle s'applique.
+  const done = $('.card__done', carte);
+  if (complete && !done) {
+    const span = document.createElement('span');
+    span.className = 'card__done';
+    span.title = t.card.complete;
+    span.textContent = '✓';
+    $('.card__head', carte).appendChild(span);
+  } else if (!complete && done) {
+    done.remove();
+  }
+}
+
+/**
+ * Enregistre puis rafraîchit le minimum.
+ *
+ * Si le Sprite ne correspond plus aux filtres (cocher la dernière case en vue
+ * « Manquants », par exemple), il doit disparaître : là seulement on reconstruit
+ * la grille, pour que l'affichage reste conforme au filtre demandé.
+ */
+function commitSprite(sprite) {
+  state.updatedAt = store.save(state.owned, state.mastered);
+
+  const carte = $(`.card[data-sprite="${sprite.id}"]`);
+  if (!carte || !matchesFilters(sprite)) {
+    renderGrid();
+  } else {
+    for (const bouton of $$('[data-slot]', carte)) {
+      majCase(bouton, sprite, bouton.dataset.slot.split(':')[1]);
+    }
+    majCarte(carte, sprite);
+  }
+
+  renderProgress();
+  invaliderTrade();
+  pousserPlusTard();
+}
+
 /* --------------------------------------------------------------- actions */
 
 function toggleSprite(spriteId) {
@@ -288,7 +405,7 @@ function toggleSprite(spriteId) {
   if (!sprite) return;
   const on = !isComplete(sprite);
   for (const v of shownVariants(sprite)) setLevel(slotId(sprite.id, v), on ? 1 : 0);
-  commit();
+  commitSprite(sprite);
 }
 
 /**
@@ -300,7 +417,7 @@ function toggleMastery(spriteId) {
   if (!sprite) return;
   const niveau = allMastered(sprite) ? 1 : 2;
   for (const v of shownVariants(sprite)) setLevel(slotId(sprite.id, v), niveau);
-  commit();
+  commitSprite(sprite);
 }
 
 /* ------------------------------------------------------ verrou d'édition */
@@ -532,7 +649,7 @@ function bindEvents() {
 
     if (cible.dataset.slot) {
       cycleLevel(cible.dataset.slot);
-      return commit();
+      return commitSprite(SPRITE_INDEX[cible.dataset.slot.split(':')[0]]);
     }
     if (cible.dataset.toggle) return toggleSprite(cible.dataset.toggle);
     toggleMastery(cible.dataset.master);
@@ -561,6 +678,11 @@ function bindEvents() {
   };
   chipHandler('#rarity-filters', state.rarities, 'rarity');
   chipHandler('#variant-filters', state.variants, 'variant');
+
+  // Le repli est un choix d'affichage : il doit survivre au rechargement.
+  surElement('#filtres-avances', (el) => {
+    el.addEventListener('toggle', () => store.savePref('filtresOuverts', el.open));
+  });
 
   let searchTimer;
   $('#search').addEventListener('input', (e) => {
@@ -1131,6 +1253,7 @@ function showCompare(actif) {
     a.classList.toggle('is-active', actif && a.getAttribute('href') === '#comparer')
   );
   if (actif) {
+    if (!tradeAJour) renderTrade(); // périmée pendant qu'on cochait
     renderCompare();
     window.scrollTo({ top: 0, behavior: 'auto' });
   }
@@ -1196,24 +1319,42 @@ function exporterSauvegarde() {
   const date = new Date().toISOString().slice(0, 10);
   telecharger(`spiritdex-${date}.json`, JSON.stringify(data, null, 2), 'application/json');
   store.savePref('lastBackup', Date.now());
+  // On retient aussi l'ampleur de la collection sauvegardée : c'est ce qui
+  // permet de savoir plus tard si le fichier est devenu très incomplet.
+  store.savePref('lastBackupCount', ownedSlots());
 }
 
 /** Seuil à partir duquel une collection mérite d'être mise à l'abri. */
 const RAPPEL_SEUIL = 15;
+/** Plus haut quand la synchro tourne : la collection est déjà sur le serveur. */
+const RAPPEL_SEUIL_SYNCHRO = 40;
+/** Cases gagnées depuis le dernier export avant de relancer le rappel. */
+const RAPPEL_CROISSANCE = 20;
 
 /**
- * Rappelle d'exporter une sauvegarde quand la collection représente déjà un
- * vrai travail et qu'aucun fichier n'a jamais été enregistré. Le rappel ne
- * s'affiche pas si la synchro est active : la collection est alors déjà ailleurs.
+ * Rappelle d'exporter une sauvegarde.
+ *
+ * Un seul rappel « au premier remplissage » ne suffit pas : après un export à
+ * 20 cases, un joueur monté à 100 n'était plus jamais relancé alors que son
+ * fichier ne valait presque plus rien. Le rappel revient donc quand la
+ * collection a nettement grossi depuis la dernière sauvegarde.
+ *
+ * La synchro ne fait plus taire le rappel, elle en relève seulement le seuil :
+ * si le code du salon est perdu, un fichier reste le dernier recours.
  */
 function rappelSauvegarde() {
-  if (syncState.config) return;
-  if (store.loadPref('lastBackup', 0)) return;
-
   const coches = ownedSlots();
-  if (coches < RAPPEL_SEUIL) return;
+  if (coches < (syncState.config ? RAPPEL_SEUIL_SYNCHRO : RAPPEL_SEUIL)) return;
 
-  toast(fill(t.backup.remind, { '%d': coches }), {
+  const dernier = store.loadPref('lastBackup', 0);
+  const auDernierExport = store.loadPref('lastBackupCount', 0);
+  if (dernier && coches - auDernierExport < RAPPEL_CROISSANCE) return;
+
+  const message = dernier
+    ? fill(t.backup.remindStale, { '%d': coches, '%a': auDernierExport })
+    : fill(t.backup.remind, { '%d': coches });
+
+  toast(message, {
     duration: 12000,
     tone: 'warn',
     action: {
@@ -1410,6 +1551,11 @@ function init() {
   if (saved.migrated) store.save(state.owned, state.mastered, state.updatedAt);
   state.showUnreleased = store.loadPref('showUnreleased', false);
   $('#show-unreleased').checked = state.showUnreleased;
+
+  // Replié par défaut sur téléphone, ouvert sur grand écran où la place existe.
+  surElement('#filtres-avances', (el) => {
+    el.open = store.loadPref('filtresOuverts', window.innerWidth > 640);
+  });
 
   applyStrings();
   renderFilters();

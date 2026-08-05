@@ -1,10 +1,10 @@
 /*
- * Base de données des Sprites — 24 Sprites, 109 cases (Sprite × variante).
+ * Base de données des Sprites — 25 Sprites, 110 cases (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
  * `variants` liste les variantes disponibles en jeu pour ce Sprite.
  * `unreleased` liste les variantes déjà présentes dans les fichiers du jeu mais
- *   pas encore sorties : masquées par défaut et exclues du total de 109.
+ *   pas encore sorties : masquées par défaut et exclues du total publié.
  * `ability.verified` = true quand l'effet est documenté publiquement.
  */
 
@@ -252,13 +252,26 @@ export const SPRITES = [
     variants: ['normal'],
     ability: { verified: true },
   },
+  // Sortie le 4 août 2026, après avoir été activée par erreur le 30 juillet
+  // puis retirée le jour même. Une seule finition, comme les autres Mythiques
+  // de collaboration (Pollo, Vini Jr., John Wick).
+  {
+    id: 'ironmouse',
+    rarity: 'mythic',
+    dropRate: 2.14,
+    shape: 'demon',
+    palette: ['#ff8ad4', '#5b1f6e'],
+    variants: ['normal'],
+    noArt: true, // illustration du jeu pas encore ajoutée : dessin de repli
+    ability: { verified: true },
+  },
 ];
 
 /**
  * Date de dernière vérification des données, affichée dans la page.
  * À changer en même temps que le contenu de SPRITES.
  */
-export const DATA_DATE = '2026-08-04';
+export const DATA_DATE = '2026-08-05';
 
 /**
  * Anciens identifiants → nouveaux.
@@ -315,7 +328,7 @@ export const SPRITE_INDEX = Object.fromEntries(SPRITES.map((s) => [s.id, s]));
 /** Variantes non publiées d'un Sprite (tableau vide par défaut). */
 export const unreleasedOf = (sprite) => sprite.unreleased || [];
 
-/** Nombre de cases comptant dans la progression : 109, hors variantes non publiées. */
+/** Nombre de cases comptant dans la progression, hors variantes non publiées. */
 export const TOTAL_SLOTS = SPRITES.reduce((n, s) => n + s.variants.length, 0);
 
 /**
@@ -332,7 +345,7 @@ export const TOTAL_SLOTS = SPRITES.reduce((n, s) => n + s.variants.length, 0);
  * conséquence ; `node tools/check-data.mjs` le signale et affiche la liste à
  * jour à recopier.
  */
-const SLOT_ORDER = [
+export const SLOT_ORDER = [
   'water:normal', 'water:gold', 'water:gummy', 'water:galaxy',
   'water:holofoil', 'water:quack', 'earth:normal', 'earth:gold',
   'earth:gummy', 'earth:galaxy', 'earth:cube', 'earth:quack',
@@ -362,7 +375,7 @@ const SLOT_ORDER = [
   'batman:cube', 'peanut:normal', 'vinijr:normal', 'pollo:normal',
   'johnwick:normal', 'water:gem', 'earth:gem', 'duck:gem',
   'demon:gem', 'aura:gem', 'punk:gem', 'reaper:gem',
-  'zeropoint:gem',
+  'zeropoint:gem', 'ironmouse:normal',
 ];
 
 /**

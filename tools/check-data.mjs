@@ -14,7 +14,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const racine = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const { SPRITES, ALL_SLOTS, BIT_SLOTS, TOTAL_SLOTS, RENAMES, VARIANT_RENAMES, DATA_DATE, unreleasedOf } =
+const { SPRITES, ALL_SLOTS, BIT_SLOTS, SLOT_ORDER, TOTAL_SLOTS, RENAMES, VARIANT_RENAMES,
+        DATA_DATE, migrateSlot, unreleasedOf } =
   await import(path.join(racine, 'assets/js/data.js'));
 const { getStrings } = await import(path.join(racine, 'assets/js/i18n.js'));
 const t = getStrings();
@@ -58,19 +59,27 @@ const courantes = [
 ];
 
 const vues = BIT_SLOTS.filter(Boolean);
-const oubliees = courantes.filter((s) => !vues.includes(s));
-if (oubliees.length) {
-  // Sans conséquence : ALL_SLOTS les place déjà en fin. Mais figer l'ordre
-  // évite d'en dépendre le jour où SPRITES sera réordonné.
-  console.log(`  info — ${oubliees.length} case(s) hors de SLOT_ORDER, ajoutées en fin :`);
-  console.log('         ' + oubliees.join(', '));
+
+/*
+ * Les cases absentes de SLOT_ORDER sont ajoutées automatiquement en fin de
+ * ALL_SLOTS — mais dans l'ordre de SPRITES, donc leurs positions bougent dès
+ * qu'une variante est ajoutée à un Sprite plus haut dans la liste. Tant qu'elles
+ * ne sont pas figées, un code de partage émis entre-temps se relira de travers.
+ */
+const figees = new Set(SLOT_ORDER.map((s) => migrateSlot(s) || s));
+const horsOrdre = courantes.filter((s) => !figees.has(s));
+if (horsOrdre.length) {
+  ko(
+    `${horsOrdre.length} case(s) absente(s) de SLOT_ORDER : ${horsOrdre.join(', ')}\n` +
+      "             leurs positions de bits ne sont pas figées — recopiez le bloc ci-dessous."
+  );
 }
 
 const doublons = ALL_SLOTS.filter((s, i) => ALL_SLOTS.indexOf(s) !== i);
 if (doublons.length) ko('ALL_SLOTS contient des doublons : ' + doublons.join(', '));
 
 const manquantes = courantes.filter((s) => !vues.includes(s));
-if (manquantes.length && !oubliees.length) ko('cases absentes de ALL_SLOTS : ' + manquantes.join(', '));
+if (manquantes.length) ko('cases absentes de ALL_SLOTS : ' + manquantes.join(', '));
 else ok(`${ALL_SLOTS.length} positions de bits, ${vues.length} encore en jeu`);
 
 const mortes = BIT_SLOTS.filter((s) => !s).length;
@@ -80,7 +89,11 @@ if (mortes) console.log(`  info — ${mortes} position(s) conservée(s) pour des
 
 const dossier = path.join(racine, 'assets/sprites');
 const fichiers = new Set(fs.existsSync(dossier) ? fs.readdirSync(dossier) : []);
-const sansImage = courantes.filter((slot) => !fichiers.has(slot.replace(':', '_') + '.webp'));
+const noArt = new Set(SPRITES.filter((s) => s.noArt).map((s) => s.id));
+const sansImage = courantes.filter(
+  (slot) => !noArt.has(slot.split(':')[0]) && !fichiers.has(slot.replace(':', '_') + '.webp')
+);
+if (noArt.size) console.log(`  info — dessin de repli assumé pour : ${[...noArt].join(', ')}`);
 if (sansImage.length) console.log(`  info — ${sansImage.length} case(s) sans illustration (repli SVG) `);
 else ok(`${courantes.length} illustrations présentes`);
 
@@ -96,7 +109,7 @@ else console.log(`  info — données datées du ${DATA_DATE}`);
 
 /* -------------------------------------- bloc à recopier le cas échéant */
 
-if (oubliees.length) {
+if (horsOrdre.length) {
   console.log('\nSLOT_ORDER à jour, à recopier dans assets/js/data.js :\n');
   const lignes = [];
   for (let i = 0; i < ALL_SLOTS.length; i += 4)

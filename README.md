@@ -7,15 +7,20 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 
 ## Fonctionnalités
 
-- **Checklist** — une case par couple Sprite × variante (117 cases pour 24 Sprites).
+- **Checklist** — une case par couple Sprite × variante (118 cases pour 25 Sprites,
+  dont 110 sorties en jeu).
 - **Progression** — pourcentage global, Sprites débloqués, collections complétées.
 - **Filtres** — statut (tous / possédés / manquants / maîtrisés), rareté, variante,
   recherche texte, tri par rareté, nom, progression, maîtrise ou taux d'apparition.
 - **Progression par rareté** — une barre par rareté sous les compteurs, en plus du
   total général.
+- **Filtres repliables** — rareté et variante se replient sur téléphone ; un badge
+  signale les filtres actifs restés hors de vue.
+- **Cochage instantané** — un clic ne met à jour que la case et sa carte, jamais
+  toute la grille (133 ms → 33 ms sur processeur bridé ×4).
 - **Application installable** — manifeste + service worker : le site s'installe sur
   téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 117
-  illustrations comprises (136 fichiers pré-mis en cache).
+  illustrations comprises (135 fichiers pré-mis en cache).
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
@@ -30,8 +35,10 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 - **Verrou d'édition** — un bouton cadenas bloque la saisie pour éviter les clics
   involontaires. Filtres, tri, comparaison, export et synchro restent actifs ;
   seule la modification des cases est suspendue. Le choix est mémorisé.
-- **Rappel de sauvegarde** — au-delà de quinze cases cochées sans export ni
-  synchro, une bannière propose d'enregistrer un fichier.
+- **Rappel de sauvegarde** — une bannière propose d'enregistrer un fichier au-delà
+  de quinze cases cochées sans export, puis de nouveau chaque fois que la
+  collection a gagné vingt cases depuis la dernière sauvegarde. La synchro ne
+  fait pas taire le rappel, elle en relève seulement le seuil.
 - **Synchronisation entre appareils** — Firebase Realtime Database via son API
   REST, sans bibliothèque ni outil à installer (`docs/firebase.md`). Un salon
   contient plusieurs profils nommés : chacun synchronise sa propre collection
@@ -92,8 +99,16 @@ Une case est stockée sous la forme `<idDuSprite>:<idDeLaVariante>` — par exem
   **chaque lecture** — `localStorage`, fichier `.json` importé, code de partage.
   Ces entrées ne coûtent rien et ne s'enlèvent jamais.
 
+- **L'ordre des bits est figé.** `SLOT_ORDER` dans `assets/js/data.js` fixe la
+  position de chaque case dans les codes de partage. Les cases absentes de cette
+  liste sont ajoutées en fin de `ALL_SLOTS`, mais **dans l'ordre de `SPRITES`** :
+  tant qu'elles n'y sont pas recopiées, ajouter une variante à un Sprite plus haut
+  dans la liste les décalerait, et un ancien lien se relirait sur les mauvais
+  Sprites. `node tools/check-data.mjs` refuse de passer tant que ce n'est pas fait
+  et affiche le bloc à recopier.
+
 Ce qui est **interdit** sans précaution : supprimer un Sprite ou une variante, ou
-réordonner `ALL_SLOTS`. Les deux invalident les codes de partage existants. Si c'est
+réordonner `SLOT_ORDER`. Les deux invalident les codes de partage existants. Si c'est
 inévitable, incrémenter `CODE_VERSION` dans `assets/js/store.js`.
 
 ### Sources
@@ -122,18 +137,19 @@ affiche alors « Effet non confirmé » plutôt que d'inventer.
    à aucune progression enregistrée.
 3. Ajouter l'illustration dans `assets/sprites/` (`.webp`, 128 px), une par variante.
    Si aucune image n'existe, `assets/js/art.js` dessine un repli SVG à partir de
-   `SHAPES` (grille 64 × 64) et de la palette.
+   `SHAPES` (grille 64 × 64) et de la palette. Poser alors `noArt: true` sur le
+   Sprite : le dessin est utilisé directement, sans requête vers un fichier absent.
 4. Si un identifiant existant change, **ajouter l'ancien dans `RENAMES`** — ne jamais
    se contenter de le remplacer.
 5. Mettre `DATA_DATE` à la date du jour : elle s'affiche en pied de page.
-6. Régénérer le service worker pour que le hors ligne reste complet :
-   `node tools/gen-sw.mjs`.
-7. Vérifier que le total attendu tombe juste, puis publier :
+6. Lancer le contrôle, et **recopier le bloc `SLOT_ORDER`** qu'il affiche :
 
 ```bash
-node -e "import('./assets/js/data.js').then(d => console.log(
-  d.TOTAL_SLOTS, 'cases publiées ·', d.ALL_SLOTS.length, 'au total'))"
+node tools/check-data.mjs   # sort en erreur tant que l'ordre n'est pas figé
 ```
+
+7. Régénérer le service worker pour que le hors ligne reste complet :
+   `node tools/gen-sw.mjs`.
 
 Une mise à jour bien faite se voit à ceci : après rechargement, le nombre de cases
 cochées est **identique ou supérieur** à celui d'avant. S'il baisse, un identifiant a

@@ -187,14 +187,20 @@
             </select>
           </label>
         </div>
-        <div class="toolbar__row">
-          <span class="toolbar__label" data-t="filters.rarity">Rareté</span>
-          <div id="rarity-filters" class="toolbar__row" role="group"></div>
-        </div>
-        <div class="toolbar__row">
-          <span class="toolbar__label" data-t="filters.variant">Variante</span>
-          <div id="variant-filters" class="toolbar__row" role="group"></div>
-        </div>
+        <details class="toolbar__more" id="filtres-avances">
+          <summary>
+            <span data-t="filters.more">Rareté et variante</span>
+            <span class="toolbar__badge" id="filters-active" hidden></span>
+          </summary>
+          <div class="toolbar__row">
+            <span class="toolbar__label" data-t="filters.rarity">Rareté</span>
+            <div id="rarity-filters" class="toolbar__row" role="group"></div>
+          </div>
+          <div class="toolbar__row">
+            <span class="toolbar__label" data-t="filters.variant">Variante</span>
+            <div id="variant-filters" class="toolbar__row" role="group"></div>
+          </div>
+        </details>
         <div class="toolbar__row">
           <label class="switch">
             <input type="checkbox" id="show-unreleased">

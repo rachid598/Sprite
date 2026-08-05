@@ -19,6 +19,11 @@ const SPRITE_DIR = new URL('../sprites/', import.meta.url).href;
  * @param {string} label texte alternatif
  */
 export function spriteImg(sprite, variant = 'normal', size = 64, label = '') {
+  // Sprite trop récent pour avoir son illustration : on dessine directement,
+  // plutôt que de demander un fichier absent et de récolter un 404 à chaque
+  // chargement. Retirer `noArt` dès que le .webp est ajouté.
+  if (sprite.noArt) return spriteSvg(sprite, variant, size);
+
   return `<img class="sprite-img" src="${SPRITE_DIR}${sprite.id}_${variant}.webp"
     width="${size}" height="${size}" alt="${label}" loading="lazy" decoding="async"
     data-sprite="${sprite.id}" data-variant="${variant}" data-size="${size}">`;

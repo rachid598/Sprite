@@ -135,12 +135,25 @@ export function decode(code) {
   try {
     const bytes = base64UrlToBytes(code);
     if (!bytes.length || bytes[0] !== CODE_VERSION) return null;
+
+    /*
+     * Longueur des champs telle qu'elle était À L'ÉMISSION du code, et non
+     * telle qu'elle est aujourd'hui : les deux champs sont collés l'un derrière
+     * l'autre, donc utiliser la longueur courante décalerait le champ
+     * « maîtrisé » dès que l'ajout de cases fait franchir un octet. Un ancien
+     * lien se relisait alors de travers, en inventant des cases possédées.
+     * Le format est toujours 1 octet de version + deux champs égaux.
+     */
+    const octetsLus = (bytes.length - 1) / 2;
+    if (!Number.isInteger(octetsLus) || octetsLus < 1) return null;
+
     const owned = new Set();
     const mastered = new Set();
     BIT_SLOTS.forEach((slot, i) => {
       if (!slot) return; // case disparue depuis l'émission du code
+      if (i >> 3 >= octetsLus) return; // case apparue après l'émission du code
       const o = bytes[1 + (i >> 3)];
-      const m = bytes[1 + OCTETS + (i >> 3)];
+      const m = bytes[1 + octetsLus + (i >> 3)];
       if (o !== undefined && o & (1 << (i & 7))) owned.add(slot);
       if (m !== undefined && m & (1 << (i & 7))) mastered.add(slot);
     });
