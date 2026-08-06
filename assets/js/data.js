@@ -1,5 +1,5 @@
 /*
- * Base de données des Sprites — 25 Sprites, 110 cases (Sprite × variante).
+ * Base de données des Sprites — 25 Sprites, 118 cases (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
  * `variants` liste les variantes disponibles en jeu pour ce Sprite.
@@ -34,8 +34,7 @@ export const SPRITES = [
     dropRate: 8.73,
     shape: 'drop',
     palette: ['#2ec5ff', '#0a6cd8'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'quack'],
-    unreleased: ['gem'],
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'quack', 'gem'],
     ability: { verified: true },
   },
   {
@@ -44,8 +43,7 @@ export const SPRITES = [
     dropRate: 8.73,
     shape: 'leaf',
     palette: ['#7bd66a', '#1d7a3c'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube', 'quack'],
-    unreleased: ['gem'],
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube', 'quack', 'gem'],
     ability: { verified: true },
   },
   {
@@ -81,8 +79,7 @@ export const SPRITES = [
     dropRate: 7.5,
     shape: 'duck',
     palette: ['#ffd94d', '#e08a12'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy'],
-    unreleased: ['gem'],
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'gem'],
     ability: { verified: true },
   },
   {
@@ -100,8 +97,7 @@ export const SPRITES = [
     dropRate: 7.54,
     shape: 'demon',
     palette: ['#ff5a6e', '#8c0f2e'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy'],
-    unreleased: ['gem'],
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'gem'],
     ability: { verified: true },
   },
   {
@@ -119,8 +115,7 @@ export const SPRITES = [
     dropRate: 7.4,
     shape: 'orb',
     palette: ['#b58cff', '#5a2fb8'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy'],
-    unreleased: ['gem'],
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'gem'],
     ability: { verified: true },
   },
   {
@@ -147,8 +142,7 @@ export const SPRITES = [
     dropRate: 4.11,
     shape: 'bolt',
     palette: ['#ff5fa8', '#7a1050'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube'],
-    unreleased: ['gem'],
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube', 'gem'],
     ability: { verified: true },
   },
   {
@@ -193,8 +187,7 @@ export const SPRITES = [
     dropRate: 2.9,
     shape: 'scythe',
     palette: ['#9d8cff', '#1c1030'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'cube'],
-    unreleased: ['gem'],
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'cube', 'gem'],
     ability: { verified: true },
   },
   {
@@ -203,8 +196,7 @@ export const SPRITES = [
     dropRate: 0.00034,
     shape: 'zero',
     palette: ['#ffd86b', '#ff6a2e'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'cube', 'quack'],
-    unreleased: ['gem'],
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'cube', 'quack', 'gem'],
     ability: { verified: true },
   },
   {
@@ -270,7 +262,7 @@ export const SPRITES = [
  * Date de dernière vérification des données, affichée dans la page.
  * À changer en même temps que le contenu de SPRITES.
  */
-export const DATA_DATE = '2026-08-05';
+export const DATA_DATE = '2026-08-06';
 
 /**
  * Anciens identifiants → nouveaux.
