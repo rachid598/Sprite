@@ -139,7 +139,7 @@ const fr = {
     seven: 'Seven',
     llama: 'Lootin\' Llama',
     peely: 'Peeky Peely',
-    reaper: 'Faucheuse',
+    reaper: 'Sinistre',
     zeropoint: 'Point Zéro',
     batman: 'Batman',
     peanut: 'Cacahuète Grillée',
