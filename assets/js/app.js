@@ -7,6 +7,7 @@ import {
   TOTAL_SLOTS,
   SPRITE_INDEX,
   DATA_DATE,
+  DROP_DATE,
   unreleasedOf,
 } from './data.js';
 import { getStrings } from './i18n.js';
@@ -90,6 +91,15 @@ function formatDrop(rate) {
   return new Intl.NumberFormat(lang, { maximumFractionDigits: digits }).format(rate) + ' %';
 }
 
+/**
+ * Taux affiché sur une carte.
+ * Sans chiffre publié, on l'annonce comme non confirmé au lieu d'afficher une
+ * valeur inventée — même règle que pour les effets passifs.
+ */
+function dropText(sprite) {
+  return sprite.dropUnverified ? t.card.dropUnknown : formatDrop(sprite.dropRate);
+}
+
 function fill(str, map) {
   return Object.entries(map).reduce((s, [k, v]) => s.split(k).join(v), str);
 }
@@ -110,7 +120,8 @@ function renderFilters() {
 
   $('#variant-filters').innerHTML = VARIANTS.map(
     (v) => `<button type="button" class="chip" data-variant="${v.id}"
-      style="${variantChipStyle(v.id)}" aria-pressed="false">${t.variant[v.id]}</button>`
+      style="${variantChipStyle(v.id)}" aria-pressed="false"
+      ${t.variantBonus[v.id] ? `title="${t.variantBonus[v.id]}"` : ''}>${t.variant[v.id]}</button>`
   ).join('');
 }
 
@@ -147,6 +158,17 @@ function sortSprites(list) {
   return [...list].sort(sorters[state.sort] || sorters.rarity);
 }
 
+/**
+ * Rappel des effets propres aux variantes que ce Sprite possède.
+ * Le bonus s'ajoute à l'effet du Sprite : sans cette ligne, rien ne l'indique.
+ */
+function bonusVariantes(sprite) {
+  const lignes = shownVariants(sprite)
+    .filter((v) => t.variantBonus[v])
+    .map((v) => `<li><b>${t.variant[v]}</b> : ${t.variantBonus[v]}</li>`);
+  return lignes.length ? `<ul class="card__bonus">${lignes.join('')}</ul>` : '';
+}
+
 function cardHtml(sprite) {
   const owned = ownedCount(sprite);
   const total = sprite.variants.length;
@@ -160,7 +182,10 @@ function cardHtml(sprite) {
       const dim = state.variants.size && !state.variants.has(v) ? ' is-dimmed' : '';
       const soon = isUnreleased(sprite, v) ? ' is-unreleased' : '';
       const etat = [t.card.levelNone, t.card.levelOwned, t.card.levelMastered][niveau];
-      const infobulle = soon ? `${t.card.unreleasedHint} — ${etat}` : etat;
+      const bonus = t.variantBonus[v];
+      const infobulle = [soon ? t.card.unreleasedHint : '', bonus, etat]
+        .filter(Boolean)
+        .join(' — ');
       return `<button type="button" class="variant${dim}${soon}" data-slot="${id}"
         data-level="${niveau}" style="${variantChipStyle(v)}"
         title="${infobulle}" aria-label="${nameOf(sprite)} ${t.variant[v]} — ${etat}">
@@ -185,12 +210,13 @@ function cardHtml(sprite) {
     <p class="card__ability${sprite.ability.verified ? '' : ' is-muted'}">
       <b>${t.card.ability} :</b> ${abilityText(sprite)}
     </p>
-    <p class="card__drop"><b>${t.card.dropRate} :</b> ${formatDrop(sprite.dropRate)}</p>
+    <p class="card__drop${sprite.dropUnverified ? ' is-muted' : ''}"><b>${t.card.dropRate} :</b> ${dropText(sprite)}</p>
     <div class="card__meter">
       <div class="meter"><i style="width:${(owned / total) * 100}%"></i></div>
       <span class="card__count">${fill(t.card.variantsOwned, { '%o': owned, '%t': total })}</span>
     </div>
     <div class="variants">${variants}</div>
+    ${bonusVariantes(sprite)}
     <div class="card__actions">
       <button type="button" class="card__toggle" data-toggle="${sprite.id}">
         ${complete ? t.card.uncheckAll : t.card.checkAll}
@@ -1512,6 +1538,14 @@ function surElement(selecteur, action, racine = document) {
   if (el) action(el);
 }
 
+/** Date ISO rendue lisible, ou telle quelle si elle est illisible. */
+function dateLisible(iso) {
+  const d = new Date(`${iso}T00:00:00`);
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 function applyStrings() {
   document.title = t.meta.title;
   surElement('meta[name="description"]', (el) => el.setAttribute('content', t.meta.description));
@@ -1530,11 +1564,14 @@ function applyStrings() {
   // Date de dernière vérification des données : dit d'un coup d'œil si le site
   // a été mis à jour depuis la dernière saison.
   surElement('#data-date', (el) => {
-    const d = new Date(`${DATA_DATE}T00:00:00`);
-    const lisible = Number.isNaN(d.getTime())
-      ? DATA_DATE
-      : d.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+    const lisible = dateLisible(DATA_DATE);
     el.textContent = fill(t.hero.dataDate, { '%d': lisible });
+  });
+
+  // Les taux d'apparition ont leur propre date : ils changent à chaque patch,
+  // indépendamment du reste des données.
+  surElement('#drop-source', (el) => {
+    el.textContent = fill(t.card.dropSource, { '%d': dateLisible(DROP_DATE) });
   });
 }
 

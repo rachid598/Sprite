@@ -127,6 +127,15 @@ Une variante vue uniquement dans les fichiers du jeu va dans `unreleased`, pas d
 effet passif non documenté publiquement garde `ability.verified: false` — le site
 affiche alors « Effet non confirmé » plutôt que d'inventer.
 
+**Les taux d'apparition demandent une prudence particulière.** Ils changent à chaque
+patch, quand de nouveaux Sprites entrent dans le butin, et les relevés publics se
+contredisent : trois sources consultées en août 2026 donnaient trois jeux de chiffres
+différents pour les mêmes Sprites. Retenir le relevé le plus récent explicitement
+rattaché à une version du jeu, mettre `DROP_DATE` à sa date, et poser
+`dropUnverified: true` sur tout Sprite sans chiffre publié — la carte affiche alors
+« non confirmé ». Ne jamais additionner les taux pour les vérifier : ce sont des
+probabilités indépendantes par coffre, pas une distribution qui totalise 100 %.
+
 ### Marche à suivre
 
 1. Ajouter l'entrée **à la fin** de `SPRITES` dans `assets/js/data.js` (id, rareté,

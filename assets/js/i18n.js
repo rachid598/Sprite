@@ -64,6 +64,8 @@ const fr = {
     dropRate: 'Apparition',
     ability: 'Effet passif',
     abilityUnknown: 'Effet non confirmé pour le moment.',
+    dropUnknown: 'non confirmé',
+    dropSource: 'Taux relevés le %d — ils changent à chaque mise à jour du jeu.',
     variantsOwned: '%o / %t variantes',
     checkAll: 'Tout cocher',
     uncheckAll: 'Tout décocher',
@@ -92,6 +94,13 @@ const fr = {
     holofoil: 'Iridescent',
     cube: 'Cube',
     quack: 'Canardesque',
+  },
+  /*
+   * Effets propres à une variante, cumulables avec celui du Sprite. Une clé
+   * absente signifie « aucun bonus documenté » : on n'affiche alors rien.
+   */
+  variantBonus: {
+    gem: '30 % de dégâts de chute en moins, cumulable avec l\'effet du Sprite.',
   },
   ability: {
     water: 'Régénère du bouclier tant que vous restez dans l\'eau.',

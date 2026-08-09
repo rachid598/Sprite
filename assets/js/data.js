@@ -58,7 +58,7 @@ export const SPRITES = [
   {
     id: 'fishy',
     rarity: 'rare',
-    dropRate: 8.7,
+    dropRate: 13.79,
     shape: 'fish',
     palette: ['#5fe0d0', '#1a7f9c'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube'],
@@ -68,6 +68,7 @@ export const SPRITES = [
     id: 'air',
     rarity: 'rare',
     dropRate: 8.7,
+    dropUnverified: true, // aucun taux publié
     shape: 'swirl',
     palette: ['#d8ecff', '#7aa8d8'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil'],
@@ -76,7 +77,7 @@ export const SPRITES = [
   {
     id: 'duck',
     rarity: 'epic',
-    dropRate: 7.5,
+    dropRate: 6.48,
     shape: 'duck',
     palette: ['#ffd94d', '#e08a12'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'gem'],
@@ -85,7 +86,7 @@ export const SPRITES = [
   {
     id: 'ghost',
     rarity: 'epic',
-    dropRate: 7.5,
+    dropRate: 5.25,
     shape: 'ghost',
     palette: ['#e8f0ff', '#8f9dc4'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil'],
@@ -94,7 +95,7 @@ export const SPRITES = [
   {
     id: 'demon',
     rarity: 'epic',
-    dropRate: 7.54,
+    dropRate: 6.48,
     shape: 'demon',
     palette: ['#ff5a6e', '#8c0f2e'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'gem'],
@@ -103,7 +104,7 @@ export const SPRITES = [
   {
     id: 'king',
     rarity: 'epic',
-    dropRate: 7.5,
+    dropRate: 5.25,
     shape: 'crown',
     palette: ['#ffe07a', '#c48a11'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil'],
@@ -112,7 +113,7 @@ export const SPRITES = [
   {
     id: 'aura',
     rarity: 'epic',
-    dropRate: 7.4,
+    dropRate: 6.48,
     shape: 'orb',
     palette: ['#b58cff', '#5a2fb8'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'gem'],
@@ -121,7 +122,7 @@ export const SPRITES = [
   {
     id: 'striker',
     rarity: 'epic',
-    dropRate: 7.4,
+    dropRate: 5.25,
     shape: 'ball',
     palette: ['#ffffff', '#3c4657'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil'],
@@ -130,7 +131,7 @@ export const SPRITES = [
   {
     id: 'dream',
     rarity: 'legendary',
-    dropRate: 4.09,
+    dropRate: 4.45,
     shape: 'moon',
     palette: ['#a6c8ff', '#4b3fb0'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube'],
@@ -139,7 +140,7 @@ export const SPRITES = [
   {
     id: 'punk',
     rarity: 'legendary',
-    dropRate: 4.11,
+    dropRate: 4.45,
     shape: 'bolt',
     palette: ['#ff5fa8', '#7a1050'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube', 'gem'],
@@ -148,7 +149,7 @@ export const SPRITES = [
   {
     id: 'boss',
     rarity: 'legendary',
-    dropRate: 4.0,
+    dropRate: 4.45,
     shape: 'shield',
     palette: ['#ff8a3d', '#8c2f0a'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube'],
@@ -157,7 +158,7 @@ export const SPRITES = [
   {
     id: 'seven',
     rarity: 'legendary',
-    dropRate: 4.0,
+    dropRate: 3.63,
     shape: 'seven',
     palette: ['#7ad9ff', '#123a66'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil'],
@@ -166,7 +167,7 @@ export const SPRITES = [
   {
     id: 'llama',
     rarity: 'legendary',
-    dropRate: 3.9,
+    dropRate: 4.45,
     shape: 'llama',
     palette: ['#7ad0ff', '#c05cff'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'gem'],
@@ -175,7 +176,7 @@ export const SPRITES = [
   {
     id: 'peely',
     rarity: 'legendary',
-    dropRate: 3.9,
+    dropRate: 4.62,
     shape: 'banana',
     palette: ['#ffe14d', '#c78a08'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil'],
@@ -184,7 +185,7 @@ export const SPRITES = [
   {
     id: 'reaper',
     rarity: 'mythic',
-    dropRate: 2.9,
+    dropRate: 0.15,
     shape: 'scythe',
     palette: ['#9d8cff', '#1c1030'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'cube', 'gem'],
@@ -202,7 +203,7 @@ export const SPRITES = [
   {
     id: 'batman',
     rarity: 'mythic',
-    dropRate: 2.9,
+    dropRate: 1.44,
     shape: 'bat',
     palette: ['#8fa4c8', '#141a26'],
     variants: ['normal', 'gold', 'gummy', 'galaxy', 'holofoil', 'cube'],
@@ -211,7 +212,7 @@ export const SPRITES = [
   {
     id: 'peanut',
     rarity: 'mythic',
-    dropRate: 2.97,
+    dropRate: 2.14,
     shape: 'peanut',
     palette: ['#d99a5c', '#5c3316'],
     variants: ['normal'],
@@ -220,7 +221,7 @@ export const SPRITES = [
   {
     id: 'vinijr',
     rarity: 'mythic',
-    dropRate: 2.8,
+    dropRate: 2.14,
     shape: 'ball',
     palette: ['#ffe98a', '#1f6f3f'],
     variants: ['normal'],
@@ -229,7 +230,7 @@ export const SPRITES = [
   {
     id: 'pollo',
     rarity: 'mythic',
-    dropRate: 2.8,
+    dropRate: 2.14,
     shape: 'chicken',
     palette: ['#fff0c2', '#e0562a'],
     variants: ['normal'],
@@ -239,6 +240,7 @@ export const SPRITES = [
     id: 'johnwick',
     rarity: 'mythic',
     dropRate: 2.8,
+    dropUnverified: true, // aucun taux publié
     shape: 'suit',
     palette: ['#6f7b93', '#0e1220'],
     variants: ['normal'],
@@ -263,6 +265,18 @@ export const SPRITES = [
  * À changer en même temps que le contenu de SPRITES.
  */
 export const DATA_DATE = '2026-08-06';
+
+/**
+ * Date du relevé des taux d'apparition, distincte de DATA_DATE.
+ *
+ * Les taux changent à chaque patch, quand de nouveaux Sprites entrent dans le
+ * butin. Trois relevés publics consultés donnaient trois jeux de chiffres
+ * différents pour les mêmes Sprites : celui retenu est le plus récent et le
+ * seul rattaché explicitement à une version du jeu. Un Sprite sans taux publié
+ * porte `dropUnverified` et affiche « non confirmé » plutôt qu'un chiffre
+ * inventé.
+ */
+export const DROP_DATE = '2026-08-07';
 
 /**
  * Anciens identifiants → nouveaux.

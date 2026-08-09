@@ -828,6 +828,24 @@ label:focus-within {
   opacity: 0.32;
 }
 
+/* Effets propres aux variantes possédées par ce Sprite. */
+.card__bonus {
+  margin: 0 0 0.9rem;
+  padding: 0.55rem 0.7rem;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+  border-left: 2px solid var(--rarity);
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.card__bonus b {
+  color: var(--text);
+}
+
 .card__actions {
   margin-top: auto;
   display: grid;
