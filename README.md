@@ -7,7 +7,7 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 
 ## Fonctionnalités
 
-- **Checklist** — une case par couple Sprite × variante (118 cases pour 25 Sprites,
+- **Checklist** — une case par couple Sprite × variante (117 cases pour 25 Sprites,
   toutes sorties en jeu depuis la vague Gemme du 6 août 2026).
 - **Progression** — pourcentage global, Sprites débloqués, collections complétées.
 - **Filtres** — statut (tous / possédés / manquants / maîtrisés), rareté, variante,

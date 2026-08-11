@@ -1,5 +1,5 @@
 /*
- * Base de données des Sprites — 25 Sprites, 118 cases (Sprite × variante).
+ * Base de données des Sprites — 25 Sprites, 117 cases publiées (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
  * `variants` liste les variantes disponibles en jeu pour ce Sprite.
@@ -143,7 +143,11 @@ export const SPRITES = [
     dropRate: 4.45,
     shape: 'bolt',
     palette: ['#ff5fa8', '#7a1050'],
-    variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube', 'gem'],
+    // Pas de Gemme : apparue le 30 juillet 2026 puis retirée, et absente de la
+    // vague du 6 août. Sa position reste réservée dans SLOT_ORDER pour ne pas
+    // décaler les bits suivants ; `migrateSlot` la renvoie à null, donc elle ne
+    // s'affiche plus et ne compte plus nulle part.
+    variants: ['normal', 'gold', 'gummy', 'galaxy', 'cube'],
     ability: { verified: true },
   },
   {
