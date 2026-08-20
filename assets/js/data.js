@@ -384,10 +384,10 @@ const VARIANTS_S4 = [
 ];
 
 /**
- * Dix Sprites au lancement, trois finitions chacun — trente cases.
+ * Douze Sprites au lancement, trois finitions chacun — trente-six cases.
  *
- * Deux autres (Shadow, Storm Scout) ne sont annoncés que par une seule source :
- * ils attendent confirmation plutôt que de gonfler un total inatteignable.
+ * Shadow et Storm Scout, un temps douteux, sont confirmés par la planche
+ * officielle du 20 août : douze Sprites au total.
  * Cinq Sprites communautaires sont annoncés pour le milieu de saison : Bullet,
  * Dumpster Dive, Honey, Pond et X-Ray.
  *
@@ -440,6 +440,17 @@ const SPRITES_S4 = [
     ability: { verified: true },
   },
   {
+    id: 'stormscout',
+    rarity: 'rare',
+    dropRate: 8.6,
+    dropUnverified: true,
+    shape: 'swirl',
+    palette: ['#8f7bff', '#2a1a6b'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
     id: 'sonic',
     rarity: 'epic',
     dropRate: 6.5,
@@ -468,6 +479,17 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'bolt',
     palette: ['#ff6b6b', '#2a1020'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'shadow',
+    rarity: 'epic',
+    dropRate: 6.2,
+    dropUnverified: true,
+    shape: 'spike',
+    palette: ['#6b6f7d', '#1a1020'],
     variants: ['normal', 'gold', 'cheatmaster'],
     noArt: true,
     ability: { verified: true },
@@ -525,6 +547,9 @@ const SLOT_ORDER_S4 = [
   'jackrabbit:normal', 'jackrabbit:gold', 'jackrabbit:cheatmaster',
   'crown:normal', 'crown:gold', 'crown:cheatmaster',
   'klombo:normal', 'klombo:gold', 'klombo:cheatmaster',
+  // Confirmés le 20 août 2026 : ajoutés en fin, les positions ci-dessus ne bougent pas.
+  'stormscout:normal', 'stormscout:gold', 'stormscout:cheatmaster',
+  'shadow:normal', 'shadow:gold', 'shadow:cheatmaster',
 ];
 
 /* ==================================================================== */
