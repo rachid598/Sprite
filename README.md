@@ -23,8 +23,8 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 - **Cochage instantané** — un clic ne met à jour que la case et sa carte, jamais
   toute la grille (133 ms → 33 ms sur processeur bridé ×4).
 - **Application installable** — manifeste + service worker : le site s'installe sur
-  téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 118
-  illustrations comprises (136 fichiers pré-mis en cache).
+  téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 154
+  illustrations comprises (172 fichiers pré-mis en cache).
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
@@ -238,7 +238,7 @@ Les effets passifs marqués comme non confirmés le sont volontairement : seuls 
 documentés publiquement sont affichés, le reste attend confirmation plutôt que d'être
 inventé.
 
-Les 118 illustrations de `assets/sprites/` sont les visuels des Sprites tirés du jeu,
+Les 154 illustrations de `assets/sprites/` sont les visuels des Sprites tirés du jeu,
 redimensionnés en 128 px et hébergés avec le site (pas de lien direct vers un serveur
 tiers). Ils appartiennent à Epic Games et sont utilisés ici dans le cadre d'un projet de
 fan non commercial. `assets/js/art.js` conserve un dessin SVG généré, affiché
