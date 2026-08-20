@@ -15,6 +15,8 @@
  * pas ne peut pas deviner le chemin.
  */
 
+import { SAISON } from './data.js';
+
 const CONFIG_KEY = 'sprite-tracker:sync';
 
 /** @typedef {{url:string, room:string, profile:string}} Config */
@@ -105,6 +107,16 @@ export function isValidUrl(url) {
   );
 }
 
+/*
+ * Chaque saison a sa propre branche sur le serveur.
+ *
+ * La Saison 3 garde le chemin historique `/profiles/…`, sans quoi un appareil
+ * resté en ancienne version cesserait de se synchroniser. Les saisons suivantes
+ * vivent sous `/saisons/<id>/profiles/…` : un client ancien ne les voit pas, et
+ * ne peut donc pas les écraser.
+ */
+const racineSaison = () => (SAISON.id === 's3' ? '' : `/saisons/${SAISON.id}`);
+
 const chemin = (config, suite = '') =>
   `${normalizeUrl(config.url)}/rooms/${encodeURIComponent(config.room)}${suite}.json`;
 
@@ -132,7 +144,7 @@ async function requete(url, options = {}) {
  * @returns {Promise<Record<string, {name:string, owned:string[], mastered:string[], count:number, updatedAt:number}>>}
  */
 export async function pull(config) {
-  const data = await requete(chemin(config, '/profiles'));
+  const data = await requete(chemin(config, `${racineSaison()}/profiles`));
   if (!data || typeof data !== 'object') return {};
 
   // On assainit : le contenu vient du réseau, il peut être partiel ou modifié.
@@ -163,7 +175,7 @@ export async function push(config, owned, mastered, updatedAt) {
     count: owned.size,
     updatedAt: updatedAt || Date.now(),
   };
-  await requete(chemin(config, `/profiles/${encodeURIComponent(config.profile)}`), {
+  await requete(chemin(config, `${racineSaison()}/profiles/${encodeURIComponent(config.profile)}`), {
     method: 'PUT',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(corps),

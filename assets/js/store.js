@@ -7,19 +7,22 @@
  * ALL_SLOTS ne l'est pas — d'où l'octet de version.
  */
 
-import { BIT_SLOTS, migrateSlot } from './data.js';
+import { BIT_SLOTS, SAISON, migrateSlot } from './data.js';
 
 /*
- * Ces clés gardent l'ancien nom du projet — c'est volontaire. Elles désignent
- * la collection déjà enregistrée dans les navigateurs : les renommer en même
- * temps que l'application la rendrait invisible du jour au lendemain, sans
- * message d'erreur. Un nom affiché change ; une clé de stockage, jamais.
+ * Chaque saison a sa propre collection, donc sa propre clé — définie dans
+ * data.js et jamais renommée. Celle de la Saison 3 garde l'ancien nom du
+ * projet : la renommer rendrait invisibles les collections déjà enregistrées,
+ * sans le moindre message d'erreur. Un nom affiché change ; une clé, jamais.
  */
-const KEY = 'sprite-tracker:v3';
-const ANCIENNE_CLE = 'sprite-tracker:v2';
-// v3 : chaque case a deux niveaux — possédé, puis maîtrisé. Le code de partage
-// contient donc deux champs de bits successifs au lieu d'un.
-const CODE_VERSION = 3;
+const cle = () => SAISON.cle;
+const ANCIENNE_CLE = 'sprite-tracker:v2'; // v2 de la Saison 3 uniquement
+/*
+ * Octet de tête des codes de partage. Il vaut le numéro de la saison, si bien
+ * qu'un lien émis dans une saison ne peut pas être relu dans une autre : le
+ * décodage échoue proprement au lieu de produire une collection absurde.
+ */
+const codeVersion = () => SAISON.codeVersion;
 
 /**
  * @returns {{owned:Set<string>, mastered:Set<string>, updatedAt:number, migrated:boolean}}
@@ -30,7 +33,9 @@ const CODE_VERSION = 3;
 export function load() {
   const vide = { owned: new Set(), mastered: new Set(), updatedAt: 0, migrated: false };
   try {
-    const raw = localStorage.getItem(KEY) || localStorage.getItem(ANCIENNE_CLE);
+    const raw =
+      localStorage.getItem(cle()) ||
+      (SAISON.id === 's3' ? localStorage.getItem(ANCIENNE_CLE) : null);
     if (!raw) return vide;
     const parsed = JSON.parse(raw);
 
@@ -68,7 +73,7 @@ export function save(owned, mastered = new Set(), updatedAt = Date.now()) {
     updatedAt,
   };
   try {
-    localStorage.setItem(KEY, JSON.stringify(payload));
+    localStorage.setItem(cle(), JSON.stringify(payload));
   } catch {
     /* mode privé ou quota plein : la session reste utilisable en mémoire */
   }
@@ -109,7 +114,12 @@ function base64UrlToBytes(str) {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 }
 
-const OCTETS = Math.ceil(BIT_SLOTS.length / 8);
+/*
+ * Longueur d'un champ de bits, recalculée à chaque appel : les saisons n'ont pas
+ * le même nombre de cases, et une valeur figée au chargement produirait des
+ * codes tronqués après un changement de saison.
+ */
+const octets = () => Math.ceil(BIT_SLOTS.length / 8);
 
 /**
  * Un octet de version, puis le champ « possédé », puis le champ « maîtrisé ».
@@ -117,12 +127,13 @@ const OCTETS = Math.ceil(BIT_SLOTS.length / 8);
  * lisible après l'ajout de Sprites ou de variantes.
  */
 export function encode(owned, mastered = new Set()) {
-  const bits = new Uint8Array(1 + OCTETS * 2);
-  bits[0] = CODE_VERSION;
+  const n = octets();
+  const bits = new Uint8Array(1 + n * 2);
+  bits[0] = codeVersion();
   BIT_SLOTS.forEach((slot, i) => {
     if (!slot) return; // case retirée du jeu : le bit reste à zéro
     if (owned.has(slot)) bits[1 + (i >> 3)] |= 1 << (i & 7);
-    if (mastered.has(slot)) bits[1 + OCTETS + (i >> 3)] |= 1 << (i & 7);
+    if (mastered.has(slot)) bits[1 + n + (i >> 3)] |= 1 << (i & 7);
   });
   return bytesToBase64Url(bits);
 }
@@ -134,7 +145,7 @@ export function encode(owned, mastered = new Set()) {
 export function decode(code) {
   try {
     const bytes = base64UrlToBytes(code);
-    if (!bytes.length || bytes[0] !== CODE_VERSION) return null;
+    if (!bytes.length || bytes[0] !== codeVersion()) return null;
 
     /*
      * Longueur des champs telle qu'elle était À L'ÉMISSION du code, et non
@@ -177,7 +188,8 @@ const BACKUP_FORMAT = 'sprite-tracker-backup';
 export function buildBackup(owned, mastered = new Set(), sync = null) {
   return {
     format: BACKUP_FORMAT,
-    version: CODE_VERSION,
+    version: codeVersion(),
+    saison: SAISON.id,
     exportedAt: new Date().toISOString(),
     count: owned.size,
     masteredCount: mastered.size,
@@ -201,6 +213,9 @@ export function readBackup(text) {
     return null;
   }
   if (!data || data.format !== BACKUP_FORMAT) return null;
+  // Refus explicite plutôt qu'un import qui viderait la collection : toutes les
+  // cases d'une autre saison seraient inconnues, donc écartées une à une.
+  if (data.saison && data.saison !== SAISON.id) return { autreSaison: data.saison };
 
   const valide = (s) => typeof s === 'string' && s.includes(':');
   const lireSync = (d) =>

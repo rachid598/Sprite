@@ -8,6 +8,10 @@ import {
   SPRITE_INDEX,
   DATA_DATE,
   DROP_DATE,
+  SAISONS,
+  SAISON,
+  SAISON_DEFAUT,
+  setSaison,
   unreleasedOf,
 } from './data.js';
 import { getStrings } from './i18n.js';
@@ -111,6 +115,62 @@ const COURONNE =
   '<rect x="2" y="18.5" width="20" height="3" rx="1.5" fill="currentColor"/></svg>';
 
 /* ------------------------------------------------------------- rendering */
+
+/* ------------------------------------------------------ saisons */
+
+function renderSaisons() {
+  surElement('#season-switch', (el) => {
+    el.innerHTML = SAISONS.map(
+      (s) => `<button type="button" class="season" data-saison="${s.id}"
+        aria-pressed="${s.id === SAISON.id}"
+        title="${s.nom} — ${s.encours ? t.season.current : t.season.past}">
+        <b>${s.nom}</b><span>${s.sousTitre}</span>
+      </button>`
+    ).join('');
+  });
+
+  // Une saison passée ne se collectionne plus en jeu : autant le dire.
+  surElement('#season-note', (el) => {
+    el.hidden = !!SAISON.encours;
+    el.textContent = SAISON.encours ? '' : t.season.pastNote;
+  });
+}
+
+/**
+ * Bascule de saison : chaque saison a sa propre collection, ses propres
+ * variantes et sa propre branche de synchronisation. On recharge donc tout,
+ * sans jamais toucher au stockage de l'autre saison.
+ */
+function changerSaison(id) {
+  if (id === SAISON.id) return;
+
+  setSaison(id);
+  store.savePref('saison', id);
+
+  const saved = store.load();
+  state.owned = saved.owned;
+  state.mastered = saved.mastered;
+  state.updatedAt = saved.updatedAt;
+  if (saved.migrated) store.save(state.owned, state.mastered, state.updatedAt);
+
+  // Les variantes diffèrent d'une saison à l'autre : un filtre gardé pointerait
+  // sur une variante inexistante et masquerait tout.
+  state.variants.clear();
+
+  renderSaisons();
+  renderFilters();
+  applyStrings();
+  renderAll();
+
+  // La synchro vise une autre branche : on repart de zéro pour cette saison.
+  syncState.profiles = {};
+  syncState.reconcilie = false;
+  renderSyncProfiles();
+  if (syncState.config) synchroniser({ silencieux: true });
+  if (document.body.classList.contains('is-comparing')) renderCompare();
+
+  toast(fill(t.season.switched, { '%d': SAISON.nom.replace(/\D+/g, '') }), { tone: 'ok' });
+}
 
 function renderFilters() {
   $('#rarity-filters').innerHTML = RARITIES.map(
@@ -682,6 +742,13 @@ function bindEvents() {
   });
 
   $('#lock-toggle').addEventListener('click', () => setLock(!state.locked));
+
+  surElement('#season-switch', (el) => {
+    el.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-saison]');
+      if (btn) changerSaison(btn.dataset.saison);
+    });
+  });
 
   $('#status-filters').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-status]');
@@ -1393,6 +1460,10 @@ function rappelSauvegarde() {
 async function importerSauvegarde(file) {
   const texte = await file.text();
   const lu = store.readBackup(texte);
+  if (lu && lu.autreSaison) {
+    etat(t.season.otherSeasonBackup, true);
+    return;
+  }
   if (!lu) {
     etat(t.backup.importError, true);
     return;
@@ -1571,11 +1642,15 @@ function applyStrings() {
   // Les taux d'apparition ont leur propre date : ils changent à chaque patch,
   // indépendamment du reste des données.
   surElement('#drop-source', (el) => {
-    el.textContent = fill(t.card.dropSource, { '%d': dateLisible(DROP_DATE) });
+    el.hidden = !DROP_DATE;
+    el.textContent = DROP_DATE ? fill(t.card.dropSource, { '%d': dateLisible(DROP_DATE) }) : '';
   });
 }
 
 function init() {
+  // Avant toute lecture : la saison détermine la clé de stockage.
+  setSaison(store.loadPref('saison', SAISON_DEFAUT));
+
   const saved = store.load();
   state.owned = saved.owned;
   state.mastered = saved.mastered;
@@ -1595,6 +1670,7 @@ function init() {
   });
 
   applyStrings();
+  renderSaisons();
   renderFilters();
   renderAll();
   // Silencieux : au chargement, le verrou n'est pas une nouvelle à annoncer.

@@ -8,7 +8,7 @@
  * `ability.verified` = true quand l'effet est documenté publiquement.
  */
 
-export const VARIANTS = [
+const VARIANTS_S3 = [
   { id: 'normal', accent: '#8ab4ff' },
   { id: 'gold', accent: '#f5c542' },
   { id: 'gummy', accent: '#ff7ab8' },
@@ -27,7 +27,7 @@ export const RARITIES = [
 ];
 
 /** Ordre d'affichage par défaut : rareté croissante. */
-export const SPRITES = [
+const SPRITES_S3 = [
   {
     id: 'water',
     rarity: 'rare',
@@ -268,7 +268,7 @@ export const SPRITES = [
  * Date de dernière vérification des données, affichée dans la page.
  * À changer en même temps que le contenu de SPRITES.
  */
-export const DATA_DATE = '2026-08-06';
+const DATA_DATE_S3 = '2026-08-06';
 
 /**
  * Date du relevé des taux d'apparition, distincte de DATA_DATE.
@@ -280,7 +280,7 @@ export const DATA_DATE = '2026-08-06';
  * porte `dropUnverified` et affiche « non confirmé » plutôt qu'un chiffre
  * inventé.
  */
-export const DROP_DATE = '2026-08-07';
+const DROP_DATE_S3 = '2026-08-07';
 
 /**
  * Anciens identifiants → nouveaux.
@@ -290,7 +290,7 @@ export const DROP_DATE = '2026-08-07';
  * entrée ajoutée ici est migrée automatiquement au chargement, et peut y rester
  * indéfiniment — le coût est nul.
  */
-export const RENAMES = {
+const RENAMES_S3 = {
   // ancien: 'nouveau'
   knight: 'batman',
   striker11: 'vinijr',
@@ -306,7 +306,7 @@ export const RENAMES = {
 };
 
 /** Variantes renommées, même principe. */
-export const VARIANT_RENAMES = {
+const VARIANT_RENAMES_S3 = {
   basic: 'normal',
   candy: 'gummy',
   holo: 'holofoil',
@@ -330,31 +330,13 @@ export function migrateSlot(slot) {
   return `${s}:${v}`;
 }
 
-export const RARITY_INDEX = Object.fromEntries(RARITIES.map((r, i) => [r.id, { ...r, order: i }]));
-export const VARIANT_INDEX = Object.fromEntries(VARIANTS.map((v, i) => [v.id, { ...v, order: i }]));
-export const SPRITE_INDEX = Object.fromEntries(SPRITES.map((s) => [s.id, s]));
-
-/** Variantes non publiées d'un Sprite (tableau vide par défaut). */
-export const unreleasedOf = (sprite) => sprite.unreleased || [];
-
-/** Nombre de cases comptant dans la progression, hors variantes non publiées. */
-export const TOTAL_SLOTS = SPRITES.reduce((n, s) => n + s.variants.length, 0);
 
 /**
- * Ordre historique des bits des codes de partage. **Figé.**
- *
- * Déduire cet ordre de SPRITES serait une erreur : ajouter une variante à un
- * Sprite du milieu de la liste décalerait tous les bits suivants, et un ancien
- * lien de partage se décoderait alors sur les mauvais Sprites — une corruption
- * silencieuse, pire qu'une perte visible.
- *
- * Règles : ne jamais réordonner, ne jamais retirer une ligne. Une case retirée
- * du jeu garde sa place — elle est simplement ignorée au décodage. Les cases
- * absentes d'ici sont ajoutées en fin de `ALL_SLOTS`, ce qui rend l'oubli sans
- * conséquence ; `node tools/check-data.mjs` le signale et affiche la liste à
- * jour à recopier.
+ * Ordre historique des bits des codes de partage de la Saison 3. **Figé.**
+ * Ne jamais réordonner ni retirer une ligne : une case retirée du jeu garde sa
+ * place et est simplement ignorée au décodage.
  */
-export const SLOT_ORDER = [
+const SLOT_ORDER_S3 = [
   'water:normal', 'water:gold', 'water:gummy', 'water:galaxy',
   'water:holofoil', 'water:quack', 'earth:normal', 'earth:gold',
   'earth:gummy', 'earth:galaxy', 'earth:cube', 'earth:quack',
@@ -387,20 +369,267 @@ export const SLOT_ORDER = [
   'zeropoint:gem', 'ironmouse:normal',
 ];
 
+/* ==================================================================== */
+/*  Saison 4 — « Override », sortie le 20 août 2026                     */
+/* ==================================================================== */
+
 /**
- * Ordre des bits effectivement utilisé : l'historique, puis les cases apparues
- * depuis. Les nouveautés se retrouvent donc toujours à la fin.
+ * Variantes de la Saison 4. « Cheat Master » est inédite ; Gélifié, Galaxie,
+ * Gemme, Iridescent, Cube et Canardesque n'existent pas dans cette saison.
  */
-export const ALL_SLOTS = [
-  ...SLOT_ORDER,
-  ...[
-    ...SPRITES.flatMap((s) => s.variants.map((v) => `${s.id}:${v}`)),
-    ...SPRITES.flatMap((s) => unreleasedOf(s).map((v) => `${s.id}:${v}`)),
-  ].filter((slot) => !SLOT_ORDER.includes(slot) && !SLOT_ORDER.some((o) => migrateSlot(o) === slot)),
+const VARIANTS_S4 = [
+  { id: 'normal', accent: '#8ab4ff' },
+  { id: 'gold', accent: '#f5c542' },
+  { id: 'cheatmaster', accent: '#4ade80' },
 ];
 
 /**
- * Case courante correspondant à chaque bit : `null` si elle a disparu du jeu.
- * Passer par `migrateSlot` fait suivre les renommages sans toucher à l'ordre.
+ * Dix Sprites au lancement, trois finitions chacun — trente cases.
+ *
+ * Deux autres (Shadow, Storm Scout) ne sont annoncés que par une seule source :
+ * ils attendent confirmation plutôt que de gonfler un total inatteignable.
+ * Cinq Sprites communautaires sont annoncés pour le milieu de saison : Bullet,
+ * Dumpster Dive, Honey, Pond et X-Ray.
+ *
+ * Aucun taux d'apparition n'est publié à ce stade : tous portent
+ * `dropUnverified`. `dropRate` ne sert alors qu'au tri, par rareté décroissante.
  */
-export const BIT_SLOTS = ALL_SLOTS.map(migrateSlot);
+const SPRITES_S4 = [
+  {
+    id: 'bush',
+    rarity: 'rare',
+    dropRate: 9,
+    dropUnverified: true,
+    shape: 'leaf',
+    palette: ['#8fd66a', '#2f6b2a'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'eightbit',
+    rarity: 'rare',
+    dropRate: 8.9,
+    dropUnverified: true,
+    shape: 'shield',
+    palette: ['#7ad9ff', '#3b2a8c'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'adventure',
+    rarity: 'rare',
+    dropRate: 8.8,
+    dropUnverified: true,
+    shape: 'orb',
+    palette: ['#ffc978', '#a2571c'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'jonesy',
+    rarity: 'rare',
+    dropRate: 8.7,
+    dropUnverified: true,
+    shape: 'suit',
+    palette: ['#9fd0ff', '#2a4f86'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'sonic',
+    rarity: 'epic',
+    dropRate: 6.5,
+    dropUnverified: true,
+    shape: 'bolt',
+    palette: ['#3aa0ff', '#123a86'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'tails',
+    rarity: 'epic',
+    dropRate: 6.4,
+    dropUnverified: true,
+    shape: 'swirl',
+    palette: ['#ffce5c', '#c07a12'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'killswitch',
+    rarity: 'epic',
+    dropRate: 6.3,
+    dropUnverified: true,
+    shape: 'bat',
+    palette: ['#ff6b6b', '#2a1020'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'jackrabbit',
+    rarity: 'legendary',
+    dropRate: 4.4,
+    dropUnverified: true,
+    shape: 'llama',
+    palette: ['#7de88a', '#1d6b3c'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'crown',
+    rarity: 'mythic',
+    dropRate: 2.2,
+    dropUnverified: true,
+    shape: 'crown',
+    palette: ['#ffe07a', '#c48a11'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'klombo',
+    rarity: 'mythic',
+    dropRate: 2.1,
+    dropUnverified: true,
+    shape: 'fish',
+    palette: ['#9db8ff', '#3b3a8c'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    noArt: true,
+    ability: { verified: true },
+  },
+];
+
+const DATA_DATE_S4 = '2026-08-20';
+const DROP_DATE_S4 = ''; // aucun relevé publié le jour du lancement
+
+const RENAMES_S4 = {};
+const VARIANT_RENAMES_S4 = {};
+
+/** Ordre historique des bits, figé dès le premier jour. Voir SLOT_ORDER_S3. */
+const SLOT_ORDER_S4 = [
+  'bush:normal', 'bush:gold', 'bush:cheatmaster',
+  'eightbit:normal', 'eightbit:gold', 'eightbit:cheatmaster',
+  'adventure:normal', 'adventure:gold', 'adventure:cheatmaster',
+  'jonesy:normal', 'jonesy:gold', 'jonesy:cheatmaster',
+  'sonic:normal', 'sonic:gold', 'sonic:cheatmaster',
+  'tails:normal', 'tails:gold', 'tails:cheatmaster',
+  'killswitch:normal', 'killswitch:gold', 'killswitch:cheatmaster',
+  'jackrabbit:normal', 'jackrabbit:gold', 'jackrabbit:cheatmaster',
+  'crown:normal', 'crown:gold', 'crown:cheatmaster',
+  'klombo:normal', 'klombo:gold', 'klombo:cheatmaster',
+];
+
+/* ==================================================================== */
+/*  Registre des saisons                                                */
+/* ==================================================================== */
+
+/**
+ * Une saison = un jeu de Sprites, sa propre collection, son propre stockage.
+ *
+ * `cle` ne doit JAMAIS changer : c'est sous ce nom que la collection est
+ * enregistrée dans le navigateur. Celle de la Saison 3 conserve le nom
+ * historique du projet, sans quoi les collections existantes deviendraient
+ * invisibles du jour au lendemain.
+ *
+ * `codeVersion` est l'octet de tête des codes de partage : il diffère par
+ * saison, donc un lien d'une saison ne peut pas être relu comme une autre.
+ */
+export const SAISONS = [
+  {
+    id: 's4',
+    nom: 'Saison 4',
+    sousTitre: 'Override',
+    cle: 'spiritdex:s4',
+    codeVersion: 4,
+    encours: true,
+    sprites: SPRITES_S4,
+    variants: VARIANTS_S4,
+    renames: RENAMES_S4,
+    variantRenames: VARIANT_RENAMES_S4,
+    slotOrder: SLOT_ORDER_S4,
+    dataDate: DATA_DATE_S4,
+    dropDate: DROP_DATE_S4,
+  },
+  {
+    id: 's3',
+    nom: 'Saison 3',
+    sousTitre: 'Sprites',
+    cle: 'sprite-tracker:v3', // historique : ne jamais renommer
+    codeVersion: 3,
+    encours: false,
+    sprites: SPRITES_S3,
+    variants: VARIANTS_S3,
+    renames: RENAMES_S3,
+    variantRenames: VARIANT_RENAMES_S3,
+    slotOrder: SLOT_ORDER_S3,
+    dataDate: DATA_DATE_S3,
+    dropDate: DROP_DATE_S3,
+  },
+];
+
+export const SAISON_DEFAUT = 's4';
+export const getSaison = (id) => SAISONS.find((s) => s.id === id) || SAISONS[0];
+
+/*
+ * Ces liaisons sont volontairement `let` : les modules ES les exposent de façon
+ * vive, si bien que changer de saison ici met à jour tous les fichiers qui les
+ * importent, sans qu'aucun n'ait à être modifié.
+ */
+export let SAISON = SAISONS[0];
+export let SPRITES = [];
+export let VARIANTS = [];
+export let RENAMES = {};
+export let VARIANT_RENAMES = {};
+export let DATA_DATE = '';
+export let DROP_DATE = '';
+export let SPRITE_INDEX = {};
+export let VARIANT_INDEX = {};
+export let TOTAL_SLOTS = 0;
+export let ALL_SLOTS = [];
+export let BIT_SLOTS = [];
+export let SLOT_ORDER = [];
+
+export const RARITY_INDEX = Object.fromEntries(RARITIES.map((r, i) => [r.id, { ...r, order: i }]));
+
+/** Variantes non publiées d'un Sprite (tableau vide par défaut). */
+export const unreleasedOf = (sprite) => sprite.unreleased || [];
+
+/** Bascule sur une saison et recalcule tout ce qui en dépend. */
+export function setSaison(id) {
+  SAISON = getSaison(id);
+
+  SPRITES = SAISON.sprites;
+  VARIANTS = SAISON.variants;
+  RENAMES = SAISON.renames;
+  VARIANT_RENAMES = SAISON.variantRenames;
+  DATA_DATE = SAISON.dataDate;
+  DROP_DATE = SAISON.dropDate;
+  SLOT_ORDER = SAISON.slotOrder;
+
+  SPRITE_INDEX = Object.fromEntries(SPRITES.map((s) => [s.id, s]));
+  VARIANT_INDEX = Object.fromEntries(VARIANTS.map((v, i) => [v.id, { ...v, order: i }]));
+  TOTAL_SLOTS = SPRITES.reduce((n, s) => n + s.variants.length, 0);
+
+  // Ordre figé d'abord, puis les cases apparues depuis — voir SLOT_ORDER_S3.
+  const courantes = [
+    ...SPRITES.flatMap((s) => s.variants.map((v) => `${s.id}:${v}`)),
+    ...SPRITES.flatMap((s) => unreleasedOf(s).map((v) => `${s.id}:${v}`)),
+  ];
+  ALL_SLOTS = [
+    ...SLOT_ORDER,
+    ...courantes.filter((slot) => !SLOT_ORDER.includes(slot) && !SLOT_ORDER.some((o) => migrateSlot(o) === slot)),
+  ];
+  BIT_SLOTS = ALL_SLOTS.map(migrateSlot);
+
+  return SAISON;
+}
+
+setSaison(SAISON_DEFAUT);

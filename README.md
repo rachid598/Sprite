@@ -7,8 +7,12 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 
 ## Fonctionnalités
 
-- **Checklist** — une case par couple Sprite × variante (117 cases pour 25 Sprites,
-  toutes sorties en jeu depuis la vague Gemme du 6 août 2026).
+- **Deux saisons** — un sélecteur dans l'en-tête bascule entre la Saison 4
+  (*Override*, 10 Sprites / 30 cases) et la Saison 3 (25 Sprites / 117 cases).
+  Chaque saison a sa collection, ses variantes, son stockage et sa branche de
+  synchronisation : rien ne se mélange, rien ne s'écrase.
+- **Checklist** — une case par couple Sprite × variante, propre à la saison
+  affichée.
 - **Progression** — pourcentage global, Sprites débloqués, collections complétées.
 - **Filtres** — statut (tous / possédés / manquants / maîtrisés), rareté, variante,
   recherche texte, tri par rareté, nom, progression, maîtrise ou taux d'apparition.
@@ -79,6 +83,39 @@ Les modules ES nécessitent un serveur HTTP (pas d'ouverture en `file://`) :
 npx http-server -p 8000 .
 # puis http://127.0.0.1:8000/fr/
 ```
+
+## Saisons
+
+`assets/js/data.js` définit `SAISONS` : chaque entrée porte ses Sprites, ses
+variantes, son ordre de bits figé, sa clé de stockage et son octet de version.
+
+Les exports (`SPRITES`, `TOTAL_SLOTS`, `ALL_SLOTS`…) sont des `let` : les modules
+ES les exposent de façon **vive**, si bien que `setSaison(id)` met à jour tous
+les fichiers qui les importent sans qu'aucun n'ait à être modifié.
+
+Trois règles pour ne rien casser :
+
+- **`cle` ne change jamais.** C'est le nom sous lequel la collection est
+  enregistrée dans le navigateur. Celle de la Saison 3 garde le nom historique
+  du projet (`sprite-tracker:v3`) ; la renommer rendrait les collections
+  existantes invisibles, sans message d'erreur.
+- **`codeVersion` vaut le numéro de la saison.** Un lien de partage émis dans
+  une saison est donc refusé dans une autre, au lieu de produire une collection
+  absurde. Même principe pour les sauvegardes `.json`, qui portent leur saison.
+- **La Saison 3 garde son chemin de synchronisation** (`/profiles/…`). Les
+  saisons suivantes vivent sous `/saisons/<id>/profiles/…` : un appareil resté
+  en ancienne version continue de synchroniser la Saison 3 et ne peut pas
+  toucher aux autres.
+
+### Ajouter une saison
+
+1. Définir `SPRITES_Sn`, `VARIANTS_Sn`, `SLOT_ORDER_Sn` (figé dès le premier
+   jour), `RENAMES_Sn`, `VARIANT_RENAMES_Sn`, `DATA_DATE_Sn`, `DROP_DATE_Sn`.
+2. Ajouter l'entrée **en tête** de `SAISONS` avec une `cle` neuve et une
+   `codeVersion` inédite, et passer `encours: false` sur la précédente.
+3. Mettre `SAISON_DEFAUT` sur la nouvelle saison.
+4. Ajouter noms et effets dans `assets/js/i18n.js`, puis lancer
+   `node tools/check-data.mjs` — il contrôle chaque saison séparément.
 
 ## Mettre à jour les données du jeu
 

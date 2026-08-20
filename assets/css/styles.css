@@ -89,6 +89,10 @@ a {
   align-items: center;
   gap: 1.25rem;
   min-height: 64px;
+  /* Marque, sélecteur de saison et navigation : sur petit écran la rangée
+     déborderait, on la laisse passer à la ligne. */
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
 }
 
 .brand {
@@ -131,6 +135,91 @@ a {
 
 .site-nav .lang {
   border: 1px solid var(--line);
+}
+
+/* ------------------------------------------------------------- saisons */
+
+.seasons {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.season {
+  display: grid;
+  gap: 0.05rem;
+  padding: 0.3rem 0.7rem;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.season b {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.season span {
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.season:hover {
+  color: var(--text);
+}
+
+.season[aria-pressed='true'] {
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  color: #080c16;
+}
+
+/* Rappel affiché quand on consulte une saison terminée. */
+.season-note {
+  margin-bottom: 1.25rem;
+  padding: 0.6rem 0.85rem;
+  border-left: 3px solid var(--accent-2);
+  background: rgba(176, 107, 255, 0.09);
+  border-radius: 0 10px 10px 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 640px) {
+  .season span {
+    display: none; /* l'en-tête est déjà dense : on garde « Saison 4 » seul */
+  }
+
+  .season {
+    padding: 0.4rem 0.6rem;
+  }
+
+  /* Marque et saisons sur la première ligne, navigation sur la seconde. */
+  .site-header .wrap {
+    gap: 0.6rem;
+    padding-block: 0.5rem;
+  }
+
+  .site-nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.15rem;
+  }
+
+  .site-nav a {
+    padding: 0.4rem 0.35rem;
+    font-size: 0.86rem;
+  }
 }
 
 /* ----------------------------------------------------------------- hero */

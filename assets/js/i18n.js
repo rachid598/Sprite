@@ -6,6 +6,15 @@ const fr = {
     description:
       'Cochez vos Sprites et vos variantes, suivez votre progression, trouvez des partenaires d\'échange. Gratuit, sans compte, tout reste sur votre appareil.',
   },
+  season: {
+    label: 'Saison',
+    current: 'en cours',
+    past: 'terminée',
+    switched: 'Saison %d affichée.',
+    pastNote:
+      'Ces Sprites ne se trouvent plus en partie : la collection reste consultable et modifiable, mais elle n\'évoluera plus.',
+    otherSeasonBackup: 'Cette sauvegarde vient d\'une autre saison. Basculez dessus avant de l\'importer.',
+  },
   nav: {
     collection: 'Ma collection',
     backup: 'Sauvegarde',
@@ -94,6 +103,7 @@ const fr = {
     holofoil: 'Iridescent',
     cube: 'Cube',
     quack: 'Canardesque',
+    cheatmaster: 'Cheat Master',
   },
   /*
    * Effets propres à une variante, cumulables avec celui du Sprite. Une clé
@@ -129,6 +139,18 @@ const fr = {
     johnwick: 'Révèle les ennemis proches quand vous mettez un joueur à terre.',
     ironmouse:
       'Régénère vos points de vie quand ils sont bas ; pendant la régénération, vous êtes furtif et en gravité réduite.',
+
+    // Saison 4
+    bush: 'Fait apparaître un buisson sur vous après un délai ; au niveau maximum, un buisson à chaque élimination.',
+    eightbit: 'Un fusil à pompe 8-Bit dans votre premier coffre, avec un multiplicateur.',
+    adventure: 'Améliore un objet aléatoire de votre inventaire à chaque niveau.',
+    jonesy: 'Après un court délai, régénère des PV ou du bouclier une fois que vous avez subi des dégâts.',
+    sonic: 'Course plus rapide.',
+    tails: 'Permet de planer dans les airs.',
+    killswitch: 'Entre en Hangtime avec une meilleure précision.',
+    jackrabbit: 'Permet un second saut en plein vol.',
+    crown: 'Octroie des victoires couronnées supplémentaires après une Victoire Royale ; ne monte en niveau qu\'en gagnant des parties.',
+    klombo: 'Offre des objets aléatoires à chaque niveau.',
   },
   name: {
     water: 'Eau',
@@ -156,6 +178,18 @@ const fr = {
     pollo: 'Pollo',
     johnwick: 'John Wick',
     ironmouse: 'Ironmouse',
+
+    // Saison 4 — noms repris des sources, aucune localisation française publiée
+    bush: 'Bush',
+    eightbit: '8-Bit',
+    adventure: 'Adventure',
+    jonesy: 'Jonesy',
+    sonic: 'Sonic',
+    tails: 'Tails',
+    killswitch: 'Killswitch',
+    jackrabbit: 'Jazz Jackrabbit',
+    crown: 'Crown',
+    klombo: 'Klombo',
   },
   backup: {
     heading: 'Sauvegarde et installation',
