@@ -11,12 +11,12 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const racine = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const D = await import(path.join(racine, 'assets/js/data.js'));
+const D = await import(pathToFileURL(path.join(racine, 'assets/js/data.js')).href);
 const { SAISONS, setSaison, migrateSlot, unreleasedOf } = D;
-const { getStrings } = await import(path.join(racine, 'assets/js/i18n.js'));
+const { getStrings } = await import(pathToFileURL(path.join(racine, 'assets/js/i18n.js')).href);
 const t = getStrings();
 
 let problemes = 0;

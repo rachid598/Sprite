@@ -1,5 +1,6 @@
 /*
- * Base de données des Sprites — 25 Sprites, 117 cases publiées (Sprite × variante).
+ * Base de données des Sprites — Saison 3 : 25 Sprites / 117 cases ;
+ * Saison 4 : 12 Sprites / 36 cases publiées (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
  * `variants` liste les variantes disponibles en jeu pour ce Sprite.
@@ -403,7 +404,6 @@ const SPRITES_S4 = [
     shape: 'bush',
     palette: ['#8fd66a', '#2f6b2a'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -414,7 +414,6 @@ const SPRITES_S4 = [
     shape: 'pixel',
     palette: ['#7ad9ff', '#3b2a8c'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -425,7 +424,6 @@ const SPRITES_S4 = [
     shape: 'shield',
     palette: ['#ffc978', '#a2571c'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -436,7 +434,6 @@ const SPRITES_S4 = [
     shape: 'suit',
     palette: ['#9fd0ff', '#2a4f86'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -447,7 +444,6 @@ const SPRITES_S4 = [
     shape: 'swirl',
     palette: ['#8f7bff', '#2a1a6b'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -458,7 +454,6 @@ const SPRITES_S4 = [
     shape: 'spike',
     palette: ['#3aa0ff', '#123a86'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -469,7 +464,6 @@ const SPRITES_S4 = [
     shape: 'tail',
     palette: ['#ffce5c', '#c07a12'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -480,7 +474,6 @@ const SPRITES_S4 = [
     shape: 'bolt',
     palette: ['#ff6b6b', '#2a1020'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -491,7 +484,6 @@ const SPRITES_S4 = [
     shape: 'spike',
     palette: ['#6b6f7d', '#1a1020'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -502,7 +494,6 @@ const SPRITES_S4 = [
     shape: 'rabbit',
     palette: ['#7de88a', '#1d6b3c'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -513,7 +504,6 @@ const SPRITES_S4 = [
     shape: 'crown',
     palette: ['#ffe07a', '#c48a11'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -524,7 +514,6 @@ const SPRITES_S4 = [
     shape: 'dino',
     palette: ['#9db8ff', '#3b3a8c'],
     variants: ['normal', 'gold', 'cheatmaster'],
-    noArt: true,
     ability: { verified: true },
   },
 ];
