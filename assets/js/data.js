@@ -541,6 +541,40 @@ const SLOT_ORDER_S4 = [
   'shadow:normal', 'shadow:gold', 'shadow:cheatmaster',
 ];
 
+/**
+ * Codes du panneau admin, à saisir dans le lobby — un usage par compte.
+ *
+ * `id` sert de clé de stockage : ne jamais le renommer une fois publié. `code`
+ * est la graphie affichée et copiée. `region` signale les codes diffusés par
+ * pays, qui n'apparaissent pas dans les relevés anglophones.
+ *
+ * La liste s'allonge au fil de la saison : ajouter en fin ne touche à rien.
+ */
+const CODES_S4 = [
+  { id: 'overridexp', code: 'OverrideXP' },
+  { id: 'iwannaflyhigh', code: 'IWannaFlyHigh' },
+  { id: 'gottagofast', code: 'GottaGoFast' },
+  { id: 'born2play', code: 'Born2Play' },
+  { id: 'eightbitblast', code: '8BitBlast' },
+  { id: 'takeyourheart', code: 'TakeYourHeart' },
+  { id: 'perfectorder', code: 'PerfectOrder' },
+  { id: 'o2override', code: 'O2Override' },
+  { id: 'survivethenight', code: 'SurviveTheNight' },
+  { id: 'letsblockandroll', code: 'LetsBlockAndRoll' },
+  { id: 'dontblockme', code: 'DontBlockMe' },
+  { id: 'bemorealien', code: 'BeMoreAlien' },
+  { id: 'reachyourimpossible', code: 'ReachYourImpossible' },
+  { id: 'magilume', code: 'Magilume' },
+  { id: 'perlimpinpin', code: 'Perlimpinpin', region: 'France' },
+  { id: 'chispambo', code: 'Chispambo', region: 'Espagne' },
+  { id: 'abgestaubt', code: 'Abgestaubt', region: 'Allemagne' },
+  // Vu en jeu, absent de tous les relevés publics : récompense non confirmée.
+  { id: 'finditchat', code: 'FindItChat', rewardUnknown: true },
+];
+
+/** La Saison 3 n'avait pas de panneau admin. */
+const CODES_S3 = [];
+
 /* ==================================================================== */
 /*  Registre des saisons                                                */
 /* ==================================================================== */
@@ -571,6 +605,8 @@ export const SAISONS = [
     slotOrder: SLOT_ORDER_S4,
     dataDate: DATA_DATE_S4,
     dropDate: DROP_DATE_S4,
+    codes: CODES_S4,
+    cleCodes: 'spiritdex:codes:s4',
   },
   {
     id: 's3',
@@ -586,6 +622,8 @@ export const SAISONS = [
     slotOrder: SLOT_ORDER_S3,
     dataDate: DATA_DATE_S3,
     dropDate: DROP_DATE_S3,
+    codes: CODES_S3,
+    cleCodes: 'spiritdex:codes:s3',
   },
 ];
 
@@ -610,6 +648,7 @@ export let TOTAL_SLOTS = 0;
 export let ALL_SLOTS = [];
 export let BIT_SLOTS = [];
 export let SLOT_ORDER = [];
+export let CODES = [];
 
 export const RARITY_INDEX = Object.fromEntries(RARITIES.map((r, i) => [r.id, { ...r, order: i }]));
 
@@ -627,6 +666,7 @@ export function setSaison(id) {
   DATA_DATE = SAISON.dataDate;
   DROP_DATE = SAISON.dropDate;
   SLOT_ORDER = SAISON.slotOrder;
+  CODES = SAISON.codes;
 
   SPRITE_INDEX = Object.fromEntries(SPRITES.map((s) => [s.id, s]));
   VARIANT_INDEX = Object.fromEntries(VARIANTS.map((v, i) => [v.id, { ...v, order: i }]));

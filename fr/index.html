@@ -115,6 +115,7 @@
     <nav class="site-nav" aria-label="Navigation principale">
       <a href="#collection" data-t="nav.collection">Ma collection</a>
       <a href="#comparer" data-t="nav.compare">Comparer</a>
+      <a href="#codes" data-t="nav.codes">Codes</a>
       <a href="#sauvegarde" data-t="nav.backup">Sauvegarde</a>
       <a href="#synchro" data-t="nav.sync">Synchro</a>
     </nav>
@@ -281,6 +282,22 @@
     </div>
   </section>
 
+
+  <section class="section" id="codes" hidden>
+    <div class="wrap">
+      <div class="section__head">
+        <h2 data-t="codes.heading">Codes du panneau admin</h2>
+        <p><b id="codes-progress">0 / 0</b></p>
+      </div>
+      <p class="season-note" data-t="codes.intro"></p>
+
+      <div class="panel toolbar">
+        <div class="toolbar__row" id="codes-filters" role="group"></div>
+      </div>
+
+      <div class="codes" id="codes-list"></div>
+    </div>
+  </section>
 
   <section class="section" id="sauvegarde">
     <div class="wrap">

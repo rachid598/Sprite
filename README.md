@@ -1,7 +1,7 @@
 # Spiritdex
 
-Traqueur de collection pour les Sprites de Fortnite, en français. Quatre onglets :
-Ma collection, Comparer, Sauvegarde, Synchro.
+Traqueur de collection pour les Sprites de Fortnite, en français. Cinq onglets :
+Ma collection, Comparer, Codes, Sauvegarde, Synchro.
 
 Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le navigateur.
 
@@ -13,6 +13,10 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   synchronisation : rien ne se mélange, rien ne s'écrase.
 - **Checklist** — une case par couple Sprite × variante, propre à la saison
   affichée.
+- **Codes du panneau admin** — onglet dédié à la Saison 4 : les 18 codes du
+  lobby avec leur récompense, un clic pour marquer un code comme saisi, filtres
+  tous / utilisés / restants, bouton de copie. Stockage séparé par saison et
+  synchronisé avec les autres appareils.
 - **Progression** — pourcentage global, Sprites débloqués, collections complétées.
 - **Filtres** — statut (tous / possédés / manquants / maîtrisés), rareté, variante,
   recherche texte, tri par rareté, nom, progression, maîtrise ou taux d'apparition.

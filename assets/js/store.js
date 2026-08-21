@@ -7,7 +7,7 @@
  * ALL_SLOTS ne l'est pas — d'où l'octet de version.
  */
 
-import { BIT_SLOTS, SAISON, migrateSlot } from './data.js';
+import { BIT_SLOTS, CODES, SAISON, migrateSlot } from './data.js';
 
 /*
  * Chaque saison a sa propre collection, donc sa propre clé — définie dans
@@ -78,6 +78,35 @@ export function save(owned, mastered = new Set(), updatedAt = Date.now()) {
     /* mode privé ou quota plein : la session reste utilisable en mémoire */
   }
   return payload.updatedAt;
+}
+
+/* ------------------------------------------------------ codes du lobby */
+
+/**
+ * Codes déjà saisis, par saison. Stockés à part de la collection : ils n'ont
+ * ni variante ni niveau, et un code retiré de la liste ne doit pas faire
+ * disparaître le reste.
+ *
+ * Un identifiant inconnu est écarté à la lecture — même principe que
+ * `migrateSlot` : la liste peut s'allonger ou perdre une entrée sans casser
+ * ce qui est enregistré.
+ */
+export function loadCodes() {
+  try {
+    const brut = JSON.parse(localStorage.getItem(SAISON.cleCodes) || '{}');
+    const connus = new Set(CODES.map((c) => c.id));
+    return new Set((Array.isArray(brut.used) ? brut.used : []).filter((id) => connus.has(id)));
+  } catch {
+    return new Set();
+  }
+}
+
+export function saveCodes(used) {
+  try {
+    localStorage.setItem(SAISON.cleCodes, JSON.stringify({ used: [...used] }));
+  } catch {
+    /* stockage indisponible : la session reste utilisable en mémoire */
+  }
 }
 
 const PREF_KEY = 'sprite-tracker:prefs';

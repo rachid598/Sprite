@@ -365,6 +365,94 @@ a {
   font-size: 0.86rem;
 }
 
+/* --------------------------------------------------- codes du lobby */
+
+.codes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.9rem;
+}
+
+.code {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+}
+
+.code.is-used {
+  border-color: color-mix(in srgb, var(--ok) 45%, transparent);
+  background: linear-gradient(180deg, rgba(85, 227, 155, 0.09), var(--panel-2));
+}
+
+.code__state {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 0;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+}
+
+/* Case à cocher dessinée : deux états seulement, saisi ou non. */
+.code__tick {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--line);
+  border-radius: 7px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #08120c;
+}
+
+.code.is-used .code__tick {
+  background: var(--ok);
+  border-color: transparent;
+}
+
+.code__name {
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: 0.01em;
+  word-break: break-word;
+}
+
+.code.is-used .code__name {
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--ok) 70%, transparent);
+  color: var(--muted);
+}
+
+.code__reward {
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.code__reward.is-muted {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.code__region {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.code__copy {
+  justify-self: start;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+}
+
 /* --------------------------------------------------------------- panels */
 
 .section {

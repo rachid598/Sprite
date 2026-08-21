@@ -159,6 +159,7 @@ export async function pull(config) {
       name: typeof p.name === 'string' ? p.name.slice(0, 40) : id,
       owned,
       mastered,
+      codes: Array.isArray(p.codes) ? p.codes.filter((c) => typeof c === 'string') : [],
       count: owned.length,
       updatedAt: Number(p.updatedAt) || 0,
     };
@@ -167,11 +168,12 @@ export async function pull(config) {
 }
 
 /** Envoie la collection locale sous notre profil. */
-export async function push(config, owned, mastered, updatedAt) {
+export async function push(config, owned, mastered, updatedAt, codes = new Set()) {
   const corps = {
     name: config.profile,
     owned: [...owned],
     mastered: [...mastered].filter((s) => owned.has(s)),
+    codes: [...codes],
     count: owned.size,
     updatedAt: updatedAt || Date.now(),
   };

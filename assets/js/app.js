@@ -8,6 +8,7 @@ import {
   SPRITE_INDEX,
   DATA_DATE,
   DROP_DATE,
+  CODES,
   SAISONS,
   SAISON,
   SAISON_DEFAUT,
@@ -39,6 +40,8 @@ const state = {
   // Verrou d'édition : protège la collection des clics involontaires pendant
   // qu'on parcourt la grille. N'affecte que la saisie, jamais l'affichage.
   locked: false,
+  codes: new Set(), // codes du lobby déjà saisis
+  codeFilter: 'all', // all | used | left
   updatedAt: 0, // date du dernier changement local, sert d'arbitre a la synchro
 };
 
@@ -116,6 +119,106 @@ const COURONNE =
 
 /* ------------------------------------------------------------- rendering */
 
+
+/* -------------------------------------------------- codes du lobby */
+
+/**
+ * Les codes n'ont que deux états — saisi ou non. Ils vivent dans leur propre
+ * stockage, mais partagent l'horodatage de la collection : la synchro n'arbitre
+ * qu'une version par profil, et un code coché doit remonter comme le reste.
+ */
+function commitCodes() {
+  store.saveCodes(state.codes);
+  state.updatedAt = store.save(state.owned, state.mastered);
+  renderCodes();
+  pousserPlusTard();
+}
+
+function toggleCode(id) {
+  if (state.codes.has(id)) state.codes.delete(id);
+  else state.codes.add(id);
+  commitCodes();
+}
+
+function renderCodes() {
+  const section = $('#codes');
+  if (!section) return;
+
+  // Une saison sans panneau admin n'affiche ni l'onglet ni la section.
+  const aDesCodes = CODES.length > 0;
+  section.hidden = !aDesCodes;
+  $$('.site-nav a[href="#codes"]').forEach((a) => (a.hidden = !aDesCodes));
+  if (!aDesCodes) return;
+
+  const utilises = CODES.filter((c) => state.codes.has(c.id)).length;
+  surElement('#codes-progress', (el) => {
+    el.textContent = fill(t.codes.progress, { '%o': utilises, '%t': CODES.length });
+  });
+
+  surElement('#codes-filters', (el) => {
+    const cat = [['all', t.codes.filterAll], ['used', t.codes.filterUsed], ['left', t.codes.filterLeft]];
+    el.innerHTML = cat
+      .map(
+        ([id, libelle]) => `<button type="button" class="btn" data-code-filter="${id}"
+          aria-pressed="${state.codeFilter === id}">${libelle}</button>`
+      )
+      .join('');
+  });
+
+  const visibles = CODES.filter((c) => {
+    if (state.codeFilter === 'used') return state.codes.has(c.id);
+    if (state.codeFilter === 'left') return !state.codes.has(c.id);
+    return true;
+  });
+
+  const html = visibles
+    .map((c) => {
+      const fait = state.codes.has(c.id);
+      const gain = c.rewardUnknown ? t.codes.rewardUnknown : t.codeReward[c.id] || t.codes.rewardUnknown;
+      return `<article class="code${fait ? ' is-used' : ''}" data-code="${c.id}">
+        <button type="button" class="code__state" data-code-toggle="${c.id}"
+          aria-pressed="${fait}" title="${fait ? t.codes.markUnused : t.codes.markUsed}">
+          <span class="code__tick" aria-hidden="true">${fait ? '✓' : ''}</span>
+          <span class="code__name">${c.code}</span>
+        </button>
+        <p class="code__reward${c.rewardUnknown ? ' is-muted' : ''}">${gain}</p>
+        ${c.region ? `<p class="code__region">${fill(t.codes.regionHint, { '%d': c.region })}</p>` : ''}
+        <button type="button" class="btn btn--ghost code__copy" data-code-copy="${c.code}">${t.codes.copy}</button>
+      </article>`;
+    })
+    .join('');
+
+  surElement('#codes-list', (el) => {
+    el.innerHTML = html || `<p class="empty">${t.codes.empty}</p>`;
+  });
+}
+
+function bindCodes() {
+  surElement('#codes-list', (el) => {
+    el.addEventListener('click', async (e) => {
+      const copier = e.target.closest('[data-code-copy]');
+      if (copier) {
+        if (await copyText(copier.dataset.codeCopy)) flash(copier, t.codes.copied);
+        return;
+      }
+      const bascule = e.target.closest('[data-code-toggle]');
+      if (!bascule) return;
+      // Le verrou protège aussi cette liste : même geste, mêmes conséquences.
+      if (state.locked) return signalerVerrou();
+      toggleCode(bascule.dataset.codeToggle);
+    });
+  });
+
+  surElement('#codes-filters', (el) => {
+    el.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-code-filter]');
+      if (!btn) return;
+      state.codeFilter = btn.dataset.codeFilter;
+      renderCodes();
+    });
+  });
+}
+
 /* ------------------------------------------------------ saisons */
 
 function renderSaisons() {
@@ -151,6 +254,7 @@ function changerSaison(id) {
   state.owned = saved.owned;
   state.mastered = saved.mastered;
   state.updatedAt = saved.updatedAt;
+  state.codes = store.loadCodes();
   if (saved.migrated) store.save(state.owned, state.mastered, state.updatedAt);
 
   // Les variantes diffèrent d'une saison à l'autre : un filtre gardé pointerait
@@ -389,6 +493,7 @@ function renderAll() {
   renderGrid();
   renderProgress();
   renderTrade();
+  renderCodes();
 }
 
 function commit() {
@@ -642,7 +747,7 @@ function exportImage() {
 
 /* ------------------------------------------------- import depuis un lien */
 
-function showImportDialog(incoming, incomingUpdatedAt = 0, incomingMastered = new Set()) {
+function showImportDialog(incoming, incomingUpdatedAt = 0, incomingMastered = new Set(), incomingCodes = null) {
   const dialog = $('#import-dialog');
   $('#import-compare').textContent = fill(t.trade.importCompare, {
     '%a': incoming.size,
@@ -653,11 +758,15 @@ function showImportDialog(incoming, incomingUpdatedAt = 0, incomingMastered = ne
     if (mode === 'replace') {
       state.owned = new Set(incoming);
       state.mastered = new Set(incomingMastered);
+      if (incomingCodes) state.codes = new Set(incomingCodes);
     } else if (mode === 'merge') {
       state.owned = new Set([...state.owned, ...incoming]);
       // La maîtrise se fusionne aussi : elle ne peut que monter, jamais redescendre.
       state.mastered = new Set([...state.mastered, ...incomingMastered]);
+      // Un code saisi l'est définitivement : l'union ne perd jamais rien.
+      if (incomingCodes) state.codes = new Set([...state.codes, ...incomingCodes]);
     }
+    if (incomingCodes && mode !== 'keep') store.saveCodes(state.codes);
     dialog.close();
     store.clearUrlCode();
 
@@ -893,10 +1002,14 @@ const heure = () =>
   new Date().toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
 
 /** Applique une collection distante en remplaçant l'actuelle. */
-function appliquerDistant(owned, mastered, updatedAt) {
+function appliquerDistant(owned, mastered, updatedAt, codes) {
   state.owned = new Set(owned);
   state.mastered = new Set([...(mastered || [])].filter((s) => state.owned.has(s)));
   state.updatedAt = updatedAt || Date.now();
+  if (codes) {
+    state.codes = new Set(codes);
+    store.saveCodes(state.codes);
+  }
   store.save(state.owned, state.mastered);
   renderAll();
 }
@@ -927,7 +1040,9 @@ async function synchroniser({ silencieux = false } = {}) {
       distant.owned.length === local.length &&
       distant.mastered.length === state.mastered.size &&
       local.every((s) => distant.owned.includes(s)) &&
-      [...state.mastered].every((s) => distant.mastered.includes(s));
+      [...state.mastered].every((s) => distant.mastered.includes(s)) &&
+      (distant.codes || []).length === state.codes.size &&
+      [...state.codes].every((c) => (distant.codes || []).includes(c));
 
     // Cases présentes sur le serveur que cet appareil n'a pas : les pousser
     // telles quelles les effacerait.
@@ -935,24 +1050,27 @@ async function synchroniser({ silencieux = false } = {}) {
 
     if (memeContenu) {
       syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
-    } else if (state.owned.size === 0 && distant) {
+    } else if (state.owned.size === 0 && state.codes.size === 0 && distant) {
       // Appareil vierge : on récupère simplement la collection du serveur.
-      appliquerDistant(distant.owned, distant.mastered, distant.updatedAt);
+      // « Vierge » veut dire aucune case ET aucun code : un appareil où seuls
+      // des codes sont cochés a bien quelque chose à défendre, et récupérer la
+      // version distante l'effacerait.
+      appliquerDistant(distant.owned, distant.mastered, distant.updatedAt, distant.codes);
       syncMessage(t.sync.pulled, 'is-ok');
     } else if (!distant || (distant.updatedAt < state.updatedAt && !effacerait.length)) {
       // L'appareil est en avance et n'efface rien : il fait autorité.
-      await sync.push(config, state.owned, state.mastered, state.updatedAt || Date.now());
+      await sync.push(config, state.owned, state.mastered, state.updatedAt || Date.now(), state.codes);
       syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
     } else if (distant.updatedAt < state.updatedAt && syncState.reconcilie) {
       // Décocher une case est légitime — mais seulement une fois que cet
       // appareil s'est déjà accordé avec le serveur au moins une fois.
-      await sync.push(config, state.owned, state.mastered, state.updatedAt || Date.now());
+      await sync.push(config, state.owned, state.mastered, state.updatedAt || Date.now(), state.codes);
       syncMessage(fill(t.sync.synced, { '%d': heure() }), 'is-ok');
     } else {
       // Premier accord après connexion, ou serveur plus récent : les deux
       // versions diffèrent vraiment, on laisse l'utilisateur trancher plutôt
       // que d'effacer quoi que ce soit.
-      showImportDialog(new Set(distant.owned), distant.updatedAt, new Set(distant.mastered || []));
+      showImportDialog(new Set(distant.owned), distant.updatedAt, new Set(distant.mastered || []), new Set(distant.codes || []));
     }
 
     // À partir d'ici, cet appareil connaît l'état du serveur.
@@ -1661,6 +1779,7 @@ function init() {
   // refaite à chaque ouverture ; avec un horodatage neuf, la synchro croirait
   // cet appareil plus récent que le serveur et écraserait ce qu'il contient.
   if (saved.migrated) store.save(state.owned, state.mastered, state.updatedAt);
+  state.codes = store.loadCodes();
   state.showUnreleased = store.loadPref('showUnreleased', false);
   $('#show-unreleased').checked = state.showUnreleased;
 
@@ -1681,6 +1800,7 @@ function init() {
   bindPwa();
   bindSync();
   bindCompare();
+  bindCodes();
 
   // Signale au secours placé dans le HTML que l'application a bien démarré.
   window.__spriteDemarre = true;
