@@ -551,25 +551,26 @@ const SLOT_ORDER_S4 = [
  * La liste s'allonge au fil de la saison : ajouter en fin ne touche à rien.
  */
 const CODES_S4 = [
-  { id: 'overridexp', code: 'OverrideXP' },
-  { id: 'iwannaflyhigh', code: 'IWannaFlyHigh' },
-  { id: 'gottagofast', code: 'GottaGoFast' },
-  { id: 'born2play', code: 'Born2Play' },
-  { id: 'eightbitblast', code: '8BitBlast' },
-  { id: 'takeyourheart', code: 'TakeYourHeart' },
-  { id: 'perfectorder', code: 'PerfectOrder' },
-  { id: 'o2override', code: 'O2Override' },
-  { id: 'survivethenight', code: 'SurviveTheNight' },
+  // Rangés comme dans le panneau admin du jeu, pour suivre les deux
+  // listes en parallèle. L'ordre n'a aucune incidence sur le stockage.
   { id: 'letsblockandroll', code: 'LetsBlockAndRoll' },
   { id: 'dontblockme', code: 'DontBlockMe' },
+  { id: 'perlimpinpin', code: 'Perlimpinpin', region: 'France' },
+  { id: 'magilume', code: 'Magilume' },
+  { id: 'chispambo', code: 'Chispambo', region: 'Espagne' },
+  { id: 'overridexp', code: 'OverrideXP' },
   { id: 'bemorealien', code: 'BeMoreAlien' },
   { id: 'reachyourimpossible', code: 'ReachYourImpossible' },
-  { id: 'magilume', code: 'Magilume' },
-  { id: 'perlimpinpin', code: 'Perlimpinpin', region: 'France' },
-  { id: 'chispambo', code: 'Chispambo', region: 'Espagne' },
-  { id: 'abgestaubt', code: 'Abgestaubt', region: 'Allemagne' },
-  // Vu en jeu, absent de tous les relevés publics : récompense non confirmée.
+  { id: 'born2play', code: 'Born2Play' },
+  { id: 'eightbitblast', code: '8BitBlast' },
+  { id: 'iwannaflyhigh', code: 'IWannaFlyHigh' },
+  { id: 'gottagofast', code: 'GottaGoFast' },
+  { id: 'o2override', code: 'O2Override' },
+  { id: 'takeyourheart', code: 'TakeYourHeart' },
+  { id: 'perfectorder', code: 'PerfectOrder' },
+  { id: 'survivethenight', code: 'SurviveTheNight' },
   { id: 'finditchat', code: 'FindItChat', rewardUnknown: true },
+  { id: 'abgestaubt', code: 'Abgestaubt', region: 'Allemagne' },
 ];
 
 /** La Saison 3 n'avait pas de panneau admin. */
