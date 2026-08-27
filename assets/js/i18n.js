@@ -276,6 +276,7 @@ const fr = {
     remindAction: 'Exporter',
     versionHeading: 'Version de l\'application',
     versionCurrent: 'Version installée : %d',
+    versionBuild: 'build %d',
     checkUpdate: 'Vérifier la mise à jour',
     checking: 'Vérification…',
     upToDate: 'Vous avez déjà la dernière version.',

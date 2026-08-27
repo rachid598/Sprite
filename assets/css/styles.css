@@ -380,9 +380,17 @@ a {
 }
 
 .version__id {
-  color: var(--muted);
-  font-size: 0.86rem;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+/* Empreinte du dépôt : utile au diagnostic, discrète à l'usage. */
+.version__build {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .version__row {

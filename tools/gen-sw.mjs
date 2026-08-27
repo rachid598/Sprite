@@ -20,6 +20,19 @@ const sprites = readdirSync(join(root, 'assets/sprites'))
   .sort()
   .map((f) => `assets/sprites/${f}`);
 
+/*
+ * Tous les modules du dossier, scannés plutôt qu'énumérés à la main.
+ *
+ * La liste était écrite en dur : ajouter un fichier sans penser à l'inscrire
+ * ici le laissait hors du cache, et l'application ne démarrait plus du tout
+ * hors ligne — l'import manquant suffit à tout arrêter. Le scan supprime
+ * définitivement cette possibilité.
+ */
+const scripts = readdirSync(join(root, 'assets/js'))
+  .filter((f) => f.endsWith('.js'))
+  .sort()
+  .map((f) => `assets/js/${f}`);
+
 // Coquille de l'application : tout ce qu'il faut pour démarrer hors ligne.
 const shell = [
   './',
@@ -28,13 +41,7 @@ const shell = [
   'fr/index.html',
   'fr/manifest.webmanifest',
   'assets/css/styles.css',
-  'assets/js/app.js',
-  'assets/js/data.js',
-  'assets/js/i18n.js',
-  'assets/js/art.js',
-  'assets/js/store.js',
-  'assets/js/pwa.js',
-  'assets/js/salon.js',
+  ...scripts,
   'assets/img/favicon.svg',
   'assets/img/icon-192.png',
   'assets/img/icon-512.png',

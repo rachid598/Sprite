@@ -47,9 +47,10 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   de quinze cases cochées sans export, puis de nouveau chaque fois que la
   collection a gagné vingt cases depuis la dernière sauvegarde. La synchro ne
   fait pas taire le rappel, elle en relève seulement le seuil.
-- **Version et mise à jour** — en bas de l'onglet Synchro : la version installée
-  et un bouton qui force la vérification auprès du serveur, sans attendre le
-  contrôle automatique du navigateur. Il annonce franchement ce qu'il trouve.
+- **Version et mise à jour** — en bas de l'onglet Synchro : le numéro de version
+  (0.1, 0.2…), l'empreinte du dépôt en dessous, et un bouton qui force la
+  vérification auprès du serveur sans attendre le contrôle automatique du
+  navigateur. Il annonce franchement ce qu'il trouve.
 - **Synchronisation entre appareils** — Firebase Realtime Database via son API
   REST, sans bibliothèque ni outil à installer (`docs/firebase.md`). Un salon
   contient plusieurs profils nommés : chacun synchronise sa propre collection
@@ -90,6 +91,16 @@ Les modules ES nécessitent un serveur HTTP (pas d'ouverture en `file://`) :
 npx http-server -p 8000 .
 # puis http://127.0.0.1:8000/fr/
 ```
+
+## Publier une version
+
+1. Incrémenter `VERSION_APP` dans `assets/js/version.js` — c'est le seul endroit.
+2. `node tools/gen-sw.mjs` si des fichiers ont été ajoutés ou retirés.
+3. Pousser : le déploiement substitue l'empreinte du commit dans les URL, ce qui
+   invalide l'ancien cache.
+
+Le numéro sert à se comprendre — « tu es en 0.3, moi en 0.4 » ; l'empreinte
+affichée en dessous identifie le contenu exact et sert au diagnostic.
 
 ## Saisons
 

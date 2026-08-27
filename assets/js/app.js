@@ -16,6 +16,7 @@ import {
   unreleasedOf,
 } from './data.js';
 import { getStrings } from './i18n.js';
+import { VERSION_APP } from './version.js';
 import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
 import { registerServiceWorker, applyUpdate, chercherMaj, trackInstall, estInstallee, estIos } from './pwa.js';
@@ -24,11 +25,11 @@ import { registerServiceWorker, applyUpdate, chercherMaj, trackInstall, estInsta
 import * as sync from './salon.js';
 
 /*
- * Version déployée, lue sur l'URL de ce module : le déploiement y ajoute
- * `?v=<empreinte>`. Affichée dans l'onglet Synchro pour pouvoir comparer d'un
- * appareil à l'autre quand une mise à jour semble ne pas passer.
+ * Empreinte du dépôt déployé, lue sur l'URL de ce module : le déploiement y
+ * ajoute `?v=<empreinte>`. Affichée sous le numéro de version, elle identifie
+ * le contenu exact et sert à comparer deux appareils.
  */
-const VERSION = new URL(import.meta.url).searchParams.get('v') || 'développement';
+const BUILD = new URL(import.meta.url).searchParams.get('v') || 'développement';
 
 const lang = 'fr'; // sert au formatage des nombres et au tri alphabétique
 const t = getStrings();
@@ -1647,7 +1648,10 @@ function bindBackup() {
  */
 function brancherVerification(reg, proposerMaj) {
   surElement('#version-actuelle', (el) => {
-    el.textContent = fill(t.backup.versionCurrent, { '%d': VERSION });
+    el.textContent = fill(t.backup.versionCurrent, { '%d': VERSION_APP });
+  });
+  surElement('#version-build', (el) => {
+    el.textContent = fill(t.backup.versionBuild, { '%d': BUILD });
   });
 
   surElement('#check-update', (bouton) => {
