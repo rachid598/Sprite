@@ -551,8 +551,8 @@ const SLOT_ORDER_S4 = [
  * La liste s'allonge au fil de la saison : ajouter en fin ne touche à rien.
  */
 const CODES_S4 = [
-  // Rangés comme dans le panneau admin du jeu, pour suivre les deux
-  // listes en parallèle. L'ordre n'a aucune incidence sur le stockage.
+  // Les dix-huit premiers suivent l'ordre du panneau admin en jeu, pour
+  // pouvoir descendre les deux listes en parallèle.
   { id: 'letsblockandroll', code: 'LetsBlockAndRoll' },
   { id: 'dontblockme', code: 'DontBlockMe' },
   { id: 'perlimpinpin', code: 'Perlimpinpin', region: 'France' },
@@ -569,8 +569,20 @@ const CODES_S4 = [
   { id: 'takeyourheart', code: 'TakeYourHeart' },
   { id: 'perfectorder', code: 'PerfectOrder' },
   { id: 'survivethenight', code: 'SurviveTheNight' },
-  { id: 'finditchat', code: 'FindItChat', rewardUnknown: true },
+  { id: 'finditchat', code: 'FindItChat' },
   { id: 'abgestaubt', code: 'Abgestaubt', region: 'Allemagne' },
+  // Relevés le 20 août 2026 sur un suivi communautaire francophone : ils ne
+  // figuraient pas encore dans le panneau au moment de la capture.
+  { id: 'play4all', code: 'Play4All' },
+  { id: 'gatherandcraft', code: 'GatherAndCraft' },
+  { id: 'jonesyisgolden', code: 'JonesyIsGolden' },
+  { id: 'ultimatelifeform', code: 'UltimateLifeform' },
+  { id: 'berryglitch', code: 'BerryGlitch' },
+  { id: 'glidedrabbit', code: 'GlidedRabbit' },
+  { id: 'craftandbuild', code: 'CraftandBuild' },
+  { id: 'h0p0nvc', code: 'H0p0nVC' },
+  { id: 'looper1', code: 'Looper1', rewardUnknown: true },
+  { id: 'fishstick1', code: 'fishstick1', rewardUnknown: true },
 ];
 
 /** La Saison 3 n'avait pas de panneau admin. */

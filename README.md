@@ -13,7 +13,7 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   synchronisation : rien ne se mélange, rien ne s'écrase.
 - **Checklist** — une case par couple Sprite × variante, propre à la saison
   affichée.
-- **Codes du panneau admin** — onglet dédié à la Saison 4 : les 18 codes du
+- **Codes du panneau admin** — onglet dédié à la Saison 4 : les 28 codes du
   lobby avec leur récompense, un clic pour marquer un code comme saisi, filtres
   tous / utilisés / restants, bouton de copie. Stockage séparé par saison et
   synchronisé avec les autres appareils.
