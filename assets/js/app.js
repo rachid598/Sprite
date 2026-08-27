@@ -18,10 +18,17 @@ import {
 import { getStrings } from './i18n.js';
 import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
-import { registerServiceWorker, applyUpdate, trackInstall, estInstallee, estIos } from './pwa.js';
+import { registerServiceWorker, applyUpdate, chercherMaj, trackInstall, estInstallee, estIos } from './pwa.js';
 // Fichier nommé « salon » et non « sync » : certains bloqueurs de publicité
 // filtrent les scripts contenant « sync », terme courant du pistage.
 import * as sync from './salon.js';
+
+/*
+ * Version déployée, lue sur l'URL de ce module : le déploiement y ajoute
+ * `?v=<empreinte>`. Affichée dans l'onglet Synchro pour pouvoir comparer d'un
+ * appareil à l'autre quand une mise à jour semble ne pas passer.
+ */
+const VERSION = new URL(import.meta.url).searchParams.get('v') || 'développement';
 
 const lang = 'fr'; // sert au formatage des nombres et au tri alphabétique
 const t = getStrings();
@@ -1630,6 +1637,53 @@ function bindBackup() {
   });
 }
 
+
+/**
+ * Bouton « Vérifier la mise à jour ».
+ *
+ * Le navigateur interroge le serveur de lui-même, mais peut attendre des
+ * heures — et une application installée peut rester figée sans qu'on comprenne
+ * pourquoi. Ce bouton force la vérification et dit franchement ce qu'il trouve.
+ */
+function brancherVerification(reg, proposerMaj) {
+  surElement('#version-actuelle', (el) => {
+    el.textContent = fill(t.backup.versionCurrent, { '%d': VERSION });
+  });
+
+  surElement('#check-update', (bouton) => {
+    const dire = (message, ton = '') => {
+      surElement('#version-state', (el) => {
+        el.textContent = message;
+        el.className = `version__state ${ton}`;
+      });
+    };
+
+    if (!reg) {
+      dire(t.backup.noWorker);
+      return;
+    }
+
+    bouton.addEventListener('click', async () => {
+      bouton.disabled = true;
+      dire(t.backup.checking);
+
+      const etat = await chercherMaj(reg);
+      bouton.disabled = false;
+
+      if (etat === 'prete') {
+        dire(t.backup.updateFound, 'is-ok');
+        proposerMaj(reg);
+      } else if (etat === 'ajour') {
+        dire(t.backup.upToDate, 'is-ok');
+      } else if (etat === 'indisponible') {
+        dire(t.backup.noWorker);
+      } else {
+        dire(t.backup.checkFailed, 'is-error');
+      }
+    });
+  });
+}
+
 function bindPwa() {
   const bouton = $('#install-app');
   const conseil = $('.backup__hint');
@@ -1666,7 +1720,13 @@ function bindPwa() {
 
   // Une nouvelle version en attente : on propose, on n'impose pas. La bannière
   // reste jusqu'à ce que l'utilisateur tranche, sinon elle passerait inaperçue.
-  registerServiceWorker((reg) => {
+  /*
+   * Le navigateur signale déjà une version en attente ; le bouton de
+   * vérification peut la signaler aussi. Sans ce garde-fou, les deux bannières
+   * s'empileraient à l'identique.
+   */
+  const proposerMaj = (reg) => {
+    if ($('.toast--update')) return;
     toast(t.backup.updateReady, {
       duration: 0,
       tone: 'update',
@@ -1684,7 +1744,9 @@ function bindPwa() {
         },
       },
     });
-  });
+  };
+
+  registerServiceWorker(proposerMaj).then((reg) => brancherVerification(reg, proposerMaj));
 
   // Retour après une mise à jour appliquée : on confirme brièvement.
   try {

@@ -36,6 +36,42 @@ export async function registerServiceWorker(onUpdate) {
   }
 }
 
+
+/**
+ * Force une vérification auprès du serveur, sans attendre le contrôle
+ * automatique du navigateur — qui peut tarder plusieurs heures.
+ *
+ * @returns {Promise<'prete'|'ajour'|'indisponible'|'echec'>}
+ *   `prete` : une nouvelle version est installée et n'attend qu'un rechargement.
+ */
+export async function chercherMaj(reg) {
+  if (!reg) return 'indisponible';
+  try {
+    await reg.update();
+
+    // `update()` rend la main avant la fin de l'installation : on laisse à la
+    // nouvelle version le temps de passer en attente, sinon on annoncerait
+    // « à jour » alors qu'elle arrive.
+    if (reg.installing) {
+      const sw = reg.installing;
+      await new Promise((fini) => {
+        const suivre = () => {
+          if (sw.state === 'installed' || sw.state === 'redundant') {
+            sw.removeEventListener('statechange', suivre);
+            fini();
+          }
+        };
+        sw.addEventListener('statechange', suivre);
+        setTimeout(fini, 8000); // réseau lent : on ne bloque pas l'interface
+      });
+    }
+
+    return reg.waiting ? 'prete' : 'ajour';
+  } catch {
+    return 'echec';
+  }
+}
+
 /** Active la version en attente et recharge la page. */
 export function applyUpdate(reg) {
   reg?.waiting?.postMessage('skip-waiting');

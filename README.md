@@ -47,6 +47,9 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   de quinze cases cochées sans export, puis de nouveau chaque fois que la
   collection a gagné vingt cases depuis la dernière sauvegarde. La synchro ne
   fait pas taire le rappel, elle en relève seulement le seuil.
+- **Version et mise à jour** — en bas de l'onglet Synchro : la version installée
+  et un bouton qui force la vérification auprès du serveur, sans attendre le
+  contrôle automatique du navigateur. Il annonce franchement ce qu'il trouve.
 - **Synchronisation entre appareils** — Firebase Realtime Database via son API
   REST, sans bibliothèque ni outil à installer (`docs/firebase.md`). Un salon
   contient plusieurs profils nommés : chacun synchronise sa propre collection
