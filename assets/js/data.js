@@ -8,7 +8,7 @@
  *   pas encore sorties : masquées par défaut et exclues du total publié.
  * `noArt` — sur un Sprite ou sur une variante — signale qu'aucune illustration
  *   n'est encore hébergée : le dessin SVG est utilisé directement, sans aller
- *   chercher un fichier absent.
+ *   chercher un fichier absent. Aucun n'en porte actuellement.
  * `ability.verified` = true quand l'effet est documenté publiquement.
  */
 
@@ -388,7 +388,8 @@ const VARIANTS_S4 = [
   // Apparue dans le jeu le 3 septembre 2026, mais annoncée hors butin jusqu'au
   // 10 septembre : elle est donc déclarée en `unreleased` sur les quinze
   // Sprites qui la reçoivent — masquée par défaut, et hors du total publié.
-  { id: 'loothacker', accent: '#38bdf8', noArt: true },
+  // Seule la Couronne est déjà attribuable, Epic l'ayant activée par erreur.
+  { id: 'loothacker', accent: '#38bdf8' },
 ];
 
 /**
@@ -554,7 +555,6 @@ const SPRITES_S4 = [
     palette: ['#8ef0ff', '#0e4f7a'],
     variants: ['normal', 'gold', 'cheatmaster'],
     unreleased: ['loothacker'],
-    noArt: true, // illustration officielle pas encore récupérée
     ability: { verified: true },
   },
   // Second lauréat du concours (Enorull). Epic a substitué ce Sprite à la
@@ -568,7 +568,6 @@ const SPRITES_S4 = [
     palette: ['#fff6e0', '#3a4152'],
     variants: ['normal', 'gold', 'cheatmaster'],
     unreleased: ['loothacker'],
-    noArt: true,
     ability: { verified: true },
   },
   {
@@ -580,7 +579,6 @@ const SPRITES_S4 = [
     palette: ['#a5f3ff', '#1d6fa8'],
     variants: ['normal', 'gold', 'cheatmaster'],
     unreleased: ['loothacker'],
-    noArt: true,
     ability: { verified: true },
   },
   // Collaboration : une seule finition, et la seule du jeu à ne pas recevoir
@@ -593,7 +591,6 @@ const SPRITES_S4 = [
     shape: 'helmet',
     palette: ['#8fd4ff', '#0b3a8c'],
     variants: ['normal'],
-    noArt: true,
     ability: { verified: true },
   },
 ];

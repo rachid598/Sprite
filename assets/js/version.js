@@ -5,4 +5,4 @@
  * L'empreinte du dépôt reste affichée en dessous — elle identifie le contenu
  * exact déployé, ce qu'un numéro à deux chiffres ne peut pas faire.
  */
-export const VERSION_APP = '0.2';
+export const VERSION_APP = '0.3';
