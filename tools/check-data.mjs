@@ -29,7 +29,7 @@ const ok = (m) => console.log('  ok — ' + m);
 
 function controler() {
   const { SPRITES, ALL_SLOTS, BIT_SLOTS, SLOT_ORDER, TOTAL_SLOTS, RENAMES, VARIANT_RENAMES,
-          DATA_DATE } = D;
+          DATA_DATE, VARIANTS } = D;
 
   /* ------------------------------------------------------------ cohérence */
 
@@ -94,10 +94,14 @@ function controler() {
   const dossier = path.join(racine, 'assets/sprites');
   const fichiers = new Set(fs.existsSync(dossier) ? fs.readdirSync(dossier) : []);
   const noArt = new Set(SPRITES.filter((s) => s.noArt).map((s) => s.id));
-  const sansImage = courantes.filter(
-    (slot) => !noArt.has(slot.split(':')[0]) && !fichiers.has(slot.replace(':', '_') + '.webp')
-  );
-  if (noArt.size) console.log(`  info — dessin de repli assumé pour : ${[...noArt].join(', ')}`);
+  const noArtVariant = new Set(VARIANTS.filter((v) => v.noArt).map((v) => v.id));
+  const sansImage = courantes.filter((slot) => {
+    const [sprite, variante] = slot.split(':');
+    if (noArt.has(sprite) || noArtVariant.has(variante)) return false;
+    return !fichiers.has(`${sprite}_${variante}.webp`);
+  });
+  const replis = [...noArt, ...[...noArtVariant].map((v) => `finition ${v}`)];
+  if (replis.length) console.log(`  info — dessin de repli assumé pour : ${replis.join(', ')}`);
   if (sansImage.length) console.log(`  info — ${sansImage.length} case(s) sans illustration (repli SVG) `);
   else ok(`${courantes.length} illustrations présentes`);
 

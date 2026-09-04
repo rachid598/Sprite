@@ -64,6 +64,10 @@ const fr = {
     glidedrabbit: 'Sprite Jackrabbit',
     craftandbuild: 'Spray Wrixel',
     h0p0nvc: '2 000 poussière spirituelle',
+    insertcointocontinue: 'Vous transforme en borne d\'arcade',
+    brb: 'Vous transforme en toilettes',
+    yourthoughtsaremine:
+      '5 000 poussière spirituelle et le style Geno « Maître du néant » — demande d\'avoir terminé les quêtes d\'histoire de Geno',
   },
   nav: {
     collection: 'Ma collection',
@@ -155,6 +159,7 @@ const fr = {
     cube: 'Cube',
     quack: 'Canardesque',
     cheatmaster: 'Cheat',
+    loothacker: 'Pirate de butin',
   },
   /*
    * Effets propres à une variante, cumulables avec celui du Sprite. Une clé
@@ -162,6 +167,8 @@ const fr = {
    */
   variantBonus: {
     gem: '30 % de dégâts de chute en moins, cumulable avec l\'effet du Sprite.',
+    loothacker:
+      'Augmente les chances de trouver vos objets de piratage de butin dans les coffres, en plus de l\'effet du Sprite.',
   },
   ability: {
     water: 'Régénère du bouclier tant que vous restez dans l\'eau.',
@@ -204,6 +211,12 @@ const fr = {
     klombo: 'Offre des objets aléatoires à chaque niveau ; ne monte en niveau qu\'en consommant des objets, dont la qualité augmente à chaque palier.',
     shadow: 'Recharge automatiquement les armes rangées ; au niveau maximum, recharge aussi l\'arme en main.',
     stormscout: 'Déclenche Surrégime après un certain montant de dégâts de tempête ; révèle les futurs cercles au niveau maximum.',
+
+    // Saison 4 — v42.10 du 3 septembre 2026
+    xray: 'Marque par intermittence les ennemis présents autour de vous.',
+    onigiri: 'Déclenche Surrégime après avoir mangé ou bu un consommable ; l\'effet dure plus longtemps à chaque niveau.',
+    overshield: 'Accorde du surbouclier, par-dessus vos PV et votre bouclier ; la quantité augmente à chaque niveau.',
+    megaman: 'Réduit la friction en glissade : vous glissez plus loin, et plus longtemps à chaque niveau.',
   },
   name: {
     water: 'Eau',
@@ -245,6 +258,12 @@ const fr = {
     klombo: 'Klombo',
     shadow: 'Shadow',
     stormscout: 'Éclaireur de tempête',
+
+    // Ajoutés le 3 septembre 2026 avec la v42.10
+    xray: 'Rayons X',
+    onigiri: 'Onigiri',
+    overshield: 'Surbouclier',
+    megaman: 'Mega Man',
   },
   backup: {
     heading: 'Sauvegarde et installation',

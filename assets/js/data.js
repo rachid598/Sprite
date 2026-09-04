@@ -1,11 +1,14 @@
 /*
  * Base de données des Sprites — Saison 3 : 25 Sprites / 117 cases ;
- * Saison 4 : 12 Sprites / 36 cases publiées (Sprite × variante).
+ * Saison 4 : 16 Sprites / 46 cases publiées (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
  * `variants` liste les variantes disponibles en jeu pour ce Sprite.
  * `unreleased` liste les variantes déjà présentes dans les fichiers du jeu mais
  *   pas encore sorties : masquées par défaut et exclues du total publié.
+ * `noArt` — sur un Sprite ou sur une variante — signale qu'aucune illustration
+ *   n'est encore hébergée : le dessin SVG est utilisé directement, sans aller
+ *   chercher un fichier absent.
  * `ability.verified` = true quand l'effet est documenté publiquement.
  */
 
@@ -382,15 +385,24 @@ const VARIANTS_S4 = [
   { id: 'normal', accent: '#8ab4ff' },
   { id: 'gold', accent: '#f5c542' },
   { id: 'cheatmaster', accent: '#4ade80' },
+  // Apparue dans le jeu le 3 septembre 2026, mais annoncée hors butin jusqu'au
+  // 10 septembre : elle est donc déclarée en `unreleased` sur les quinze
+  // Sprites qui la reçoivent — masquée par défaut, et hors du total publié.
+  { id: 'loothacker', accent: '#38bdf8', noArt: true },
 ];
 
 /**
- * Douze Sprites au lancement, trois finitions chacun — trente-six cases.
+ * Douze Sprites au lancement, trois finitions chacun — trente-six cases ;
+ * quatre de plus le 3 septembre (v42.10), pour seize Sprites et quarante-six
+ * cases publiées.
  *
  * Shadow et Storm Scout, un temps douteux, sont confirmés par la planche
- * officielle du 20 août : douze Sprites au total.
- * Cinq Sprites communautaires sont annoncés pour le milieu de saison : Bullet,
- * Dumpster Dive, Honey, Pond et X-Ray.
+ * officielle du 20 août : douze Sprites au lancement.
+ * Le concours « Design-A-Sprite » avait retenu cinq propositions
+ * communautaires : Bullet, Dumpster Dive, Honey, Pond et X-Ray. Epic a
+ * finalement remplacé Bullet par Onigiri, du même auteur. X-Ray et Onigiri
+ * sont sortis le 3 septembre ; Dumpster Dive, Honey et Pond restent annoncés
+ * pour plus tard dans la saison, sans date — donc absents d'ici là.
  *
  * Aucun taux d'apparition n'est publié à ce stade : tous portent
  * `dropUnverified`. `dropRate` ne sert alors qu'au tri, par rareté décroissante.
@@ -404,6 +416,7 @@ const SPRITES_S4 = [
     shape: 'bush',
     palette: ['#8fd66a', '#2f6b2a'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -414,6 +427,7 @@ const SPRITES_S4 = [
     shape: 'pixel',
     palette: ['#7ad9ff', '#3b2a8c'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -424,6 +438,7 @@ const SPRITES_S4 = [
     shape: 'shield',
     palette: ['#ffc978', '#a2571c'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -434,6 +449,7 @@ const SPRITES_S4 = [
     shape: 'suit',
     palette: ['#9fd0ff', '#2a4f86'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -444,6 +460,7 @@ const SPRITES_S4 = [
     shape: 'swirl',
     palette: ['#8f7bff', '#2a1a6b'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -454,6 +471,7 @@ const SPRITES_S4 = [
     shape: 'spike',
     palette: ['#3aa0ff', '#123a86'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -464,6 +482,7 @@ const SPRITES_S4 = [
     shape: 'tail',
     palette: ['#ffce5c', '#c07a12'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -474,6 +493,7 @@ const SPRITES_S4 = [
     shape: 'bolt',
     palette: ['#ff6b6b', '#2a1020'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -484,6 +504,7 @@ const SPRITES_S4 = [
     shape: 'spike',
     palette: ['#6b6f7d', '#1a1020'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -494,6 +515,7 @@ const SPRITES_S4 = [
     shape: 'rabbit',
     palette: ['#7de88a', '#1d6b3c'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -504,6 +526,7 @@ const SPRITES_S4 = [
     shape: 'crown',
     palette: ['#ffe07a', '#c48a11'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
     ability: { verified: true },
   },
   {
@@ -514,11 +537,68 @@ const SPRITES_S4 = [
     shape: 'dino',
     palette: ['#9db8ff', '#3b3a8c'],
     variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
+    ability: { verified: true },
+  },
+
+  /* ---- Sortis le 3 septembre 2026 avec la v42.10 ------------------------ */
+
+  // Lauréat du concours « Design-A-Sprite » (Avila215, d'après un dessin de
+  // Brady, huit ans). Deuxième Légendaire de la saison.
+  {
+    id: 'xray',
+    rarity: 'legendary',
+    dropRate: 4.3,
+    dropUnverified: true,
+    shape: 'glasses',
+    palette: ['#8ef0ff', '#0e4f7a'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
+    noArt: true, // illustration officielle pas encore récupérée
+    ability: { verified: true },
+  },
+  // Second lauréat du concours (Enorull). Epic a substitué ce Sprite à la
+  // proposition Bullet du même auteur, qui ne sortira donc pas.
+  {
+    id: 'onigiri',
+    rarity: 'rare',
+    dropRate: 8.5,
+    dropUnverified: true,
+    shape: 'onigiri',
+    palette: ['#fff6e0', '#3a4152'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  {
+    id: 'overshield',
+    rarity: 'rare',
+    dropRate: 8.4,
+    dropUnverified: true,
+    shape: 'shield',
+    palette: ['#a5f3ff', '#1d6fa8'],
+    variants: ['normal', 'gold', 'cheatmaster'],
+    unreleased: ['loothacker'],
+    noArt: true,
+    ability: { verified: true },
+  },
+  // Collaboration : une seule finition, et la seule du jeu à ne pas recevoir
+  // la variante Loot Hacker.
+  {
+    id: 'megaman',
+    rarity: 'rare',
+    dropRate: 8.3,
+    dropUnverified: true,
+    shape: 'helmet',
+    palette: ['#8fd4ff', '#0b3a8c'],
+    variants: ['normal'],
+    noArt: true,
     ability: { verified: true },
   },
 ];
 
-const DATA_DATE_S4 = '2026-08-20';
+const DATA_DATE_S4 = '2026-09-04';
 const DROP_DATE_S4 = ''; // aucun relevé publié le jour du lancement
 
 const RENAMES_S4 = {};
@@ -539,6 +619,17 @@ const SLOT_ORDER_S4 = [
   // Confirmés le 20 août 2026 : ajoutés en fin, les positions ci-dessus ne bougent pas.
   'stormscout:normal', 'stormscout:gold', 'stormscout:cheatmaster',
   'shadow:normal', 'shadow:gold', 'shadow:cheatmaster',
+  // Sortis le 3 septembre 2026 (v42.10) : mêmes précautions, ajout en fin.
+  'xray:normal', 'xray:gold', 'xray:cheatmaster',
+  'onigiri:normal', 'onigiri:gold', 'onigiri:cheatmaster',
+  'overshield:normal', 'overshield:gold', 'overshield:cheatmaster',
+  'megaman:normal',
+  // Finition Loot Hacker, encore hors butin : sa place est figée dès
+  // maintenant pour que les liens émis d'ici sa sortie restent lisibles.
+  'bush:loothacker', 'eightbit:loothacker', 'adventure:loothacker', 'jonesy:loothacker',
+  'stormscout:loothacker', 'sonic:loothacker', 'tails:loothacker', 'killswitch:loothacker',
+  'shadow:loothacker', 'jackrabbit:loothacker', 'crown:loothacker', 'klombo:loothacker',
+  'xray:loothacker', 'onigiri:loothacker', 'overshield:loothacker',
 ];
 
 /**
@@ -583,6 +674,10 @@ const CODES_S4 = [
   { id: 'h0p0nvc', code: 'H0p0nVC' },
   { id: 'looper1', code: 'Looper1', rewardUnknown: true },
   { id: 'fishstick1', code: 'fishstick1', rewardUnknown: true },
+  // Activés avec la v42.10, le 3 septembre 2026.
+  { id: 'insertcointocontinue', code: 'InsertCoinToContinue' },
+  { id: 'brb', code: 'BRB' },
+  { id: 'yourthoughtsaremine', code: 'YourThoughtsAreMine' },
 ];
 
 /** La Saison 3 n'avait pas de panneau admin. */

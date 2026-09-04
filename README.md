@@ -8,12 +8,12 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 ## Fonctionnalités
 
 - **Deux saisons** — un sélecteur dans l'en-tête bascule entre la Saison 4
-  (*Override*, 12 Sprites / 36 cases) et la Saison 3 (25 Sprites / 117 cases).
+  (*Override*, 16 Sprites / 46 cases) et la Saison 3 (25 Sprites / 117 cases).
   Chaque saison a sa collection, ses variantes, son stockage et sa branche de
   synchronisation : rien ne se mélange, rien ne s'écrase.
 - **Checklist** — une case par couple Sprite × variante, propre à la saison
   affichée.
-- **Codes du panneau admin** — onglet dédié à la Saison 4 : les 28 codes du
+- **Codes du panneau admin** — onglet dédié à la Saison 4 : les 31 codes du
   lobby avec leur récompense, un clic pour marquer un code comme saisi, filtres
   tous / utilisés / restants, bouton de copie. Stockage séparé par saison et
   synchronisé avec les autres appareils.
@@ -28,7 +28,7 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   toute la grille (133 ms → 33 ms sur processeur bridé ×4).
 - **Application installable** — manifeste + service worker : le site s'installe sur
   téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 154
-  illustrations comprises (172 fichiers pré-mis en cache).
+  illustrations comprises (173 fichiers pré-mis en cache).
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
@@ -73,7 +73,7 @@ assets/js/i18n.js   tous les textes affichés
 sw.js               service worker (généré — voir tools/gen-sw.mjs)
 tools/gen-sw.mjs    régénère sw.js depuis la liste réelle des fichiers
 fr/manifest.webmanifest     manifeste d'installation
-assets/sprites/     illustrations des Sprites (118 fichiers .webp 128 px)
+assets/sprites/     illustrations des Sprites (154 fichiers .webp 128 px)
 assets/js/art.js    rendu des illustrations, avec repli SVG généré
 assets/js/pwa.js    service worker, invite d'installation, état réseau
 assets/js/salon.js  client de synchronisation (API REST Firebase)
@@ -203,6 +203,9 @@ probabilités indépendantes par coffre, pas une distribution qui totalise 100 %
    Si aucune image n'existe, `assets/js/art.js` dessine un repli SVG à partir de
    `SHAPES` (grille 64 × 64) et de la palette. Poser alors `noArt: true` sur le
    Sprite : le dessin est utilisé directement, sans requête vers un fichier absent.
+   Quand c'est une finition entière qui n'a pas encore d'illustration — la
+   variante vient de sortir, aucun Sprite ne l'a en image — poser le même
+   `noArt: true` sur son entrée de `VARIANTS` plutôt que sur chaque Sprite.
 4. Si un identifiant existant change, **ajouter l'ancien dans `RENAMES`** — ne jamais
    se contenter de le remplacer.
 5. Mettre `DATA_DATE` à la date du jour : elle s'affiche en pied de page.

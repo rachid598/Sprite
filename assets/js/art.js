@@ -19,10 +19,10 @@ const SPRITE_DIR = new URL('../sprites/', import.meta.url).href;
  * @param {string} label texte alternatif
  */
 export function spriteImg(sprite, variant = 'normal', size = 64, label = '') {
-  // Sprite trop récent pour avoir son illustration : on dessine directement,
-  // plutôt que de demander un fichier absent et de récolter un 404 à chaque
-  // chargement. Retirer `noArt` dès que le .webp est ajouté.
-  if (sprite.noArt) return spriteSvg(sprite, variant, size);
+  // Sprite — ou finition — trop récent pour avoir son illustration : on dessine
+  // directement, plutôt que de demander un fichier absent et de récolter un 404
+  // à chaque chargement. Retirer `noArt` dès que le .webp est ajouté.
+  if (sprite.noArt || VARIANT_INDEX[variant]?.noArt) return spriteSvg(sprite, variant, size);
 
   return `<img class="sprite-img" src="${SPRITE_DIR}${sprite.id}_${variant}.webp"
     width="${size}" height="${size}" alt="${label}" loading="lazy" decoding="async"
@@ -72,6 +72,12 @@ const SHAPES = {
   tail:
     'M44 12 c 10 8 12 24 2 34 c -8 8 -22 8 -30 0 c 6 2 14 0 18 -6 c -8 2 -14 -2 -16 -8 c 6 4 12 2 14 -4 c -6 0 -10 -4 -10 -10 c 6 6 16 4 22 -6 Z',
   suit: 'M32 10 a 8 8 0 1 1 0 16 a 8 8 0 0 1 0 -16 Z M18 56 v -16 a 14 14 0 0 1 14 -12 a 14 14 0 0 1 14 12 v 16 Z M32 28 l -5 10 l 5 6 l 5 -6 Z',
+  glasses:
+    'M8 22 h 20 v 14 a 10 10 0 0 1 -20 0 Z M36 22 h 20 v 14 a 10 10 0 0 1 -20 0 Z M28 26 h 8 v 4 h -8 Z M4 22 h 4 v 4 h -4 Z M56 22 h 4 v 4 h -4 Z',
+  onigiri:
+    'M32 10 a 6 6 0 0 1 5.2 3 L 52 42 a 6 6 0 0 1 -5.2 9 H 17.2 A 6 6 0 0 1 12 42 L 26.8 13 A 6 6 0 0 1 32 10 Z M22 44 h 20 v 7 H 22 Z',
+  helmet:
+    'M32 8 a 20 20 0 0 1 20 20 v 10 h -8 v -8 a 12 12 0 0 0 -24 0 v 8 h -8 V 28 A 20 20 0 0 1 32 8 Z M10 40 h 10 v 14 H 10 Z M44 40 h 10 v 14 H 44 Z',
 };
 
 /** Palettes appliquées par-dessus les couleurs du Sprite selon la variante. */
@@ -85,6 +91,7 @@ const VARIANT_PAINT = {
   cube: ['#d07bff', '#4a0e73'],
   quack: ['#ffd24d', '#e07a0f'],
   cheatmaster: ['#7bf5a6', '#0f7a45'],
+  loothacker: ['#7dd3fc', '#0b5c93'],
 };
 
 let uid = 0;
