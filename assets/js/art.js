@@ -6,7 +6,7 @@
  * manque : voir le gestionnaire d'erreur dans app.js.
  */
 
-import { VARIANT_INDEX } from './data.js';
+import { VARIANT_INDEX } from './data.js?v=625016e';
 
 /** Résolu depuis l'URL du module, quel que soit le dossier de la page. */
 const SPRITE_DIR = new URL('../sprites/', import.meta.url).href;

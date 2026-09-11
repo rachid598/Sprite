@@ -14,15 +14,15 @@ import {
   SAISON_DEFAUT,
   setSaison,
   unreleasedOf,
-} from './data.js';
-import { getStrings } from './i18n.js';
-import { VERSION_APP } from './version.js';
-import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
-import * as store from './store.js';
-import { registerServiceWorker, applyUpdate, chercherMaj, trackInstall, estInstallee, estIos } from './pwa.js';
+} from './data.js?v=625016e';
+import { getStrings } from './i18n.js?v=625016e';
+import { VERSION_APP } from './version.js?v=625016e';
+import { spriteImg, spriteSvg, variantChipStyle } from './art.js?v=625016e';
+import * as store from './store.js?v=625016e';
+import { registerServiceWorker, applyUpdate, chercherMaj, trackInstall, estInstallee, estIos } from './pwa.js?v=625016e';
 // Fichier nommé « salon » et non « sync » : certains bloqueurs de publicité
 // filtrent les scripts contenant « sync », terme courant du pistage.
-import * as sync from './salon.js';
+import * as sync from './salon.js?v=625016e';
 
 /*
  * Empreinte du dépôt déployé, lue sur l'URL de ce module : le déploiement y
