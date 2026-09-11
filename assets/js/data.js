@@ -1,6 +1,6 @@
 /*
  * Base de données des Sprites — Saison 3 : 25 Sprites / 117 cases ;
- * Saison 4 : 16 Sprites / 46 cases publiées (Sprite × variante).
+ * Saison 4 : 16 Sprites / 61 cases publiées (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
  * `variants` liste les variantes disponibles en jeu pour ce Sprite.
@@ -385,17 +385,17 @@ const VARIANTS_S4 = [
   { id: 'normal', accent: '#8ab4ff' },
   { id: 'gold', accent: '#f5c542' },
   { id: 'cheatmaster', accent: '#4ade80' },
-  // Apparue dans le jeu le 3 septembre 2026, mais annoncée hors butin jusqu'au
-  // 10 septembre : elle est donc déclarée en `unreleased` sur les quinze
-  // Sprites qui la reçoivent — masquée par défaut, et hors du total publié.
-  // Seule la Couronne est déjà attribuable, Epic l'ayant activée par erreur.
+  // Apparue dans le jeu le 3 septembre 2026, hors butin jusqu'au 10 septembre.
+  // Sortie confirmée à cette date sur les quinze Sprites qui la reçoivent —
+  // Mega Man, collaboration à finition unique, en reste écarté.
   { id: 'loothacker', accent: '#38bdf8' },
 ];
 
 /**
  * Douze Sprites au lancement, trois finitions chacun — trente-six cases ;
- * quatre de plus le 3 septembre (v42.10), pour seize Sprites et quarante-six
- * cases publiées.
+ * quatre de plus le 3 septembre (v42.10) ; et la quatrième finition, Loot
+ * Hacker, sortie le 10 septembre sur quinze des seize Sprites. Seize Sprites,
+ * soixante et une cases publiées au total.
  *
  * Shadow et Storm Scout, un temps douteux, sont confirmés par la planche
  * officielle du 20 août : douze Sprites au lancement.
@@ -416,8 +416,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'bush',
     palette: ['#8fd66a', '#2f6b2a'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -427,8 +426,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'pixel',
     palette: ['#7ad9ff', '#3b2a8c'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -438,8 +436,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'shield',
     palette: ['#ffc978', '#a2571c'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -449,8 +446,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'suit',
     palette: ['#9fd0ff', '#2a4f86'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -460,8 +456,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'swirl',
     palette: ['#8f7bff', '#2a1a6b'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -471,8 +466,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'spike',
     palette: ['#3aa0ff', '#123a86'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -482,8 +476,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'tail',
     palette: ['#ffce5c', '#c07a12'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -493,8 +486,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'bolt',
     palette: ['#ff6b6b', '#2a1020'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -504,8 +496,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'spike',
     palette: ['#6b6f7d', '#1a1020'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -515,8 +506,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'rabbit',
     palette: ['#7de88a', '#1d6b3c'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -526,8 +516,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'crown',
     palette: ['#ffe07a', '#c48a11'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -537,8 +526,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'dino',
     palette: ['#9db8ff', '#3b3a8c'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
 
@@ -553,8 +541,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'glasses',
     palette: ['#8ef0ff', '#0e4f7a'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   // Second lauréat du concours (Enorull). Epic a substitué ce Sprite à la
@@ -566,8 +553,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'onigiri',
     palette: ['#fff6e0', '#3a4152'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   {
@@ -577,8 +563,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'shield',
     palette: ['#a5f3ff', '#1d6fa8'],
-    variants: ['normal', 'gold', 'cheatmaster'],
-    unreleased: ['loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
     ability: { verified: true },
   },
   // Collaboration : une seule finition, et la seule du jeu à ne pas recevoir
@@ -595,7 +580,7 @@ const SPRITES_S4 = [
   },
 ];
 
-const DATA_DATE_S4 = '2026-09-04';
+const DATA_DATE_S4 = '2026-09-11';
 const DROP_DATE_S4 = ''; // aucun relevé publié le jour du lancement
 
 const RENAMES_S4 = {};
