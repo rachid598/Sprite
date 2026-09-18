@@ -1,6 +1,6 @@
 /*
  * Base de données des Sprites — Saison 3 : 25 Sprites / 117 cases ;
- * Saison 4 : 16 Sprites / 61 cases publiées (Sprite × variante).
+ * Saison 4 : 19 Sprites / 76 cases publiées (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
  * `variants` liste les variantes disponibles en jeu pour ce Sprite.
@@ -389,21 +389,31 @@ const VARIANTS_S4 = [
   // Sortie confirmée à cette date sur les quinze Sprites qui la reçoivent —
   // Mega Man, collaboration à finition unique, en reste écarté.
   { id: 'loothacker', accent: '#38bdf8' },
+  // Ajoutée aux fichiers du jeu le 17 septembre 2026, sortie annoncée pour le
+  // 24 — sauf sur la Couronne, déjà attribuable dès l'ajout aux fichiers.
+  // Ne monte en niveau que par élimination ; chance de faire tomber un Sprite
+  // supplémentaire sur une élimination.
+  { id: 'bountyhunter', accent: '#ef4444' },
 ];
 
 /**
  * Douze Sprites au lancement, trois finitions chacun — trente-six cases ;
- * quatre de plus le 3 septembre (v42.10) ; et la quatrième finition, Loot
- * Hacker, sortie le 10 septembre sur quinze des seize Sprites. Seize Sprites,
- * soixante et une cases publiées au total.
+ * quatre de plus le 3 septembre (v42.10) ; la quatrième finition, Loot
+ * Hacker, sortie le 10 septembre sur quinze des seize Sprites ; trois Sprites
+ * de plus le 17 septembre (v42.20), avec la cinquième finition, Bounty
+ * Hunter, à ce stade publiée sur la seule Couronne. Dix-neuf Sprites,
+ * soixante-quatorze cases publiées au total.
  *
  * Shadow et Storm Scout, un temps douteux, sont confirmés par la planche
  * officielle du 20 août : douze Sprites au lancement.
  * Le concours « Design-A-Sprite » avait retenu cinq propositions
  * communautaires : Bullet, Dumpster Dive, Honey, Pond et X-Ray. Epic a
  * finalement remplacé Bullet par Onigiri, du même auteur. X-Ray et Onigiri
- * sont sortis le 3 septembre ; Dumpster Dive, Honey et Pond restent annoncés
- * pour plus tard dans la saison, sans date — donc absents d'ici là.
+ * sont sortis le 3 septembre, Pond (« Étang ») le 17 ; Dumpster Dive et Honey
+ * restent annoncés pour plus tard dans la saison, sans date — donc absents
+ * d'ici là. Même chose pour Anniversaire (annoncé au 26 septembre) et Morgana
+ * (repérés dans les fichiers du jeu, sans date) : absents des données tant
+ * qu'ils ne sont pas en jeu, selon la même règle.
  *
  * Aucun taux d'apparition n'est publié à ce stade : tous portent
  * `dropUnverified`. `dropRate` ne sert alors qu'au tri, par rareté décroissante.
@@ -417,6 +427,7 @@ const SPRITES_S4 = [
     shape: 'bush',
     palette: ['#8fd66a', '#2f6b2a'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -427,6 +438,7 @@ const SPRITES_S4 = [
     shape: 'pixel',
     palette: ['#7ad9ff', '#3b2a8c'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -437,6 +449,7 @@ const SPRITES_S4 = [
     shape: 'shield',
     palette: ['#ffc978', '#a2571c'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -447,6 +460,7 @@ const SPRITES_S4 = [
     shape: 'suit',
     palette: ['#9fd0ff', '#2a4f86'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -457,6 +471,7 @@ const SPRITES_S4 = [
     shape: 'swirl',
     palette: ['#8f7bff', '#2a1a6b'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -467,6 +482,7 @@ const SPRITES_S4 = [
     shape: 'spike',
     palette: ['#3aa0ff', '#123a86'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -477,6 +493,7 @@ const SPRITES_S4 = [
     shape: 'tail',
     palette: ['#ffce5c', '#c07a12'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -487,6 +504,7 @@ const SPRITES_S4 = [
     shape: 'bolt',
     palette: ['#ff6b6b', '#2a1020'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -497,6 +515,7 @@ const SPRITES_S4 = [
     shape: 'spike',
     palette: ['#6b6f7d', '#1a1020'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -507,6 +526,7 @@ const SPRITES_S4 = [
     shape: 'rabbit',
     palette: ['#7de88a', '#1d6b3c'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -516,7 +536,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'crown',
     palette: ['#ffe07a', '#c48a11'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -527,6 +547,7 @@ const SPRITES_S4 = [
     shape: 'dino',
     palette: ['#9db8ff', '#3b3a8c'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
 
@@ -542,6 +563,7 @@ const SPRITES_S4 = [
     shape: 'glasses',
     palette: ['#8ef0ff', '#0e4f7a'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   // Second lauréat du concours (Enorull). Epic a substitué ce Sprite à la
@@ -554,6 +576,7 @@ const SPRITES_S4 = [
     shape: 'onigiri',
     palette: ['#fff6e0', '#3a4152'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   {
@@ -564,6 +587,7 @@ const SPRITES_S4 = [
     shape: 'shield',
     palette: ['#a5f3ff', '#1d6fa8'],
     variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
     ability: { verified: true },
   },
   // Collaboration : une seule finition, et la seule du jeu à ne pas recevoir
@@ -578,9 +602,49 @@ const SPRITES_S4 = [
     variants: ['normal'],
     ability: { verified: true },
   },
+
+  /* ---- Sortis le 17 septembre 2026 avec la v42.20 ----------------------- */
+
+  // Collaboration Pac-Man.
+  {
+    id: 'blinky',
+    rarity: 'legendary',
+    dropRate: 4.2,
+    dropUnverified: true,
+    shape: 'ghost',
+    palette: ['#ff5a5a', '#7a1010'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
+    ability: { verified: true },
+  },
+  // Collaboration Crash Bandicoot.
+  {
+    id: 'crash',
+    rarity: 'legendary',
+    dropRate: 4.1,
+    dropUnverified: true,
+    shape: 'bandicoot',
+    palette: ['#ff9d4d', '#8a4a12'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
+    ability: { verified: true },
+  },
+  // Troisième lauréat du concours « Design-A-Sprite » sorti (Pine & Kiri) ;
+  // Dumpster Dive et Honey restent annoncés, sans date.
+  {
+    id: 'pond',
+    rarity: 'epic',
+    dropRate: 6.1,
+    dropUnverified: true,
+    shape: 'frog',
+    palette: ['#8fe6b0', '#1f6b45'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
+    unreleased: ['bountyhunter'],
+    ability: { verified: true },
+  },
 ];
 
-const DATA_DATE_S4 = '2026-09-11';
+const DATA_DATE_S4 = '2026-09-18';
 const DROP_DATE_S4 = ''; // aucun relevé publié le jour du lancement
 
 const RENAMES_S4 = {};
@@ -612,6 +676,19 @@ const SLOT_ORDER_S4 = [
   'stormscout:loothacker', 'sonic:loothacker', 'tails:loothacker', 'killswitch:loothacker',
   'shadow:loothacker', 'jackrabbit:loothacker', 'crown:loothacker', 'klombo:loothacker',
   'xray:loothacker', 'onigiri:loothacker', 'overshield:loothacker',
+  // Bounty Hunter, déjà attribuable sur la Couronne à l'ajout aux fichiers.
+  'crown:bountyhunter',
+  // Sortis le 17 septembre 2026 (v42.20) : ajout en fin, comme d'habitude.
+  'blinky:normal', 'blinky:gold', 'blinky:cheatmaster', 'blinky:loothacker',
+  'crash:normal', 'crash:gold', 'crash:cheatmaster', 'crash:loothacker',
+  'pond:normal', 'pond:gold', 'pond:cheatmaster', 'pond:loothacker',
+  // Bounty Hunter, encore hors butin ailleurs que sur la Couronne : même
+  // précaution que pour Loot Hacker, sa place est figée avant sa sortie.
+  'bush:bountyhunter', 'eightbit:bountyhunter', 'adventure:bountyhunter', 'jonesy:bountyhunter',
+  'stormscout:bountyhunter', 'sonic:bountyhunter', 'tails:bountyhunter', 'killswitch:bountyhunter',
+  'shadow:bountyhunter', 'jackrabbit:bountyhunter', 'klombo:bountyhunter', 'xray:bountyhunter',
+  'onigiri:bountyhunter', 'overshield:bountyhunter', 'blinky:bountyhunter', 'crash:bountyhunter',
+  'pond:bountyhunter',
 ];
 
 /**

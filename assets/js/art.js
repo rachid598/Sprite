@@ -78,6 +78,10 @@ const SHAPES = {
     'M32 10 a 6 6 0 0 1 5.2 3 L 52 42 a 6 6 0 0 1 -5.2 9 H 17.2 A 6 6 0 0 1 12 42 L 26.8 13 A 6 6 0 0 1 32 10 Z M22 44 h 20 v 7 H 22 Z',
   helmet:
     'M32 8 a 20 20 0 0 1 20 20 v 10 h -8 v -8 a 12 12 0 0 0 -24 0 v 8 h -8 V 28 A 20 20 0 0 1 32 8 Z M10 40 h 10 v 14 H 10 Z M44 40 h 10 v 14 H 44 Z',
+  bandicoot:
+    'M32 10 a 18 18 0 0 1 18 18 v 6 a 18 14 0 0 1 -36 0 v -6 a 18 18 0 0 1 18 -18 Z M18 14 l -6 -10 l 10 4 Z M46 14 l 6 -10 l -10 4 Z M26 30 h 4 v 4 h -4 Z M34 30 h 4 v 4 h -4 Z M26 40 a 6 4 0 0 0 12 0 Z',
+  frog:
+    'M14 34 a 18 16 0 0 1 36 0 v 6 a 16 14 0 0 1 -36 0 Z M12 16 a 8 8 0 1 1 12 8 M52 16 a 8 8 0 1 0 -12 8 M24 32 a 3 3 0 1 0 0.1 0 M40 32 a 3 3 0 1 0 0.1 0 M26 42 q 6 4 12 0',
 };
 
 /** Palettes appliquées par-dessus les couleurs du Sprite selon la variante. */

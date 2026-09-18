@@ -160,6 +160,7 @@ const fr = {
     quack: 'Canardesque',
     cheatmaster: 'Cheat',
     loothacker: 'Pirate des butins',
+    bountyhunter: 'Chasseur de tête',
   },
   /*
    * Effets propres à une variante, cumulables avec celui du Sprite. Une clé
@@ -169,6 +170,8 @@ const fr = {
     gem: '30 % de dégâts de chute en moins, cumulable avec l\'effet du Sprite.',
     loothacker:
       'Augmente les chances de trouver vos objets de piratage de butin dans les coffres, en plus de l\'effet du Sprite.',
+    bountyhunter:
+      'Chance de faire tomber un Sprite supplémentaire sur une élimination ; ne monte en niveau que par élimination.',
   },
   ability: {
     water: 'Régénère votre bouclier et celui des équipiers proches au contact de l\'eau.',
@@ -217,6 +220,11 @@ const fr = {
     onigiri: 'Déclenche Surcharge après avoir consommé un objet à usage unique ; l\'effet dure plus longtemps à chaque niveau.',
     overshield: 'Vous octroie du surbouclier, en quantité proportionnelle au niveau du Sprite.',
     megaman: 'Frottement réduit pendant la glissade : vous glissez et dérapez plus loin, et plus longtemps à chaque niveau.',
+
+    // Saison 4 — v42.20 du 17 septembre 2026
+    blinky: 'Accorde un camouflage pendant une durée lorsque vous subissez des dégâts ; la durée augmente à chaque niveau.',
+    crash: 'Déclenche une attaque en tornade qui inflige des dégâts et repousse les ennemis proches ; les dégâts augmentent et le temps de recharge diminue à chaque niveau.',
+    pond: 'Sautez peu après l\'atterrissage pour déclencher un Super Saut si des charges sont présentes — elles s\'accumulent avec le temps ; la puissance augmente et le temps de recharge diminue à chaque niveau.',
   },
   name: {
     water: 'Eau',
@@ -264,6 +272,11 @@ const fr = {
     onigiri: 'Onigiri',
     overshield: 'Surbouclier',
     megaman: 'Mega Man',
+
+    // Ajoutés le 17 septembre 2026 avec la v42.20
+    blinky: 'Blinky',
+    crash: 'Crash Bandicoot',
+    pond: 'Étang',
   },
   backup: {
     heading: 'Sauvegarde et installation',
