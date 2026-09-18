@@ -7,7 +7,7 @@
  * ALL_SLOTS ne l'est pas — d'où l'octet de version.
  */
 
-import { BIT_SLOTS, CODES, SAISON, migrateSlot } from './data.js';
+import { BIT_SLOTS, CODES, SAISON, migrateSlot } from './data.js?v=54a71c2';
 
 /*
  * Chaque saison a sa propre collection, donc sa propre clé — définie dans

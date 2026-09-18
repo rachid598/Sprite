@@ -6,7 +6,7 @@
  *   - autres URL   : cache d'abord, puis réseau (les assets sont versionnés)
  */
 
-const BUILD = '__BUILD__';
+const BUILD = '54a71c2';
 const CACHE = 'sprite-tracker-' + BUILD;
 
 // 228 fichiers, dont 209 illustrations.
