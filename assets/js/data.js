@@ -1,6 +1,6 @@
 /*
  * Base de données des Sprites — Saison 3 : 25 Sprites / 117 cases ;
- * Saison 4 : 19 Sprites / 76 cases publiées (Sprite × variante).
+ * Saison 4 : 25 Sprites / 122 cases publiées (Sprite × variante).
  *
  * `id` sert de clé de stockage : ne jamais le renommer une fois publié.
  * `variants` liste les variantes disponibles en jeu pour ce Sprite.
@@ -389,11 +389,15 @@ const VARIANTS_S4 = [
   // Sortie confirmée à cette date sur les quinze Sprites qui la reçoivent —
   // Mega Man, collaboration à finition unique, en reste écarté.
   { id: 'loothacker', accent: '#38bdf8' },
-  // Ajoutée aux fichiers du jeu le 17 septembre 2026, sortie annoncée pour le
-  // 24 — sauf sur la Couronne, déjà attribuable dès l'ajout aux fichiers.
-  // Ne monte en niveau que par élimination ; chance de faire tomber un Sprite
-  // supplémentaire sur une élimination.
+  // Ajoutée aux fichiers du jeu le 17 septembre 2026, sortie le 24 sur tous
+  // les Sprites qui la reçoivent — publiée dès l'ajout aux fichiers sur la
+  // Couronne. Ne monte en niveau que par élimination ; chance de trouver un
+  // Sprite en éliminant un adversaire.
   { id: 'bountyhunter', accent: '#ef4444' },
+  // Ajoutée aux fichiers du jeu le 1er octobre 2026 (Fortnitemares) ; sortie
+  // annoncée pour le 8, sauf sur la Couronne, déjà attribuable comme à
+  // chaque fois.
+  { id: 'trickortreat', accent: '#ff7a1a' },
 ];
 
 /**
@@ -401,19 +405,21 @@ const VARIANTS_S4 = [
  * quatre de plus le 3 septembre (v42.10) ; la quatrième finition, Loot
  * Hacker, sortie le 10 septembre sur quinze des seize Sprites ; trois Sprites
  * de plus le 17 septembre (v42.20), avec la cinquième finition, Bounty
- * Hunter, à ce stade publiée sur la seule Couronne. Dix-neuf Sprites,
- * soixante-quatorze cases publiées au total.
+ * Hunter, publiée d'abord sur la seule Couronne puis, le 24 septembre, sur
+ * tous les Sprites qui la reçoivent ; Anniversaire et Morgana sortis le
+ * 26 septembre ; quatre Sprites de plus le 1er octobre avec Fortnitemares,
+ * et une sixième finition, Trick or Treat, à ce stade publiée sur la seule
+ * Couronne. Vingt-cinq Sprites, cent vingt-deux cases publiées au total.
  *
  * Shadow et Storm Scout, un temps douteux, sont confirmés par la planche
  * officielle du 20 août : douze Sprites au lancement.
  * Le concours « Design-A-Sprite » avait retenu cinq propositions
  * communautaires : Bullet, Dumpster Dive, Honey, Pond et X-Ray. Epic a
  * finalement remplacé Bullet par Onigiri, du même auteur. X-Ray et Onigiri
- * sont sortis le 3 septembre, Pond (« Étang ») le 17 ; Dumpster Dive et Honey
- * restent annoncés pour plus tard dans la saison, sans date — donc absents
- * d'ici là. Même chose pour Anniversaire (annoncé au 26 septembre) et Morgana
- * (repérés dans les fichiers du jeu, sans date) : absents des données tant
- * qu'ils ne sont pas en jeu, selon la même règle.
+ * sont sortis le 3 septembre, Pond (« Étang ») le 17, Dumpster Dive
+ * (« Fouille-Poubelles ») le 1er octobre ; Honey reste annoncé, sans date —
+ * donc absent d'ici là, selon la même règle que pour tout Sprite repéré dans
+ * les fichiers du jeu mais pas encore actif.
  *
  * Aucun taux d'apparition n'est publié à ce stade : tous portent
  * `dropUnverified`. `dropRate` ne sert alors qu'au tri, par rareté décroissante.
@@ -426,8 +432,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'bush',
     palette: ['#8fd66a', '#2f6b2a'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -437,8 +443,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'pixel',
     palette: ['#7ad9ff', '#3b2a8c'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -448,8 +454,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'shield',
     palette: ['#ffc978', '#a2571c'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -459,8 +465,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'suit',
     palette: ['#9fd0ff', '#2a4f86'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -470,8 +476,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'swirl',
     palette: ['#8f7bff', '#2a1a6b'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -481,8 +487,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'spike',
     palette: ['#3aa0ff', '#123a86'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -492,8 +498,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'tail',
     palette: ['#ffce5c', '#c07a12'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -503,8 +509,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'bolt',
     palette: ['#ff6b6b', '#2a1020'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -514,8 +520,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'spike',
     palette: ['#6b6f7d', '#1a1020'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -525,8 +531,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'rabbit',
     palette: ['#7de88a', '#1d6b3c'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -536,7 +542,7 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'crown',
     palette: ['#ffe07a', '#c48a11'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter', 'trickortreat'],
     ability: { verified: true },
   },
   {
@@ -546,8 +552,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'dino',
     palette: ['#9db8ff', '#3b3a8c'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
 
@@ -562,8 +568,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'glasses',
     palette: ['#8ef0ff', '#0e4f7a'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   // Second lauréat du concours (Enorull). Epic a substitué ce Sprite à la
@@ -575,8 +581,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'onigiri',
     palette: ['#fff6e0', '#3a4152'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   {
@@ -586,8 +592,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'shield',
     palette: ['#a5f3ff', '#1d6fa8'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   // Collaboration : une seule finition, et la seule du jeu à ne pas recevoir
@@ -613,8 +619,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'ghost',
     palette: ['#ff5a5a', '#7a1010'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   // Collaboration Crash Bandicoot.
@@ -625,8 +631,8 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'bandicoot',
     palette: ['#ff9d4d', '#8a4a12'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
   // Troisième lauréat du concours « Design-A-Sprite » sorti (Pine & Kiri) ;
@@ -638,13 +644,90 @@ const SPRITES_S4 = [
     dropUnverified: true,
     shape: 'frog',
     palette: ['#8fe6b0', '#1f6b45'],
-    variants: ['normal', 'gold', 'cheatmaster', 'loothacker'],
-    unreleased: ['bountyhunter'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
+    ability: { verified: true },
+  },
+
+  /* ---- Sortis le 26 septembre et le 1er octobre 2026 --------------------- */
+
+  // Annoncé pour le 26 septembre, sorti à cette date.
+  {
+    id: 'birthday',
+    rarity: 'rare',
+    dropRate: 8.2,
+    dropUnverified: true,
+    shape: 'cake',
+    palette: ['#ff9ec4', '#c23f8b'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
+    ability: { verified: true },
+  },
+  // Collaboration Persona, repérée dans les fichiers du jeu sans date, sortie
+  // avant le 3 octobre.
+  {
+    id: 'morgana',
+    rarity: 'epic',
+    dropRate: 6.0,
+    dropUnverified: true,
+    shape: 'cat',
+    palette: ['#8f9bb3', '#3c4657'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
+    ability: { verified: true },
+  },
+
+  /* Fortnitemares 2026, ajoutés le 1er octobre avec le thème Halloween. */
+
+  // Quatrième lauréat du concours « Design-A-Sprite » sorti (StinkyPrincessGoose) ;
+  // Honey reste annoncé, sans date.
+  {
+    id: 'dumpsterdive',
+    rarity: 'epic',
+    dropRate: 5.9,
+    dropUnverified: true,
+    shape: 'raccoon',
+    palette: ['#9aa5b1', '#4a5363'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
+    ability: { verified: true },
+  },
+  {
+    id: 'deer',
+    rarity: 'legendary',
+    dropRate: 4.0,
+    dropUnverified: true,
+    shape: 'deer',
+    palette: ['#d99a5c', '#7a4a1e'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
+    ability: { verified: true },
+  },
+  {
+    id: 'vampire',
+    rarity: 'legendary',
+    dropRate: 3.9,
+    dropUnverified: true,
+    shape: 'fangs',
+    palette: ['#8c1030', '#2a0510'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
+    ability: { verified: true },
+  },
+  {
+    id: 'spookydash',
+    rarity: 'mythic',
+    dropRate: 2.0,
+    dropUnverified: true,
+    shape: 'pumpkin',
+    palette: ['#ff8a3d', '#7a2f0a'],
+    variants: ['normal', 'gold', 'cheatmaster', 'loothacker', 'bountyhunter'],
+    unreleased: ['trickortreat'],
     ability: { verified: true },
   },
 ];
 
-const DATA_DATE_S4 = '2026-09-18';
+const DATA_DATE_S4 = '2026-10-03';
 const DROP_DATE_S4 = ''; // aucun relevé publié le jour du lancement
 
 const RENAMES_S4 = {};
@@ -682,13 +765,30 @@ const SLOT_ORDER_S4 = [
   'blinky:normal', 'blinky:gold', 'blinky:cheatmaster', 'blinky:loothacker',
   'crash:normal', 'crash:gold', 'crash:cheatmaster', 'crash:loothacker',
   'pond:normal', 'pond:gold', 'pond:cheatmaster', 'pond:loothacker',
-  // Bounty Hunter, encore hors butin ailleurs que sur la Couronne : même
-  // précaution que pour Loot Hacker, sa place est figée avant sa sortie.
+  // Bounty Hunter, sorti le 24 septembre 2026 partout où il était annoncé.
   'bush:bountyhunter', 'eightbit:bountyhunter', 'adventure:bountyhunter', 'jonesy:bountyhunter',
   'stormscout:bountyhunter', 'sonic:bountyhunter', 'tails:bountyhunter', 'killswitch:bountyhunter',
   'shadow:bountyhunter', 'jackrabbit:bountyhunter', 'klombo:bountyhunter', 'xray:bountyhunter',
   'onigiri:bountyhunter', 'overshield:bountyhunter', 'blinky:bountyhunter', 'crash:bountyhunter',
   'pond:bountyhunter',
+  // Trick or Treat, déjà attribuable sur la Couronne à l'ajout aux fichiers.
+  'crown:trickortreat',
+  // Sortis les 26 septembre et 1er octobre 2026 : ajout en fin, comme d'habitude.
+  'birthday:normal', 'birthday:gold', 'birthday:cheatmaster', 'birthday:loothacker', 'birthday:bountyhunter',
+  'morgana:normal', 'morgana:gold', 'morgana:cheatmaster', 'morgana:loothacker', 'morgana:bountyhunter',
+  'dumpsterdive:normal', 'dumpsterdive:gold', 'dumpsterdive:cheatmaster', 'dumpsterdive:loothacker', 'dumpsterdive:bountyhunter',
+  'deer:normal', 'deer:gold', 'deer:cheatmaster', 'deer:loothacker', 'deer:bountyhunter',
+  'vampire:normal', 'vampire:gold', 'vampire:cheatmaster', 'vampire:loothacker', 'vampire:bountyhunter',
+  'spookydash:normal', 'spookydash:gold', 'spookydash:cheatmaster', 'spookydash:loothacker', 'spookydash:bountyhunter',
+  // Trick or Treat, encore hors butin ailleurs que sur la Couronne : même
+  // précaution que pour les finitions précédentes, sa place est figée avant
+  // sa sortie annoncée pour le 8 octobre.
+  'bush:trickortreat', 'eightbit:trickortreat', 'adventure:trickortreat', 'jonesy:trickortreat',
+  'stormscout:trickortreat', 'sonic:trickortreat', 'tails:trickortreat', 'killswitch:trickortreat',
+  'shadow:trickortreat', 'jackrabbit:trickortreat', 'klombo:trickortreat', 'xray:trickortreat',
+  'onigiri:trickortreat', 'overshield:trickortreat', 'blinky:trickortreat', 'crash:trickortreat',
+  'pond:trickortreat', 'birthday:trickortreat', 'morgana:trickortreat', 'dumpsterdive:trickortreat',
+  'deer:trickortreat', 'vampire:trickortreat', 'spookydash:trickortreat',
 ];
 
 /**

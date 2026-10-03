@@ -161,17 +161,27 @@ const fr = {
     cheatmaster: 'Cheat',
     loothacker: 'Pirate des butins',
     bountyhunter: 'Chasseur de tête',
+    trickortreat: 'Farce ou friandise',
   },
   /*
-   * Effets propres à une variante, cumulables avec celui du Sprite. Une clé
+   * Effets propres à une variante, cumulables avec celui du Sprite. Textes
+   * relevés sur le panneau « générer une image » du SpriteDex de SoisCool
+   * Mec, identiques quel que soit le Sprite qui porte la variante — une clé
    * absente signifie « aucun bonus documenté » : on n'affiche alors rien.
    */
   variantBonus: {
+    gold: 'Multiplie par 3 l\'EXP obtenue en réalisant des éliminations.',
+    gummy: 'Obtenez 20 % de poussière de sprite supplémentaire lors de l\'extraction.',
+    galaxy: 'Gagnez 30 % de munitions supplémentaires à chaque fois que vous en ramassez dans le monde.',
     gem: '30 % de dégâts de chute en moins, cumulable avec l\'effet du Sprite.',
-    loothacker:
-      'Augmente les chances de trouver vos objets de piratage de butin dans les coffres, en plus de l\'effet du Sprite.',
+    holofoil: '5 % de chances pour l\'escouade de trouver des variantes rares de Sprite en pillant des coffres.',
+    quack: 'Octroie 50 % de l\'EXP d\'esprit reçue à tous les esprits de l\'inventaire.',
+    cheatmaster:
+      'Spam de boutons : toutes les saisies comptent comme correctes pour les codes de triche trouvés dans le monde.',
+    loothacker: 'Augmente les chances de faire apparaître des objets grâce à vos Loot Hacks.',
     bountyhunter:
-      'Chance de faire tomber un Sprite supplémentaire sur une élimination ; ne monte en niveau que par élimination.',
+      'Chance de trouver un Sprite en éliminant un adversaire ; ne gagne de l\'XP que par élimination, sauf règle propre au Sprite.',
+    trickortreat: 'Chance de faire apparaître des bonbons en ouvrant un contenant.',
   },
   ability: {
     water: 'Régénère votre bouclier et celui des équipiers proches au contact de l\'eau.',
@@ -225,6 +235,14 @@ const fr = {
     blinky: 'Accorde un camouflage pendant une durée lorsque vous subissez des dégâts ; la durée augmente à chaque niveau.',
     crash: 'Déclenche une attaque en tornade qui inflige des dégâts et repousse les ennemis proches ; les dégâts augmentent et le temps de recharge diminue à chaque niveau.',
     pond: 'Sautez peu après l\'atterrissage pour déclencher un Super Saut si des charges sont présentes — elles s\'accumulent avec le temps ; la puissance augmente et le temps de recharge diminue à chaque niveau.',
+
+    // Saison 4 — sortis les 26 septembre et 1er octobre 2026
+    birthday: 'Chance de faire apparaître un morceau de gâteau en ouvrant un coffre, et sur une élimination au niveau maximum ; la chance augmente à chaque niveau.',
+    morgana: 'Augmente l\'efficacité des objets de soin ; l\'efficacité augmente à chaque niveau.',
+    dumpsterdive: 'La nourriture procure un bonus de soin. Sauter hors d\'une cachette en fait parfois trouver, tout comme ouvrir un conteneur, plus rarement ; la qualité augmente à chaque niveau.',
+    deer: 'Les attaques au corps-à-corps infligent plus de dégâts, davantage à chaque niveau.',
+    vampire: 'Récupère un pourcentage des dégâts infligés en PV ; le pourcentage augmente à chaque niveau.',
+    spookydash: 'Permet de traverser certains objets. Charges accumulées avec le temps ; le temps de recharge diminue à chaque niveau.',
   },
   name: {
     water: 'Eau',
@@ -277,6 +295,14 @@ const fr = {
     blinky: 'Blinky',
     crash: 'Crash Bandicoot',
     pond: 'Étang',
+
+    // Ajoutés les 26 septembre et 1er octobre 2026
+    birthday: 'Anniversaire',
+    morgana: 'Morgana',
+    dumpsterdive: 'Fouille-Poubelles',
+    deer: 'Cerf',
+    vampire: 'Vampirique',
+    spookydash: 'Ruée Effrayante',
   },
   backup: {
     heading: 'Sauvegarde et installation',
