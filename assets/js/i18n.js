@@ -243,6 +243,8 @@ const fr = {
     deer: 'Les attaques au corps-à-corps infligent plus de dégâts, davantage à chaque niveau.',
     vampire: 'Récupère un pourcentage des dégâts infligés en PV ; le pourcentage augmente à chaque niveau.',
     spookydash: 'Permet de traverser certains objets. Charges accumulées avec le temps ; le temps de recharge diminue à chaque niveau.',
+    honey: 'Chance de faire apparaître des abeilles au point d’impact lorsque vous infligez des dégâts avec une arme à distance.',
+    onewishwillow: 'Extrait les esprits équipés des adversaires éliminés. Repousse les objets et les joueurs lorsque vous subissez des dégâts ; révèle votre position sur la carte lorsque vous le retirez.',
   },
   name: {
     water: 'Eau',
@@ -303,6 +305,8 @@ const fr = {
     deer: 'Cerf',
     vampire: 'Vampirique',
     spookydash: 'Ruée Effrayante',
+    honey: 'Esprit du Miel',
+    onewishwillow: 'One Wish Willow',
   },
   backup: {
     heading: 'Sauvegarde et installation',
