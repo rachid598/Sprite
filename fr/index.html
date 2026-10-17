@@ -315,6 +315,34 @@
         </div>
         <p class="backup__hint" data-t="backup.installHint"></p>
       </div>
+      <div class="panel epic-import" aria-labelledby="epic-heading">
+        <h3 id="epic-heading">Importer ma collection Fortnite</h3>
+        <p>Récupérez vos esprits obtenus et maîtrisés, puis vérifiez les ajouts avant de les fusionner avec la saison affichée.</p>
+        <p id="epic-status" role="status" aria-live="polite">Connexion Epic en préparation.</p>
+        <details>
+          <summary>Comment fonctionne la connexion ?</summary>
+          <p>La lecture passe par le service indépendant api-fortnite.com. La connexion s’effectue sur Epic Games :
+            Spiritdex ne demande jamais votre mot de passe. Le fournisseur reçoit une autorisation d’accès au compte,
+            qui peut inclure une autorisation de connexion persistante ; elle est révoquée à la déconnexion ou
+            après expiration de la session. Les identifiants restent chiffrés sur le serveur pendant cette période.
+            Le bouton Déconnecter permet de terminer la session.</p>
+          <p>Ce service n’est pas une intégration officielle Epic. Une session expirée demande une nouvelle connexion.
+            La récupération ne modifie pas votre inventaire dans le jeu.</p>
+        </details>
+        <div class="backup__row">
+          <button type="button" class="btn btn--primary" id="epic-connect" disabled>Connecter mon compte Epic</button>
+          <a class="btn" id="epic-link" target="_blank" rel="noopener noreferrer" hidden>Ouvrir Epic Games</a>
+          <button type="button" class="btn" id="epic-refresh" disabled>Actualiser depuis Fortnite</button>
+          <button type="button" class="btn btn--ghost" id="epic-disconnect" disabled>Déconnecter</button>
+        </div>
+        <p>Vous disposez déjà d’un export JSON de collection provenant de l’API ?</p>
+        <label for="epic-file">Choisir le fichier de collection Fortnite</label>
+        <input type="file" id="epic-file" accept="application/json,.json">
+        <div id="epic-preview" hidden>
+          <p id="epic-summary"></p>
+          <button type="button" class="btn btn--primary" id="epic-apply" disabled>Ajouter à ma collection</button>
+        </div>
+      </div>
     </div>
   </section>
 

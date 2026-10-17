@@ -1,0 +1,16 @@
+name = "spiritdex-epic"
+main = "epic-worker.js"
+compatibility_date = "2026-10-17"
+
+[vars]
+ALLOWED_ORIGIN = "https://rachid598.github.io"
+
+[[kv_namespaces]]
+binding = "EPIC_SESSIONS"
+id = "REMPLACER_PAR_VOTRE_ID"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+# Secrets via wrangler secret put (jamais dans ce fichier) :
+# FORTNITE_API_KEY (offre Pro), SESSION_ENCRYPTION_KEY (64 caractères hexadécimaux).
