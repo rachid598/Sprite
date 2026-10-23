@@ -496,7 +496,7 @@ const SPRITES_S4 = [
   },
   {
     id: 'killswitch',
-    rarity: 'epic',
+    rarity: 'legendary',
     dropRate: 6.3,
     dropUnverified: true,
     shape: 'bolt',
@@ -722,7 +722,7 @@ const SPRITES_S4 = [
   },
 ];
 
-const DATA_DATE_S4 = '2026-10-17';
+const DATA_DATE_S4 = '2026-10-23';
 const DROP_DATE_S4 = ''; // aucun relevé publié le jour du lancement
 
 const RENAMES_S4 = {};
