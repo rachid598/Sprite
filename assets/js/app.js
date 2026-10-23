@@ -19,6 +19,8 @@ import { getStrings } from './i18n.js';
 import { VERSION_APP } from './version.js';
 import { spriteImg, spriteSvg, variantChipStyle } from './art.js';
 import * as store from './store.js';
+import { bindEpicImport } from './epic-ui.js';
+import { mergeEpicCollection } from './epic-import.js';
 import { registerServiceWorker, applyUpdate, chercherMaj, trackInstall, estInstallee, estIos } from './pwa.js';
 // Fichier nommé « salon » et non « sync » : certains bloqueurs de publicité
 // filtrent les scripts contenant « sync », terme courant du pistage.
@@ -252,8 +254,10 @@ function renderSaisons() {
  * variantes et sa propre branche de synchronisation. On recharge donc tout,
  * sans jamais toucher au stockage de l'autre saison.
  */
+let epicImport;
 function changerSaison(id) {
   if (id === SAISON.id) return;
+  epicImport?.seasonChanged();
 
   setSaison(id);
   store.savePref('saison', id);
@@ -1863,6 +1867,17 @@ function init() {
   bindImageFallback();
   bindEvents();
   bindBackup();
+  epicImport = bindEpicImport({
+    getSeason: () => SAISON.id,
+    getCollection: () => state,
+    isLocked: () => state.locked,
+    merge: (incoming) => {
+      const merged = mergeEpicCollection(state, incoming);
+      state.owned = merged.owned;
+      state.mastered = merged.mastered;
+      commit();
+    },
+  });
   bindPwa();
   bindSync();
   bindCompare();

@@ -9,7 +9,7 @@
 const BUILD = '__BUILD__';
 const CACHE = 'sprite-tracker-' + BUILD;
 
-// 299 fichiers, dont 280 illustrations.
+// 302 fichiers, dont 280 illustrations.
 const FILES = [
   "./",
   "index.html",
@@ -20,6 +20,9 @@ const FILES = [
   "assets/js/app.js",
   "assets/js/art.js",
   "assets/js/data.js",
+  "assets/js/epic-config.js",
+  "assets/js/epic-import.js",
+  "assets/js/epic-ui.js",
   "assets/js/i18n.js",
   "assets/js/pwa.js",
   "assets/js/salon.js",

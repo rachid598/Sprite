@@ -28,7 +28,7 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
   toute la grille (133 ms → 33 ms sur processeur bridé ×4).
 - **Application installable** — manifeste + service worker : le site s'installe sur
   téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 280
-  illustrations comprises (299 fichiers pré-mis en cache).
+  illustrations comprises (302 fichiers pré-mis en cache).
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
@@ -84,6 +84,11 @@ assets/js/app.js    rendu, filtres, interactions
 ```
 
 ## Développement
+
+Un prototype d'import automatique de collection Fortnite est disponible sur la
+branche de développement : aperçu des ajouts, fusion additive et passerelle Epic
+séparée. La connexion reste désactivée avant configuration et validation sur un
+vrai compte. Voir [le guide](docs/epic-import.md).
 
 Les modules ES nécessitent un serveur HTTP (pas d'ouverture en `file://`) :
 
