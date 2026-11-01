@@ -10,7 +10,8 @@ const fr = {
     label: 'Saison',
     current: 'en cours',
     past: 'terminée',
-    switched: 'Saison %d affichée.',
+    switched: '%d affichée.',
+    empty: 'La collection de cette saison sera ajoutée prochainement.',
     pastNote:
       'Ces Sprites ne se trouvent plus en partie : la collection reste consultable et modifiable, mais elle n\'évoluera plus.',
     otherSeasonBackup: 'Cette sauvegarde vient d\'une autre saison. Basculez dessus avant de l\'importer.',

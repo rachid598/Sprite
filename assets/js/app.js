@@ -281,7 +281,7 @@ function changerSaison(id) {
   if (syncState.config) synchroniser({ silencieux: true });
   if (document.body.classList.contains('is-comparing')) renderCompare();
 
-  toast(fill(t.season.switched, { '%d': SAISON.nom.replace(/\D+/g, '') }), { tone: 'ok' });
+  toast(fill(t.season.switched, { '%d': SAISON.nom }), { tone: 'ok' });
 }
 
 function renderFilters() {
@@ -406,7 +406,7 @@ function renderGrid() {
 
   grid.innerHTML = visible.length
     ? visible.map(cardHtml).join('')
-    : `<p class="empty">${t.filters.empty}</p>`;
+    : `<p class="empty">${SPRITES.length ? t.filters.empty : t.season.empty}</p>`;
 
   const label = visible.length === 1 ? t.filters.countOne : t.filters.countMany;
   $('#result-count').textContent = fill(label, { '%d': visible.length });
@@ -711,7 +711,7 @@ function exportImage() {
   ctx.fillText(t.trade.summaryTitle, 60, 96);
 
   const owned = ownedSlots();
-  const pct = (owned / TOTAL_SLOTS) * 100;
+  const pct = TOTAL_SLOTS ? (owned / TOTAL_SLOTS) * 100 : 0;
   ctx.font = 'bold 120px system-ui, sans-serif';
   ctx.fillStyle = '#7ad0ff';
   ctx.fillText(`${pct.toFixed(1)} %`, 60, 220);
@@ -1111,7 +1111,7 @@ function renderSyncProfiles() {
     .sort(([a], [b]) => a.localeCompare(b, lang))
     .map(([id, p]) => {
       const moi = id === syncState.config?.profile;
-      const pct = ((p.count / TOTAL_SLOTS) * 100).toFixed(0);
+      const pct = (TOTAL_SLOTS ? (p.count / TOTAL_SLOTS) * 100 : 0).toFixed(0);
       return `<li class="sync__profile${moi ? ' is-me' : ''}">
         <span class="sync__name">${p.name || id}${moi ? ` <em>(${t.sync.you})</em>` : ''}</span>
         <span class="sync__count">${p.count} / ${TOTAL_SLOTS} · ${pct} %</span>
@@ -1345,7 +1345,7 @@ function classerCases(autre) {
 }
 
 function carteVersus(nom, owned, mastered, aMoi) {
-  const pct = ((owned / TOTAL_SLOTS) * 100).toFixed(0);
+  const pct = (TOTAL_SLOTS ? (owned / TOTAL_SLOTS) * 100 : 0).toFixed(0);
   return `<div class="versus__side${aMoi ? ' is-me' : ''}">
     <span class="versus__who">${nom}</span>
     <span class="versus__pct">${pct} %</span>
