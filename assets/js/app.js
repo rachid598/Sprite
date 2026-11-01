@@ -58,7 +58,8 @@ const state = {
 const slotId = (spriteId, variantId) => `${spriteId}:${variantId}`;
 const nameOf = (sprite) => t.name[sprite.id] || sprite.id;
 const ownedCount = (sprite) => sprite.variants.filter((v) => state.owned.has(slotId(sprite.id, v))).length;
-const isComplete = (sprite) => ownedCount(sprite) === sprite.variants.length;
+const isComplete = (sprite) => sprite.variants.length > 0 && ownedCount(sprite) === sprite.variants.length;
+const publishedSpriteCount = () => SPRITES.filter((s) => s.variants.length > 0).length;
 
 /** Variantes à afficher : les publiées, plus les non publiées si l'option est active. */
 const shownVariants = (sprite) =>
@@ -323,7 +324,8 @@ function sortSprites(list) {
     rarity: (a, b) => RARITY_INDEX[a.rarity].order - RARITY_INDEX[b.rarity].order || byName(a, b),
     name: byName,
     progress: (a, b) =>
-      ownedCount(b) / b.variants.length - ownedCount(a) / a.variants.length || byName(a, b),
+      (b.variants.length ? ownedCount(b) / b.variants.length : 0) -
+      (a.variants.length ? ownedCount(a) / a.variants.length : 0) || byName(a, b),
     mastery: (a, b) => masteredCount(b) - masteredCount(a) || byName(a, b),
     drop: (a, b) => a.dropRate - b.dropRate || byName(a, b),
   };
@@ -344,7 +346,7 @@ function bonusVariantes(sprite) {
 function cardHtml(sprite) {
   const owned = ownedCount(sprite);
   const total = sprite.variants.length;
-  const complete = owned === total;
+  const complete = isComplete(sprite);
   const rarity = RARITY_INDEX[sprite.rarity];
 
   const variants = shownVariants(sprite)
@@ -384,7 +386,7 @@ function cardHtml(sprite) {
     </p>
     <p class="card__drop${sprite.dropUnverified ? ' is-muted' : ''}"><b>${t.card.dropRate} :</b> ${dropText(sprite)}</p>
     <div class="card__meter">
-      <div class="meter"><i style="width:${(owned / total) * 100}%"></i></div>
+      <div class="meter"><i style="width:${total ? (owned / total) * 100 : 0}%"></i></div>
       <span class="card__count">${fill(t.card.variantsOwned, { '%o': owned, '%t': total })}</span>
     </div>
     <div class="variants">${variants}</div>
@@ -438,8 +440,8 @@ function renderProgress() {
   $('#progress-pct').textContent = `${pct.toFixed(1).replace('.', ',')} %`;
   $('#progress-slots').textContent = `${slots} / ${TOTAL_SLOTS}`;
   $('#progress-mastered').textContent = `${masteredSlots()} / ${TOTAL_SLOTS}`;
-  $('#progress-sprites').textContent = `${unlocked} / ${SPRITES.length}`;
-  $('#progress-complete').textContent = `${completed} / ${SPRITES.length}`;
+  $('#progress-sprites').textContent = `${unlocked} / ${publishedSpriteCount()}`;
+  $('#progress-complete').textContent = `${completed} / ${publishedSpriteCount()}`;
   $('#progress-ring').style.setProperty('--pct', pct.toFixed(2));
   $('#progress-ring').setAttribute('aria-valuenow', pct.toFixed(1));
 
@@ -545,13 +547,13 @@ function majCase(bouton, sprite, variante) {
 function majCarte(carte, sprite) {
   const owned = ownedCount(sprite);
   const total = sprite.variants.length;
-  const complete = owned === total;
+  const complete = isComplete(sprite);
 
   carte.classList.toggle('is-complete', complete);
   surElement('.card__count', (el) => {
     el.textContent = fill(t.card.variantsOwned, { '%o': owned, '%t': total });
   }, carte);
-  surElement('.meter i', (el) => (el.style.width = `${(owned / total) * 100}%`), carte);
+  surElement('.meter i', (el) => (el.style.width = `${total ? (owned / total) * 100 : 0}%`), carte);
   surElement('[data-toggle]', (el) => {
     el.textContent = complete ? t.card.uncheckAll : t.card.checkAll;
   }, carte);
@@ -1814,7 +1816,7 @@ function applyStrings() {
     el.setAttribute('aria-label', t.filters.searchLabel);
   });
   surElement('#total-slots', (el) => (el.textContent = TOTAL_SLOTS));
-  surElement('#total-sprites', (el) => (el.textContent = SPRITES.length));
+  surElement('#total-sprites', (el) => (el.textContent = publishedSpriteCount()));
 
   // Date de dernière vérification des données : dit d'un coup d'œil si le site
   // a été mis à jour depuis la dernière saison.
