@@ -872,12 +872,29 @@ const CODES_S3 = [];
  */
 export const SAISONS = [
   {
+    id: 'onepiece',
+    nom: 'Saison One Piece',
+    sousTitre: 'Nouvelle collection',
+    cle: 'spiritdex:onepiece',
+    codeVersion: 5, // version de partage unique, pas un numéro de saison officiel
+    encours: true,
+    sprites: [],
+    variants: [],
+    renames: {},
+    variantRenames: {},
+    slotOrder: [],
+    dataDate: '2026-11-01',
+    dropDate: '',
+    codes: [],
+    cleCodes: 'spiritdex:codes:onepiece',
+  },
+  {
     id: 's4',
     nom: 'Saison 4',
     sousTitre: 'Override',
     cle: 'spiritdex:s4',
     codeVersion: 4,
-    encours: true,
+    encours: false,
     sprites: SPRITES_S4,
     variants: VARIANTS_S4,
     renames: RENAMES_S4,
@@ -907,7 +924,7 @@ export const SAISONS = [
   },
 ];
 
-export const SAISON_DEFAUT = 's4';
+export const SAISON_DEFAUT = 'onepiece';
 export const getSaison = (id) => SAISONS.find((s) => s.id === id) || SAISONS[0];
 
 /*

@@ -148,7 +148,7 @@ function base64UrlToBytes(str) {
  * le même nombre de cases, et une valeur figée au chargement produirait des
  * codes tronqués après un changement de saison.
  */
-const octets = () => Math.ceil(BIT_SLOTS.length / 8);
+const octets = () => Math.max(1, Math.ceil(BIT_SLOTS.length / 8));
 
 /**
  * Un octet de version, puis le champ « possédé », puis le champ « maîtrisé ».

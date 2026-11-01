@@ -141,6 +141,7 @@ a {
 
 .seasons {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
   padding: 0.2rem;
   border: 1px solid var(--line);
