@@ -870,19 +870,71 @@ const CODES_S3 = [];
  * `codeVersion` est l'octet de tête des codes de partage : il diffère par
  * saison, donc un lien d'une saison ne peut pas être relu comme une autre.
  */
+/*
+ * Saison One Piece — relevé SCM du 1er novembre 2026.
+ * 12 esprits disponibles / 22 cases ; 13 cases à venir, dont Lil' Uzi Vert Jr.
+ * Les taux « none » du site source restent non confirmés.
+ */
+const VARIANTS_ONEPIECE = [
+  { id: 'normal', accent: '#8ab4ff' },
+  { id: 'lucky', accent: '#f5c542' },
+  { id: 'cursed', accent: '#b45cff' },
+];
+
+const SPRITES_ONEPIECE = [
+  { id: 'frecinette', rarity: 'rare', shape: 'banana', palette: ['#ffe14d', '#c78a08'] },
+  { id: 'pierroquet', rarity: 'rare', shape: 'duck', palette: ['#72d590', '#236d47'] },
+  { id: 'barryopoisson', rarity: 'rare', shape: 'fish', palette: ['#67d7e0', '#1a7f9c'] },
+  { id: 'nordbere', rarity: 'rare', shape: 'orb', palette: ['#d8ecff', '#7aa8d8'] },
+  { id: 'orlando', rarity: 'rare', shape: 'orb', palette: ['#ffb875', '#9b541c'] },
+  { id: 'carpediem', rarity: 'epic', shape: 'fish', palette: ['#71dfc2', '#267a70'] },
+  { id: 'marqueswell', rarity: 'epic', shape: 'orb', palette: ['#b58cff', '#5a2fb8'] },
+  { id: 'minicrapoulpe', rarity: 'epic', shape: 'orb', palette: ['#ff8ad4', '#6e265d'] },
+  { id: 'lilflacko', rarity: 'legendary', shape: 'orb', palette: ['#ff9d4d', '#8a4a12'] },
+  { id: 'liluzivertjr', rarity: 'legendary', shape: 'orb', palette: ['#b58cff', '#5a2fb8'] },
+  { id: 'tadore', rarity: 'mythic', shape: 'orb', palette: ['#ffc857', '#9a5c16'] },
+  { id: 'escargophone', rarity: 'legendary', shape: 'orb', palette: ['#8fd66a', '#2f6b2a'] },
+  { id: 'songessereins', rarity: 'mythic', shape: 'moon', palette: ['#a6c8ff', '#4b3fb0'] },
+].map((sprite) => ({
+  ...sprite,
+  dropRate: 0,
+  dropUnverified: true,
+  variants: sprite.id === 'liluzivertjr' ? [] :
+    ['escargophone', 'songessereins'].includes(sprite.id) ? ['normal'] : ['normal', 'lucky'],
+  unreleased: sprite.id === 'liluzivertjr' ? ['normal', 'cursed', 'lucky'] :
+    ['escargophone', 'songessereins'].includes(sprite.id) ? [] : ['cursed'],
+  ability: { verified: true },
+}));
+
+// Figé dès publication : nouveaux couples uniquement en fin de cette liste.
+const SLOT_ORDER_ONEPIECE = [
+  'frecinette:normal', 'frecinette:cursed', 'frecinette:lucky',
+  'pierroquet:normal', 'pierroquet:cursed', 'pierroquet:lucky',
+  'barryopoisson:normal', 'barryopoisson:cursed', 'barryopoisson:lucky',
+  'nordbere:normal', 'nordbere:cursed', 'nordbere:lucky',
+  'orlando:normal', 'orlando:cursed', 'orlando:lucky',
+  'carpediem:normal', 'carpediem:cursed', 'carpediem:lucky',
+  'marqueswell:normal', 'marqueswell:cursed', 'marqueswell:lucky',
+  'minicrapoulpe:normal', 'minicrapoulpe:cursed', 'minicrapoulpe:lucky',
+  'lilflacko:normal', 'lilflacko:cursed', 'lilflacko:lucky',
+  'liluzivertjr:normal', 'liluzivertjr:cursed', 'liluzivertjr:lucky',
+  'tadore:normal', 'tadore:cursed', 'tadore:lucky',
+  'escargophone:normal', 'songessereins:normal',
+];
+
 export const SAISONS = [
   {
     id: 'onepiece',
     nom: 'Saison One Piece',
-    sousTitre: 'Nouvelle collection',
+    sousTitre: 'Sprites',
     cle: 'spiritdex:onepiece',
     codeVersion: 5, // version de partage unique, pas un numéro de saison officiel
     encours: true,
-    sprites: [],
-    variants: [],
+    sprites: SPRITES_ONEPIECE,
+    variants: VARIANTS_ONEPIECE,
     renames: {},
     variantRenames: {},
-    slotOrder: [],
+    slotOrder: SLOT_ORDER_ONEPIECE,
     dataDate: '2026-11-01',
     dropDate: '',
     codes: [],

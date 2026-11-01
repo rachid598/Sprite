@@ -108,6 +108,8 @@ const VARIANT_PAINT = {
   quack: ['#ffd24d', '#e07a0f'],
   cheatmaster: ['#7bf5a6', '#0f7a45'],
   loothacker: ['#7dd3fc', '#0b5c93'],
+  lucky: ['#ffe487', '#c78d0a'],
+  cursed: ['#b58cff', '#4a0e73'],
 };
 
 let uid = 0;
