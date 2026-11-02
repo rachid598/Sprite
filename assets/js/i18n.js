@@ -273,7 +273,7 @@ const fr = {
     minicrapoulpe: 'Mini Crapoulpe',
     lilflacko: 'Lil Flacko',
     liluzivertjr: "Lil' Uzi Vert Jr.",
-    tadore: 'Tadore',
+    tadore: 'Tador',
     escargophone: 'Escargophone',
     songessereins: 'Songes Sereins',
     water: 'Eau',
