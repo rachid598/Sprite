@@ -8,7 +8,7 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 ## Fonctionnalités
 
 - **Trois saisons** — le sélecteur propose « Saison One Piece » (12 esprits
-  disponibles / 22 cases, plus 13 cases à venir), ainsi que la Saison 4
+  disponibles / 31 cases, plus 4 cases à venir), ainsi que la Saison 4
   (*Override*, 27 Sprites / 162 cases) et la Saison 3 (25 Sprites / 117 cases).
   Chaque saison a sa collection, ses variantes, son stockage et sa branche de
   synchronisation : rien ne se mélange, rien ne s'écrase.
@@ -169,8 +169,13 @@ inévitable, incrémenter `CODE_VERSION` dans `assets/js/store.js`.
 
 ### Sources
 
-Se limiter à des sources vérifiables, et croiser au moins deux d'entre elles avant
-d'écrire quoi que ce soit :
+**Source de référence demandée par Rachid : SoisCool Mec.** Pour toute demande de
+mise à jour du site ou de l'application, même sans source précisée, commencer par
+<https://soiscoolmec.com/index.php?page=spriteDex> et comparer son catalogue à celui
+du projet. Cette consigne permanente est également inscrite dans `AGENTS.md`.
+
+Les autres sources servent à compléter ou à recouper les informations. Signaler
+les contradictions sans substituer silencieusement un autre site à SCM.
 
 | Source | Sert à |
 |---|---|
