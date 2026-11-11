@@ -871,8 +871,8 @@ const CODES_S3 = [];
  * saison, donc un lien d'une saison ne peut pas être relu comme une autre.
  */
 /*
- * Saison One Piece — relevé SCM du 4 novembre 2026.
- * 12 esprits disponibles / 22 cases ; 13 cases à venir, dont Lil' Uzi Vert Jr.
+ * Saison One Piece — relevé SCM du 11 novembre 2026.
+ * 13 esprits disponibles / 34 cases ; Carpe Diem Maudit reste à venir.
  * Les taux « none » du site source restent non confirmés.
  */
 const VARIANTS_ONEPIECE = [
@@ -899,10 +899,9 @@ const SPRITES_ONEPIECE = [
   ...sprite,
   dropRate: 0,
   dropUnverified: true,
-  variants: sprite.id === 'liluzivertjr' ? [] :
-    ['escargophone', 'songessereins'].includes(sprite.id) ? ['normal'] : ['normal', 'lucky'],
-  unreleased: sprite.id === 'liluzivertjr' ? ['normal', 'cursed', 'lucky'] :
-    ['escargophone', 'songessereins'].includes(sprite.id) ? [] : ['cursed'],
+  variants: ['escargophone', 'songessereins'].includes(sprite.id) ? ['normal'] :
+    sprite.id === 'carpediem' ? ['normal', 'lucky'] : ['normal', 'cursed', 'lucky'],
+  unreleased: sprite.id === 'carpediem' ? ['cursed'] : [],
   ability: { verified: true },
 }));
 
@@ -935,7 +934,7 @@ export const SAISONS = [
     renames: {},
     variantRenames: {},
     slotOrder: SLOT_ORDER_ONEPIECE,
-    dataDate: '2026-11-04',
+    dataDate: '2026-11-11',
     dropDate: '',
     codes: [],
     cleCodes: 'spiritdex:codes:onepiece',
