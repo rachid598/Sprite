@@ -15,7 +15,7 @@
  * pas ne peut pas deviner le chemin.
  */
 
-import { SAISON } from './data.js';
+import { SAISON } from './data.js?v=c32ddcb';
 
 const CONFIG_KEY = 'sprite-tracker:sync';
 
