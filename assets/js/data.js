@@ -871,14 +871,15 @@ const CODES_S3 = [];
  * saison, donc un lien d'une saison ne peut pas être relu comme une autre.
  */
 /*
- * Saison One Piece — relevé SCM du 11 novembre 2026.
- * 13 esprits disponibles / 34 cases ; Carpe Diem Maudit reste à venir.
+ * Saison One Piece — relevé SCM du 12 novembre 2026.
+ * 13 esprits disponibles / 35 cases ; 24 cases à venir.
  * Les taux « none » du site source restent non confirmés.
  */
 const VARIANTS_ONEPIECE = [
   { id: 'normal', accent: '#8ab4ff' },
   { id: 'lucky', accent: '#f5c542' },
   { id: 'cursed', accent: '#b45cff' },
+  { id: 'gold', accent: '#f3c146' },
 ];
 
 const SPRITES_ONEPIECE = [
@@ -895,13 +896,19 @@ const SPRITES_ONEPIECE = [
   { id: 'tadore', rarity: 'mythic', shape: 'orb', palette: ['#ffc857', '#9a5c16'] },
   { id: 'escargophone', rarity: 'legendary', shape: 'orb', palette: ['#8fd66a', '#2f6b2a'] },
   { id: 'songessereins', rarity: 'mythic', shape: 'moon', palette: ['#a6c8ff', '#4b3fb0'] },
+  { id: 'minihatsune', rarity: 'mythic', shape: 'orb', palette: ['#7fdfdc', '#347b85'] },
+  { id: 'zee', rarity: 'mythic', shape: 'orb', palette: ['#a6c8ff', '#4b3fb0'] },
+  { id: 'siroscar', rarity: 'legendary', shape: 'orb', palette: ['#ffb875', '#9b541c'] },
+  { id: 'calamordu', rarity: 'epic', shape: 'orb', palette: ['#b58cff', '#5a2fb8'] },
 ].map((sprite) => ({
   ...sprite,
   dropRate: 0,
   dropUnverified: true,
-  variants: ['escargophone', 'songessereins'].includes(sprite.id) ? ['normal'] :
-    sprite.id === 'carpediem' ? ['normal', 'lucky'] : ['normal', 'cursed', 'lucky'],
-  unreleased: sprite.id === 'carpediem' ? ['cursed'] : [],
+  variants: ['minihatsune', 'zee', 'siroscar', 'calamordu'].includes(sprite.id) ? [] :
+    ['escargophone', 'songessereins'].includes(sprite.id) ? ['normal'] : ['normal', 'cursed', 'lucky'],
+  unreleased: sprite.id === 'zee' ? ['normal'] :
+    ['minihatsune', 'siroscar', 'calamordu'].includes(sprite.id) ? ['normal', 'lucky', 'cursed', 'gold'] :
+    ['escargophone', 'songessereins'].includes(sprite.id) ? [] : ['gold'],
   ability: { verified: true },
 }));
 
@@ -919,6 +926,13 @@ const SLOT_ORDER_ONEPIECE = [
   'liluzivertjr:normal', 'liluzivertjr:cursed', 'liluzivertjr:lucky',
   'tadore:normal', 'tadore:cursed', 'tadore:lucky',
   'escargophone:normal', 'songessereins:normal',
+  'minihatsune:normal', 'minihatsune:lucky', 'minihatsune:cursed', 'minihatsune:gold',
+  'zee:normal', 'siroscar:normal', 'calamordu:normal',
+  'siroscar:lucky', 'siroscar:cursed', 'siroscar:gold',
+  'calamordu:lucky', 'calamordu:cursed', 'calamordu:gold',
+  'frecinette:gold', 'pierroquet:gold', 'barryopoisson:gold', 'nordbere:gold',
+  'orlando:gold', 'carpediem:gold', 'marqueswell:gold', 'minicrapoulpe:gold',
+  'lilflacko:gold', 'liluzivertjr:gold', 'tadore:gold',
 ];
 
 export const SAISONS = [
@@ -934,7 +948,7 @@ export const SAISONS = [
     renames: {},
     variantRenames: {},
     slotOrder: SLOT_ORDER_ONEPIECE,
-    dataDate: '2026-11-11',
+    dataDate: '2026-11-12',
     dropDate: '',
     codes: [],
     cleCodes: 'spiritdex:codes:onepiece',
