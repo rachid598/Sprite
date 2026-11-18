@@ -871,8 +871,8 @@ const CODES_S3 = [];
  * saison, donc un lien d'une saison ne peut pas être relu comme une autre.
  */
 /*
- * Saison One Piece — relevé SCM du 12 novembre 2026.
- * 13 esprits disponibles / 35 cases ; 24 cases à venir.
+ * Saison One Piece — relevé SCM du 18 novembre 2026.
+ * 16 esprits disponibles / 42 cases ; 17 cases à venir.
  * Les taux « none » du site source restent non confirmés.
  */
 const VARIANTS_ONEPIECE = [
@@ -904,11 +904,10 @@ const SPRITES_ONEPIECE = [
   ...sprite,
   dropRate: 0,
   dropUnverified: true,
-  variants: ['minihatsune', 'zee', 'siroscar', 'calamordu'].includes(sprite.id) ? [] :
-    ['escargophone', 'songessereins'].includes(sprite.id) ? ['normal'] : ['normal', 'cursed', 'lucky'],
-  unreleased: sprite.id === 'zee' ? ['normal'] :
-    ['minihatsune', 'siroscar', 'calamordu'].includes(sprite.id) ? ['normal', 'lucky', 'cursed', 'gold'] :
-    ['escargophone', 'songessereins'].includes(sprite.id) ? [] : ['gold'],
+  variants: sprite.id === 'siroscar' ? [] :
+    ['escargophone', 'songessereins', 'zee'].includes(sprite.id) ? ['normal'] : ['normal', 'cursed', 'lucky'],
+  unreleased: sprite.id === 'siroscar' ? ['normal', 'lucky', 'cursed', 'gold'] :
+    ['escargophone', 'songessereins', 'zee'].includes(sprite.id) ? [] : ['gold'],
   ability: { verified: true },
 }));
 
@@ -948,7 +947,7 @@ export const SAISONS = [
     renames: {},
     variantRenames: {},
     slotOrder: SLOT_ORDER_ONEPIECE,
-    dataDate: '2026-11-12',
+    dataDate: '2026-11-18',
     dropDate: '',
     codes: [],
     cleCodes: 'spiritdex:codes:onepiece',
