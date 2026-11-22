@@ -871,8 +871,7 @@ const CODES_S3 = [];
  * saison, donc un lien d'une saison ne peut pas être relu comme une autre.
  */
 /*
- * Saison One Piece — relevé SCM du 18 novembre 2026.
- * 16 esprits disponibles / 42 cases ; 17 cases à venir.
+ * Saison One Piece — Captain’s Day Oscar, 22 novembre 2026.
  * Les taux « none » du site source restent non confirmés.
  */
 const VARIANTS_ONEPIECE = [
@@ -881,6 +880,9 @@ const VARIANTS_ONEPIECE = [
   { id: 'cursed', accent: '#b45cff' },
   { id: 'gold', accent: '#f3c146' },
 ];
+
+// Horaire officiel Epic : 15 h à Paris. Évalué à l’ouverture de l’application.
+const oscarDisponible = Date.now() >= Date.parse('2026-11-22T14:00:00Z');
 
 const SPRITES_ONEPIECE = [
   { id: 'frecinette', rarity: 'rare', shape: 'banana', palette: ['#ffe14d', '#c78a08'] },
@@ -900,16 +902,20 @@ const SPRITES_ONEPIECE = [
   { id: 'zee', rarity: 'mythic', shape: 'orb', palette: ['#a6c8ff', '#4b3fb0'] },
   { id: 'siroscar', rarity: 'legendary', shape: 'orb', palette: ['#ffb875', '#9b541c'] },
   { id: 'calamordu', rarity: 'epic', shape: 'orb', palette: ['#b58cff', '#5a2fb8'] },
-].map((sprite) => ({
-  ...sprite,
-  dropRate: 0,
-  dropUnverified: true,
-  variants: sprite.id === 'siroscar' ? [] :
-    ['escargophone', 'songessereins', 'zee'].includes(sprite.id) ? ['normal'] : ['normal', 'cursed', 'lucky'],
-  unreleased: sprite.id === 'siroscar' ? ['normal', 'lucky', 'cursed', 'gold'] :
-    ['escargophone', 'songessereins', 'zee'].includes(sprite.id) ? [] : ['gold'],
-  ability: { verified: true },
-}));
+].map((sprite) => {
+  const normalSeulement = ['escargophone', 'songessereins', 'zee'].includes(sprite.id);
+  const variantes = normalSeulement ? ['normal'] : ['normal', 'cursed', 'lucky', 'gold'];
+  const aVenir = oscarDisponible || normalSeulement ? [] :
+    sprite.id === 'siroscar' ? variantes : ['gold'];
+  return {
+    ...sprite,
+    dropRate: 0,
+    dropUnverified: true,
+    variants: variantes.filter((variant) => !aVenir.includes(variant)),
+    unreleased: aVenir,
+    ability: { verified: true },
+  };
+});
 
 // Figé dès publication : nouveaux couples uniquement en fin de cette liste.
 const SLOT_ORDER_ONEPIECE = [
@@ -947,7 +953,7 @@ export const SAISONS = [
     renames: {},
     variantRenames: {},
     slotOrder: SLOT_ORDER_ONEPIECE,
-    dataDate: '2026-11-18',
+    dataDate: '2026-11-22',
     dropDate: '',
     codes: [],
     cleCodes: 'spiritdex:codes:onepiece',

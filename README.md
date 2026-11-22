@@ -7,8 +7,8 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 
 ## Fonctionnalités
 
-- **Trois saisons** — le sélecteur propose « Saison One Piece » (16 esprits
-  disponibles / 42 cases, plus 17 cases à venir), ainsi que la Saison 4
+- **Trois saisons** — le sélecteur propose « Saison One Piece » (17 esprits
+  et 59 cases après le lancement d’Oscar le 22 novembre à 15 h, heure de Paris), ainsi que la Saison 4
   (*Override*, 27 Sprites / 162 cases) et la Saison 3 (25 Sprites / 117 cases).
   Chaque saison a sa collection, ses variantes, son stockage et sa branche de
   synchronisation : rien ne se mélange, rien ne s'écrase.
