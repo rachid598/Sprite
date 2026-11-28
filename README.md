@@ -169,18 +169,21 @@ inévitable, incrémenter `CODE_VERSION` dans `assets/js/store.js`.
 
 ### Sources
 
-**Source de référence demandée par Rachid : SoisCool Mec.** Pour toute demande de
-mise à jour du site ou de l'application, même sans source précisée, commencer par
-<https://soiscoolmec.com/index.php?page=spriteDex> et comparer son catalogue à celui
-du projet. Cette consigne permanente est également inscrite dans `AGENTS.md`.
+**Source de référence demandée par Rachid : Neko-V (secours/recoupement :
+Fortnite.GG).** Pour toute demande de mise à jour du site ou de l'application,
+même sans source précisée, commencer par
+<https://neko-v.com/index.php?page=spriteDex> (successeur direct du SpriteDex de
+SoisCool Mec) et comparer son catalogue à celui du projet, en utilisant
+<https://fortnite.gg/sprites> en secours ou en recoupement. Cette consigne
+permanente est également inscrite dans `AGENTS.md`.
 
 Les autres sources servent à compléter ou à recouper les informations. Signaler
-les contradictions sans substituer silencieusement un autre site à SCM.
+les contradictions sans substituer silencieusement un autre site à Neko-V.
 
 | Source | Sert à |
 |---|---|
-| <https://fortnite.gg/sprites> | liste des Sprites, variantes, taux d'apparition |
-| <https://soiscoolmec.com/index.php?page=spriteDex> | libellés français du jeu, visuels, variantes |
+| <https://neko-v.com/index.php?page=spriteDex> | source principale : libellés français du jeu, disponibilités, effets, visuels, variantes |
+| <https://fortnite.gg/sprites> | secours et recoupement : liste complète, variantes, visuels WebP issus des fichiers du jeu |
 | Notes de mise à jour d'Epic Games | confirmation des sorties et des effets passifs |
 | Fichiers du jeu extraits (FModel, dataminers) | variantes présentes mais pas encore sorties |
 
