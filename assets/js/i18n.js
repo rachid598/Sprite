@@ -185,6 +185,8 @@ const fr = {
     bountyhunter:
       'Chance de trouver un Sprite en éliminant un adversaire ; ne gagne de l\'XP que par élimination, sauf règle propre au Sprite.',
     trickortreat: 'Chance de faire apparaître des bonbons en ouvrant un contenant.',
+    lucky: 'Révèle les coffres à proximité.',
+    cursed: 'Augmente les chances de trouver des Sprites rares, mais vous subissez des dégâts dans l\'eau.',
   },
   ability: {
     minihatsune: 'Accorde une bulle de l’amitié en faisant une emote avec d’autres joueurs ; le temps de recharge diminue à chaque niveau.',
