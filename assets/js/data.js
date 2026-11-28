@@ -871,8 +871,8 @@ const CODES_S3 = [];
  * saison, donc un lien d'une saison ne peut pas être relu comme une autre.
  */
 /*
- * Saison One Piece — Captain’s Day Oscar, 22 novembre 2026.
- * Les taux « none » du site source restent non confirmés.
+ * Saison One Piece — relevé du 28 novembre 2026 (17 esprits / 59 cases).
+ * Toutes les cases sont disponibles ; les taux « none » du site source restent non confirmés.
  */
 const VARIANTS_ONEPIECE = [
   { id: 'normal', accent: '#8ab4ff' },
@@ -880,9 +880,6 @@ const VARIANTS_ONEPIECE = [
   { id: 'cursed', accent: '#b45cff' },
   { id: 'gold', accent: '#f3c146' },
 ];
-
-// Horaire officiel Epic : 15 h à Paris. Évalué à l’ouverture de l’application.
-const oscarDisponible = Date.now() >= Date.parse('2026-11-22T14:00:00Z');
 
 const SPRITES_ONEPIECE = [
   { id: 'frecinette', rarity: 'rare', shape: 'banana', palette: ['#ffe14d', '#c78a08'] },
@@ -904,15 +901,12 @@ const SPRITES_ONEPIECE = [
   { id: 'calamordu', rarity: 'epic', shape: 'orb', palette: ['#b58cff', '#5a2fb8'] },
 ].map((sprite) => {
   const normalSeulement = ['escargophone', 'songessereins', 'zee'].includes(sprite.id);
-  const variantes = normalSeulement ? ['normal'] : ['normal', 'cursed', 'lucky', 'gold'];
-  const aVenir = oscarDisponible || normalSeulement ? [] :
-    sprite.id === 'siroscar' ? variantes : ['gold'];
   return {
     ...sprite,
     dropRate: 0,
     dropUnverified: true,
-    variants: variantes.filter((variant) => !aVenir.includes(variant)),
-    unreleased: aVenir,
+    variants: normalSeulement ? ['normal'] : ['normal', 'cursed', 'lucky', 'gold'],
+    unreleased: [],
     ability: { verified: true },
   };
 });
@@ -953,7 +947,7 @@ export const SAISONS = [
     renames: {},
     variantRenames: {},
     slotOrder: SLOT_ORDER_ONEPIECE,
-    dataDate: '2026-11-22',
+    dataDate: '2026-11-28',
     dropDate: '',
     codes: [],
     cleCodes: 'spiritdex:codes:onepiece',

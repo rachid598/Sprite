@@ -7,9 +7,9 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 
 ## Fonctionnalités
 
-- **Trois saisons** — le sélecteur propose « Saison One Piece » (17 esprits
-  et 59 cases après le lancement d’Oscar le 22 novembre à 15 h, heure de Paris), ainsi que la Saison 4
-  (*Override*, 27 Sprites / 162 cases) et la Saison 3 (25 Sprites / 117 cases).
+- **Trois saisons** — le sélecteur propose « Saison One Piece » (17 esprits /
+  59 cases), ainsi que la Saison 4 (*Override*, 27 Sprites / 162 cases) et la
+  Saison 3 (25 Sprites / 117 cases).
   Chaque saison a sa collection, ses variantes, son stockage et sa branche de
   synchronisation : rien ne se mélange, rien ne s'écrase.
 - **Checklist** — une case par couple Sprite × variante, propre à la saison
@@ -28,8 +28,8 @@ Site statique, sans dépendances, sans build, sans backend. Tout tourne dans le 
 - **Cochage instantané** — un clic ne met à jour que la case et sa carte, jamais
   toute la grille (133 ms → 33 ms sur processeur bridé ×4).
 - **Application installable** — manifeste + service worker : le site s'installe sur
-  téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 315
-  illustrations comprises (334 fichiers pré-mis en cache).
+  téléphone comme sur ordinateur et fonctionne **entièrement hors ligne**, les 339
+  illustrations comprises (358 fichiers pré-mis en cache).
 - **Sauvegarde locale** — `localStorage`, aucun compte, aucune donnée envoyée.
 - **Sauvegarde fichier** — export de la collection en `.json` et ré-import, avec le
   même arbitrage remplacer / fusionner que pour les liens partagés.
@@ -74,7 +74,7 @@ assets/js/i18n.js   tous les textes affichés
 sw.js               service worker (généré — voir tools/gen-sw.mjs)
 tools/gen-sw.mjs    régénère sw.js depuis la liste réelle des fichiers
 fr/manifest.webmanifest     manifeste d'installation
-assets/sprites/     illustrations des Sprites (315 fichiers .webp 128 px)
+assets/sprites/     illustrations des Sprites (339 fichiers .webp 128 px)
 assets/js/art.js    rendu des illustrations, avec repli SVG généré
 assets/js/pwa.js    service worker, invite d'installation, état réseau
 assets/js/salon.js  client de synchronisation (API REST Firebase)
@@ -169,18 +169,21 @@ inévitable, incrémenter `CODE_VERSION` dans `assets/js/store.js`.
 
 ### Sources
 
-**Source de référence demandée par Rachid : SoisCool Mec.** Pour toute demande de
-mise à jour du site ou de l'application, même sans source précisée, commencer par
-<https://soiscoolmec.com/index.php?page=spriteDex> et comparer son catalogue à celui
-du projet. Cette consigne permanente est également inscrite dans `AGENTS.md`.
+**Source de référence demandée par Rachid : Neko-V (secours/recoupement :
+Fortnite.GG).** Pour toute demande de mise à jour du site ou de l'application,
+même sans source précisée, commencer par
+<https://neko-v.com/index.php?page=spriteDex> (successeur direct du SpriteDex de
+SoisCool Mec) et comparer son catalogue à celui du projet, en utilisant
+<https://fortnite.gg/sprites> en secours ou en recoupement. Cette consigne
+permanente est également inscrite dans `AGENTS.md`.
 
 Les autres sources servent à compléter ou à recouper les informations. Signaler
-les contradictions sans substituer silencieusement un autre site à SCM.
+les contradictions sans substituer silencieusement un autre site à Neko-V.
 
 | Source | Sert à |
 |---|---|
-| <https://fortnite.gg/sprites> | liste des Sprites, variantes, taux d'apparition |
-| <https://soiscoolmec.com/index.php?page=spriteDex> | libellés français du jeu, visuels, variantes |
+| <https://neko-v.com/index.php?page=spriteDex> | source principale : libellés français du jeu, disponibilités, effets, visuels, variantes |
+| <https://fortnite.gg/sprites> | secours et recoupement : liste complète, variantes, visuels WebP issus des fichiers du jeu |
 | Notes de mise à jour d'Epic Games | confirmation des sorties et des effets passifs |
 | Fichiers du jeu extraits (FModel, dataminers) | variantes présentes mais pas encore sorties |
 
@@ -266,7 +269,7 @@ Les effets passifs marqués comme non confirmés le sont volontairement : seuls 
 documentés publiquement sont affichés, le reste attend confirmation plutôt que d'être
 inventé.
 
-Les 315 illustrations de `assets/sprites/` sont les visuels des Sprites tirés du jeu,
+Les 339 illustrations de `assets/sprites/` sont les visuels des Sprites tirés du jeu,
 redimensionnés en 128 px et hébergés avec le site (pas de lien direct vers un serveur
 tiers). Ils appartiennent à Epic Games et sont utilisés ici dans le cadre d'un projet de
 fan non commercial. `assets/js/art.js` conserve un dessin SVG généré, affiché
